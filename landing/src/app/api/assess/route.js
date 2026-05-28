@@ -154,7 +154,7 @@ async function verifyClinicAccess(request) {
   const clinicId = request.headers.get("x-sora-clinic-id") || "";
   const allowPublicDemo = process.env.SORA_ALLOW_PUBLIC_DEMO_ASSESSMENT === "true" || process.env.NODE_ENV !== "production";
 
-  if (allowPublicDemo && isAllowedDemoOrigin(request)) {
+  if (!clinicId && allowPublicDemo && isAllowedDemoOrigin(request)) {
     return { ok: true, clinic: null };
   }
 
@@ -179,7 +179,7 @@ async function verifyClinicAccess(request) {
     return { ok: false, message: "This clinic is not verified yet." };
   }
 
-  if (origin && !originMatchesClinic(origin, clinic)) {
+  if (origin && !originMatchesClinic(origin, clinic) && !(allowPublicDemo && isAllowedDemoOrigin(request))) {
     return { ok: false, message: "This domain is not approved for this clinic." };
   }
 
