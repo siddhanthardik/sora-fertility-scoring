@@ -17,17 +17,6 @@
   backdrop-filter: blur(10px);
 }
 
-/* Glassmorphism accent highlight */
-.quizCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-gold), var(--color-primary-light));
-}
-
 .progressBar {
   height: 4px;
   background: var(--color-border);
@@ -847,5 +836,4 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(95, 125, 103, 0.2);
 }
-
 

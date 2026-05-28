@@ -23,9 +23,10 @@ import {
 import styles from "./QuizWizard.module.css";
 
 const LEAD_API_URL = "https://sora-fertility-bot.onrender.com/api/leads";
-const CLINIC_ID = process.env.NEXT_PUBLIC_SORA_CLINIC_ID || "";
+const DEFAULT_CLINIC_ID = "clinic_krystal_clinic_4ded0a";
+const CLINIC_ID = process.env.NEXT_PUBLIC_SORA_CLINIC_ID || DEFAULT_CLINIC_ID;
 
-// Full 29-step questionnaire definition mapping 1:1 with WordPress clinical plugin
+// Questionnaire definition shared with the server-side scoring payload.
 const steps = [
   { 
     section: "Start Here", 
@@ -247,27 +248,16 @@ const steps = [
   { 
     section: "Pelvic & Uterine Health", 
     id: "uterineHistory", 
-    question: "Have you had fibroids, uterine surgery, or a known uterine abnormality?", 
-    hint: "Uterine factors can affect embryo implantation or miscarriage risk.", 
+    question: "Have you had fibroids, uterine surgery, pelvic surgery, or a known uterine abnormality?", 
+    hint: "Uterine and pelvic factors can affect implantation, miscarriage risk, or tubal function.", 
     type: "radio", 
     key: "uterineHistory", 
     options: [
-      { val: "no", label: "No" }, 
-      { val: "yes", label: "Yes" }, 
-      { val: "notSure", label: "Not sure" }
-    ] 
-  },
-  { 
-    section: "Pelvic & Uterine Health", 
-    id: "pelvicSurgery", 
-    question: "Have you had pelvic surgery (e.g. for cysts, appendix, endometriosis)?", 
-    hint: "Pelvic or abdominal surgeries can sometimes leave minor tubal scar tissues.", 
-    type: "radio", 
-    key: "pelvicSurgery", 
-    options: [
-      { val: "no", label: "No" }, 
-      { val: "yes", label: "Yes" }, 
-      { val: "notSure", label: "Not sure" }
+      { id: "no", val: "no", label: "No", set: { pelvicSurgery: "no" } }, 
+      { id: "uterine", val: "yes", label: "Yes - fibroids, uterine surgery, or uterine abnormality", set: { pelvicSurgery: "no" } }, 
+      { id: "pelvic", val: "no", label: "Yes - pelvic/abdominal surgery, cysts, appendix, or endometriosis surgery", set: { pelvicSurgery: "yes" } },
+      { id: "both", val: "yes", label: "Yes - both uterine and pelvic/abdominal surgery history", set: { pelvicSurgery: "yes" } },
+      { id: "notSure", val: "notSure", label: "Not sure", set: { pelvicSurgery: "notSure" } }
     ] 
   },
   { 
@@ -286,29 +276,16 @@ const steps = [
   { 
     section: "Infection History", 
     id: "tbHistory", 
-    question: "Have you ever had tuberculosis?", 
-    hint: "TB can rarely affect reproductive tracts if it involved the pelvic cavity.", 
+    question: "Have you ever had TB, or are you currently/previously treated for TB?", 
+    hint: "TB history and treatment timing are relevant if TB involved the abdomen, pelvis, genital tract, or is currently being treated.", 
     type: "radio", 
     key: "tbHistory", 
     options: [
-      { val: "no", label: "No" }, 
-      { val: "pulmonary", label: "Yes, pulmonary / lung TB" }, 
-      { val: "pelvic", label: "Yes, abdominal / pelvic / genital TB" }, 
-      { val: "notSure", label: "Not sure" }
-    ] 
-  },
-  { 
-    section: "Infection History", 
-    id: "tbTreatment", 
-    question: "Have you ever been treated for TB?", 
-    hint: "TB therapy timing is relevant for proactive pregnancy timelines.", 
-    type: "radio", 
-    key: "tbTreatment", 
-    options: [
-      { val: "no", label: "No" }, 
-      { val: "completed", label: "Yes, completed treatment" }, 
-      { val: "current", label: "Yes, currently on treatment" }, 
-      { val: "notSure", label: "Not sure" }
+      { id: "no", val: "no", label: "No TB history or treatment", set: { tbTreatment: "no" } }, 
+      { id: "pulmonary", val: "pulmonary", label: "Yes, pulmonary / lung TB - completed treatment", set: { tbTreatment: "completed" } }, 
+      { id: "pelvic", val: "pelvic", label: "Yes, abdominal / pelvic / genital TB - completed treatment", set: { tbTreatment: "completed" } }, 
+      { id: "current", val: "notSure", label: "Yes, currently on TB treatment", set: { tbTreatment: "current" } },
+      { id: "notSure", val: "notSure", label: "Not sure", set: { tbTreatment: "notSure" } }
     ] 
   },
   { 
@@ -442,7 +419,16 @@ const getReadableValue = (key, value) => {
   return String(value);
 };
 
+const getCombinedReadableValue = (items) => (
+  items
+    .map(([key, label, value]) => `${label}: ${getReadableValue(key, value)}`)
+    .join("; ")
+);
+
 export default function QuizWizard() {
+  const leadStepIndex = steps.length;
+  const resultStepIndex = steps.length + 1;
+  const labToggleStepIndex = steps.findIndex((step) => step.id === "labToggle");
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -572,8 +558,7 @@ export default function QuizWizard() {
 
     // Skip labs step if lab toggle is No
     if (step.id === "labToggle" && formData.includeLab === "no") {
-      // Proceed straight to lead gate step (index 29)
-      setCurrentStep(29);
+      setCurrentStep(leadStepIndex);
       return;
     }
 
@@ -585,28 +570,33 @@ export default function QuizWizard() {
     const prevStepIndex = currentStep - 1;
 
     // If going back from lead gate (index 29) and includeLab was 'no'
-    if (currentStep === 29 && formData.includeLab === "no") {
-      setCurrentStep(27); // Skip back past the labs inputs to the labToggle step
+    if (currentStep === leadStepIndex && formData.includeLab === "no") {
+      setCurrentStep(labToggleStepIndex);
       return;
     }
 
     setCurrentStep(prevStepIndex);
   };
 
-  const handleRadioSelect = (key, val, autoAdvance = false) => {
-    setFormData(prev => ({ ...prev, [key]: val }));
+  const handleRadioSelect = (step, option, autoAdvance = false) => {
+    setFormData(prev => ({ ...prev, [step.key]: option.val, ...(option.set || {}) }));
     setError("");
 
     if (autoAdvance) {
       setTimeout(() => {
         // Evaluate lab toggle skip during auto advance
-        if (key === "includeLab" && val === "no") {
-          setCurrentStep(29); // Jump straight to lead gate
+        if (step.key === "includeLab" && option.val === "no") {
+          setCurrentStep(leadStepIndex);
         } else {
           setCurrentStep(prev => prev + 1);
         }
       }, 220);
     }
+  };
+
+  const isOptionSelected = (step, option) => {
+    if (formData[step.key] !== option.val) return false;
+    return Object.entries(option.set || {}).every(([key, value]) => formData[key] === value);
   };
 
   const handleLeadSubmit = async (e) => {
@@ -707,11 +697,11 @@ export default function QuizWizard() {
       }
 
       setResults(triageResults);
-      setCurrentStep(30); // Gracefully transition to results dashboard
+      setCurrentStep(resultStepIndex); // Gracefully transition to results dashboard
     } catch (err) {
       console.warn("Network or CORS error during lead submission, showing assessed result without lead confirmation:", err);
       setResults(triageResults);
-      setCurrentStep(30); // Always guarantee report generation
+      setCurrentStep(resultStepIndex); // Always guarantee report generation
     } finally {
       setLoading(false);
     }
@@ -973,15 +963,19 @@ export default function QuizWizard() {
               <tr class="data-group"><td colSpan="3">Pelvic & Medical History</td></tr>
               <tr><td>Pelvic</td><td>Endometriosis</td><td>${getReadableValue("endo", formData.endo)}</td></tr>
               <tr><td>Pelvic</td><td>Severe Pelvic/Period Pain</td><td>${getReadableValue("pelvicPain", formData.pelvicPain)}</td></tr>
-              <tr><td>Pelvic</td><td>Uterine Factor / Fibroids</td><td>${getReadableValue("uterineHistory", formData.uterineHistory)}</td></tr>
-              <tr><td>Pelvic</td><td>Prior Pelvic Surgeries</td><td>${getReadableValue("pelvicSurgery", formData.pelvicSurgery)}</td></tr>
+              <tr><td>Pelvic</td><td>Uterine / Pelvic Surgery History</td><td>${getCombinedReadableValue([
+                ["uterineHistory", "Uterine", formData.uterineHistory],
+                ["pelvicSurgery", "Pelvic surgery", formData.pelvicSurgery]
+              ])}</td></tr>
               <tr><td>Pelvic</td><td>Pregnancy Losses</td><td>${getReadableValue("pregnancyLosses", formData.pregnancyLosses)}</td></tr>
 
               <tr class="data-group"><td colSpan="3">Medical Background</td></tr>
               <tr><td>Medical</td><td>Prior Ectopic Pregnancy</td><td>${getReadableValue("ectopicPregnancy", formData.ectopicPregnancy)}</td></tr>
               <tr><td>Medical</td><td>STI History</td><td>${getReadableValue("stiHistory", formData.stiHistory)}</td></tr>
-              <tr><td>Medical</td><td>Tuberculosis History</td><td>${getReadableValue("tbHistory", formData.tbHistory)}</td></tr>
-              <tr><td>Medical</td><td>TB Treatment History</td><td>${getReadableValue("tbTreatment", formData.tbTreatment)}</td></tr>
+              <tr><td>Medical</td><td>TB History / Treatment</td><td>${getCombinedReadableValue([
+                ["tbHistory", "TB history", formData.tbHistory],
+                ["tbTreatment", "Treatment", formData.tbTreatment]
+              ])}</td></tr>
               <tr><td>Medical</td><td>Chemotherapy / Radiation</td><td>${getReadableValue("cancerTreatment", formData.cancerTreatment)}</td></tr>
               <tr><td>Medical</td><td>Family Early Menopause</td><td>${getReadableValue("familyEarlyMenopause", formData.familyEarlyMenopause)}</td></tr>
 
@@ -1069,16 +1063,18 @@ export default function QuizWizard() {
 
   const getStepIndicator = () => {
     // Return visible steps, hiding optional lab step if omitted
-    const maxProgressSteps = formData.includeLab === "yes" ? 29 : 28;
-    const currentProgressStep = currentStep === 29 ? maxProgressSteps : Math.min(currentStep + 1, maxProgressSteps);
+    const maxProgressSteps = formData.includeLab === "yes" ? steps.length : steps.length - 1;
+    const currentProgressStep = currentStep === leadStepIndex ? maxProgressSteps : Math.min(currentStep + 1, maxProgressSteps);
     return `Question ${currentProgressStep} of ${maxProgressSteps}`;
   };
 
-  const progressPercent = currentStep === 29 ? 100 : Math.round((currentStep / 29) * 100);
+  const progressTotal = formData.includeLab === "yes" ? steps.length : steps.length - 1;
+  const progressStep = currentStep === leadStepIndex ? progressTotal : Math.min(currentStep, progressTotal);
+  const progressPercent = Math.round((progressStep / progressTotal) * 100);
 
   return (
     <div className={styles.quizContainer}>
-      {currentStep < 30 ? (
+      {currentStep < resultStepIndex ? (
         <div className={styles.quizCard} id="wizardCard">
           {/* Progress Indicator */}
           <div className={styles.progressBar}>
@@ -1095,7 +1091,7 @@ export default function QuizWizard() {
             </div>
           )}
 
-          {currentStep < 29 ? (
+          {currentStep < leadStepIndex ? (
             /* RENDERING ALL 27 QUESTIONS INDIVIDUALLY */
             <div>
               {(() => {
@@ -1115,9 +1111,9 @@ export default function QuizWizard() {
                       <div className={styles.optionsGrid}>
                         {step.options.map(opt => (
                           <div 
-                            key={opt.val} 
-                            className={`${styles.optionCard} ${formData[step.key] === opt.val ? styles.selected : ""}`}
-                            onClick={() => handleRadioSelect(step.key, opt.val, true)}
+                            key={opt.id || opt.val} 
+                            className={`${styles.optionCard} ${isOptionSelected(step, opt) ? styles.selected : ""}`}
+                            onClick={() => handleRadioSelect(step, opt, true)}
                           >
                             <div className={styles.radioCircle}>
                               <span className={styles.radioCircleInner}></span>
@@ -1140,7 +1136,10 @@ export default function QuizWizard() {
                           min={step.min} 
                           max={step.max} 
                           value={formData.age} 
-                          onChange={(e) => handleRadioSelect("age", Number(e.target.value))}
+                          onChange={(e) => {
+                            setFormData(prev => ({ ...prev, age: Number(e.target.value) }));
+                            setError("");
+                          }}
                           className={styles.customSlider}
                         />
                         <div className={styles.sliderLabels}>
@@ -1574,13 +1573,13 @@ export default function QuizWizard() {
                   </tr>
                   <tr>
                     <td>Pelvic</td>
-                    <td>Uterine Factor / Fibroids</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("uterineHistory", formData.uterineHistory)}</td>
-                  </tr>
-                  <tr>
-                    <td>Pelvic</td>
-                    <td>Prior Pelvic Surgeries</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("pelvicSurgery", formData.pelvicSurgery)}</td>
+                    <td>Uterine / Pelvic Surgery History</td>
+                    <td style={{ fontWeight: 600 }}>
+                      {getCombinedReadableValue([
+                        ["uterineHistory", "Uterine", formData.uterineHistory],
+                        ["pelvicSurgery", "Pelvic surgery", formData.pelvicSurgery]
+                      ])}
+                    </td>
                   </tr>
                   <tr>
                     <td>Pelvic</td>
@@ -1604,13 +1603,13 @@ export default function QuizWizard() {
                   </tr>
                   <tr>
                     <td>Medical</td>
-                    <td>Tuberculosis History</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("tbHistory", formData.tbHistory)}</td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>TB Treatment History</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("tbTreatment", formData.tbTreatment)}</td>
+                    <td>TB History / Treatment</td>
+                    <td style={{ fontWeight: 600 }}>
+                      {getCombinedReadableValue([
+                        ["tbHistory", "TB history", formData.tbHistory],
+                        ["tbTreatment", "Treatment", formData.tbTreatment]
+                      ])}
+                    </td>
                   </tr>
                   <tr>
                     <td>Medical</td>
