@@ -161,11 +161,24 @@ export async function POST(request) {
       referral_triggers, 
       flagged_factors, 
       ovarian_reserve,
-      includeLab
+      includeLab,
+      consultation_request,
+      preferred_date,
+      preferred_time,
+      consultation_notes
     } = payload;
     const safeRiskCategory = ["high", "medium", "low"].includes(risk_category) ? risk_category : "low";
     const safeReferralTriggers = Array.isArray(referral_triggers) ? referral_triggers : [];
     const safeFlaggedFactors = Array.isArray(flagged_factors) ? flagged_factors : [];
+    const isConsultationRequest = consultation_request === true;
+    const consultationBlock = isConsultationRequest ? `
+      <div style="background: #fff7ea; border: 1px solid #DFBA89; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 8px; color: #1F2B22;">Priority Consultation Request</h3>
+        <p style="margin: 4px 0;"><strong>Preferred date:</strong> ${preferred_date || "Not specified"}</p>
+        <p style="margin: 4px 0;"><strong>Preferred time:</strong> ${preferred_time || "Not specified"}</p>
+        ${consultation_notes ? `<p style="margin: 4px 0;"><strong>Notes:</strong> ${consultation_notes}</p>` : ""}
+      </div>
+    ` : "";
 
     // Check if SMTP is configured in environmental options, with clinical spa fallback
     const smtpHost = process.env.SMTP_HOST || "";
@@ -446,20 +459,21 @@ export async function POST(request) {
                   <p><strong>Name:</strong> ${name}</p>
                   <p><strong>Email:</strong> ${email}</p>
                   <p><strong>Phone:</strong> ${phone}</p>
-                  <p><strong>Age:</strong> ${age}</p>
-                  <p><strong>Triage tier:</strong> ${safeRiskCategory.toUpperCase()}</p>
-                  <p><strong>Referral guidance:</strong> ${referral_urgency}</p>
-                </div>
-                <p style="font-size: 13px; color: #63716b;">The user consented to secure delivery of the FertiSTAT fertility summary and follow-up advisor clinical matching calls/texts.</p>
-                ${htmlBody}
+                <p><strong>Age:</strong> ${age}</p>
+                <p><strong>Triage tier:</strong> ${safeRiskCategory.toUpperCase()}</p>
+                <p><strong>Referral guidance:</strong> ${referral_urgency}</p>
               </div>
-            `;
+              ${consultationBlock}
+              <p style="font-size: 13px; color: #63716b;">The user consented to secure delivery of the FertiSTAT fertility summary and follow-up advisor clinical matching calls/texts.</p>
+              ${htmlBody}
+            </div>
+          `;
 
             await transporter.sendMail({
               from: smtpFrom,
               to: clinicNotificationEmail,
               replyTo: deliveryEmail,
-              subject: `New SORA fertility lead - ${safeHeaderText(name || "Patient")}`,
+              subject: `${isConsultationRequest ? "Priority consult request" : "New SORA fertility lead"} - ${safeHeaderText(name || "Patient")}`,
               html: clinicHtmlBody
             });
             clinicNotificationSent = true;
