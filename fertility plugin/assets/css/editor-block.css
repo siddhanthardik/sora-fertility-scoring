@@ -1,0 +1,25 @@
+.fc-block-preview {
+  max-width: 580px;
+  margin: 0 auto;
+  border: 1px dashed #557b5d;
+  border-radius: 8px;
+  padding: 20px;
+  background: #ffffff;
+  color: #24313d;
+  text-align: center;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.fc-block-preview-icon {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 2rem;
+}
+
+.fc-block-preview h3 {
+  margin: 0 0 8px;
+}
+
+.fc-block-preview p {
+  margin: 0;
+}
