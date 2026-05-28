@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import styles from "./QuizWizard.module.css";
 
-const LEAD_API_URL = "https://sora-fertility-bot.onrender.com/api/leads";
+const LEAD_API_URL = "/api/leads";
 const DEFAULT_CLINIC_ID = "clinic_krystal_clinic_4ded0a";
 const CLINIC_ID = process.env.NEXT_PUBLIC_SORA_CLINIC_ID || DEFAULT_CLINIC_ID;
 
@@ -632,6 +632,7 @@ export default function QuizWizard() {
 
     const payload = {
       source: "nextjs_full_27_questions",
+      clinicId: CLINIC_ID,
       name: leadName.trim(),
       email: leadEmail.trim(),
       phone: leadPhone.trim(),

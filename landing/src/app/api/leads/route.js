@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getClinic } from "../../lib/clinicRegistry";
 
 const getReadableValue = (key, value) => {
   if (value === undefined || value === null || value === "") return "Not entered / Skipped";
@@ -82,6 +83,10 @@ function safeHeaderText(value) {
     .slice(0, 120);
 }
 
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+
 export async function POST(request) {
   try {
     const contentLength = Number(request.headers.get("content-length") || 0);
@@ -102,12 +107,23 @@ export async function POST(request) {
     }
 
     const payload = escapePayload(rawPayload);
+    const clinicId = String(rawPayload?.clinicId || rawPayload?.clinic_id || "").trim();
+    const clinic = clinicId ? await getClinic(clinicId).catch((error) => {
+      console.error("Clinic lookup for lead notification failed:", error);
+      return null;
+    }) : null;
+    const clinicNotificationEmail = String(clinic?.notificationEmail || clinic?.ownerEmail || "").trim();
+    const shouldNotifyClinic = rawPayload?.consent_marketing === true
+      || rawPayload?.contactConsent === true
+      || rawPayload?.leadConsent === true;
 
     // 1. Submit lead to Render Database API
     let renderSaved = false;
     let renderErrorMsg = "";
     
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
       const renderResponse = await fetch("https://sora-fertility-bot.onrender.com/api/leads", {
         method: "POST",
         headers: { 
@@ -115,7 +131,9 @@ export async function POST(request) {
           "Accept": "application/json"
         },
         body: JSON.stringify(rawPayload),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       if (renderResponse.ok) {
         renderSaved = true;
       } else {
@@ -124,12 +142,14 @@ export async function POST(request) {
       }
     } catch (dbErr) {
       console.error("Failed to forward lead to database Render node:", dbErr);
-      renderErrorMsg = dbErr.message;
+      renderErrorMsg = dbErr.name === "AbortError" ? "Render lead forward timed out." : dbErr.message;
     }
 
     // 2. Dispatch Triage Report HTML Email using SMTP via Nodemailer
     let emailSent = false;
     let emailErrorMsg = "";
+    let clinicNotificationSent = false;
+    let clinicNotificationError = "";
 
     const { 
       email, 
@@ -415,13 +435,56 @@ export async function POST(request) {
         });
 
         emailSent = true;
+
+        if (shouldNotifyClinic && isValidEmail(clinicNotificationEmail)) {
+          try {
+            const clinicHtmlBody = `
+              <div style="font-family: Arial, sans-serif; color: #1F2B22; background: #FAF9F6; padding: 24px; line-height: 1.6; max-width: 680px; margin: 0 auto;">
+                <h2 style="margin: 0 0 8px;">New SORA Fertility Lead</h2>
+                <p style="margin: 0 0 16px; color: #5F7D67;"><strong>Mapped clinic:</strong> ${clinic?.name || clinicId || "Clinic not found"}</p>
+                <div style="background: #ffffff; border: 1px solid #e3e7e2; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                  <p><strong>Name:</strong> ${name}</p>
+                  <p><strong>Email:</strong> ${email}</p>
+                  <p><strong>Phone:</strong> ${phone}</p>
+                  <p><strong>Age:</strong> ${age}</p>
+                  <p><strong>Triage tier:</strong> ${safeRiskCategory.toUpperCase()}</p>
+                  <p><strong>Referral guidance:</strong> ${referral_urgency}</p>
+                </div>
+                <p style="font-size: 13px; color: #63716b;">The user consented to secure delivery of the FertiSTAT fertility summary and follow-up advisor clinical matching calls/texts.</p>
+                ${htmlBody}
+              </div>
+            `;
+
+            await transporter.sendMail({
+              from: smtpFrom,
+              to: clinicNotificationEmail,
+              replyTo: deliveryEmail,
+              subject: `New SORA fertility lead - ${safeHeaderText(name || "Patient")}`,
+              html: clinicHtmlBody
+            });
+            clinicNotificationSent = true;
+          } catch (clinicMailErr) {
+            console.error("Clinic notification email send failure:", clinicMailErr);
+            clinicNotificationError = clinicMailErr.message;
+          }
+        } else if (shouldNotifyClinic) {
+          clinicNotificationError = clinicId
+            ? "Mapped clinic notification email is missing or invalid."
+            : "Clinic ID was not provided with the lead payload.";
+        }
       } catch (mailErr) {
         console.error("Nodemailer SMTP email send failure:", mailErr);
         emailErrorMsg = mailErr.message;
+        if (shouldNotifyClinic && !clinicNotificationSent) {
+          clinicNotificationError = mailErr.message;
+        }
       }
     } else {
       console.warn("SMTP email environment variables are not configured. Skipping email delivery.");
       emailErrorMsg = "SMTP variables not defined on Next.js server node.";
+      if (shouldNotifyClinic) {
+        clinicNotificationError = "SMTP variables not defined on Next.js server node.";
+      }
     }
 
     // 3. Return full compilation status back to client
@@ -430,7 +493,10 @@ export async function POST(request) {
       render_database_saved: renderSaved,
       database_error: renderErrorMsg,
       email_dispatched: emailSent,
-      email_error: emailErrorMsg
+      email_error: emailErrorMsg,
+      clinic_notification_dispatched: clinicNotificationSent,
+      clinic_notification_email: clinicNotificationEmail || null,
+      clinic_notification_error: clinicNotificationError
     });
 
   } catch (err) {

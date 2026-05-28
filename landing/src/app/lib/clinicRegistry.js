@@ -8,11 +8,40 @@ const registryPath = path.join(process.cwd(), "data", "clinics.json");
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabaseClinicsTable = safeIdentifier(process.env.SUPABASE_CLINICS_TABLE || "clinic_registry");
+const defaultClinics = [
+  {
+    clinicId: "clinic_krystal_clinic_4ded0a",
+    name: "Krystal Clinic",
+    ownerName: "Dr Hasib",
+    ownerEmail: "hasibulimam86@gmail.com",
+    notificationEmail: "hasibulimam86@gmail.com",
+    allowedDomains: [
+      "sora.krystalclinicdelhi.com",
+      "www.sora.krystalclinicdelhi.com",
+      "krystalclinicdelhi.com",
+      "www.krystalclinicdelhi.com",
+    ],
+    status: "active",
+    verificationStatus: "verified",
+    plan: "starter",
+    usage: {
+      totalAssessments: 0,
+      totalReports: 0,
+      lastAssessmentAt: null,
+    },
+    createdAt: "2026-05-28T09:14:58.516Z",
+    updatedAt: "2026-05-28T09:14:58.516Z",
+  },
+];
 
 export async function listClinics() {
   if (hasSupabase()) {
-    const rows = await supabaseRequest(`/${supabaseClinicsTable}?select=*&order=created_at.desc`);
-    return rows.map(fromDbClinic);
+    try {
+      const rows = await supabaseRequest(`/${supabaseClinicsTable}?select=*&order=created_at.desc`);
+      return rows.map(fromDbClinic);
+    } catch (error) {
+      console.error("Supabase clinic list failed; using local registry fallback:", error);
+    }
   }
 
   const registry = await readRegistry();
@@ -22,8 +51,12 @@ export async function listClinics() {
 export async function getClinic(clinicId) {
   if (!clinicId) return null;
   if (hasSupabase()) {
-    const rows = await supabaseRequest(`/${supabaseClinicsTable}?clinic_id=eq.${encodeURIComponent(clinicId)}&select=*&limit=1`);
-    return rows[0] ? fromDbClinic(rows[0]) : null;
+    try {
+      const rows = await supabaseRequest(`/${supabaseClinicsTable}?clinic_id=eq.${encodeURIComponent(clinicId)}&select=*&limit=1`);
+      if (rows[0]) return fromDbClinic(rows[0]);
+    } catch (error) {
+      console.error("Supabase clinic lookup failed; using local registry fallback:", error);
+    }
   }
 
   const registry = await readRegistry();
@@ -97,8 +130,12 @@ export async function updateClinic(clinicId, patch) {
 export async function recordAssessment(clinicId) {
   if (!clinicId) return;
   if (hasSupabase()) {
-    await supabaseRpc("increment_clinic_assessment", { clinic_id_input: clinicId });
-    return;
+    try {
+      await supabaseRpc("increment_clinic_assessment", { clinic_id_input: clinicId });
+      return;
+    } catch (error) {
+      console.error("Supabase assessment counter failed; using local registry fallback:", error);
+    }
   }
 
   const registry = await readRegistry();
@@ -109,7 +146,11 @@ export async function recordAssessment(clinicId) {
   clinic.usage.totalAssessments = Number(clinic.usage.totalAssessments || 0) + 1;
   clinic.usage.lastAssessmentAt = new Date().toISOString();
   clinic.updatedAt = new Date().toISOString();
-  await writeRegistry(registry);
+  try {
+    await writeRegistry(registry);
+  } catch (error) {
+    console.error("Local assessment counter failed:", error);
+  }
 }
 
 export function originMatchesClinic(origin, clinic) {
@@ -140,11 +181,35 @@ async function readRegistry() {
   try {
     const content = await fs.readFile(registryPath, "utf8");
     const parsed = JSON.parse(content);
-    return { clinics: Array.isArray(parsed.clinics) ? parsed.clinics : [] };
+    const clinics = Array.isArray(parsed.clinics) ? parsed.clinics : [];
+    return { clinics: mergeDefaultClinics(clinics) };
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
-    return { clinics: [] };
+    return { clinics: defaultClinics };
   }
+}
+
+function mergeDefaultClinics(clinics) {
+  const defaultsById = new Map(defaultClinics.map((clinic) => [clinic.clinicId, clinic]));
+  const merged = clinics.map((clinic) => {
+    const defaultClinic = defaultsById.get(clinic.clinicId);
+    if (!defaultClinic) return clinic;
+    return {
+      ...defaultClinic,
+      ...clinic,
+      allowedDomains: [...new Set([
+        ...(clinic.allowedDomains || []),
+        ...(defaultClinic.allowedDomains || []),
+      ])],
+      notificationEmail: clinic.notificationEmail || defaultClinic.notificationEmail,
+      ownerEmail: clinic.ownerEmail || defaultClinic.ownerEmail,
+    };
+  });
+  const ids = new Set(merged.map((clinic) => clinic.clinicId));
+  return [
+    ...merged,
+    ...defaultClinics.filter((clinic) => !ids.has(clinic.clinicId)),
+  ];
 }
 
 async function writeRegistry(registry) {
@@ -207,9 +272,6 @@ function buildUpdatedClinic(current, patch) {
 }
 
 function hasSupabase() {
-  if (process.env.NODE_ENV === "production" && (!supabaseUrl || !supabaseServiceRoleKey)) {
-    throw new Error("Supabase registry environment variables are required in production.");
-  }
   return Boolean(supabaseUrl && supabaseServiceRoleKey);
 }
 
