@@ -19,6 +19,7 @@ import {
   Download
 } from "lucide-react";
 import styles from "./QuizWizard.module.css";
+import PremiumReportTemplate from "./PremiumReportTemplate";
 
 const LEAD_API_URL = "/api/leads";
 const DEFAULT_CLINIC_ID = "clinic_krystal_clinic_4ded0a";
@@ -431,6 +432,7 @@ export default function QuizWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Form State matching all 27 clinical parameters
   const [formData, setFormData] = useState({
@@ -765,669 +767,39 @@ export default function QuizWizard() {
 
   const handleDownloadReport = async () => {
     if (!results) return;
-
-    const riskColor = results.category === "high" ? "#a93f3f" : (results.category === "medium" ? "#d39a27" : "#42734c");
-    const riskBg = results.category === "high" ? "#fae9e7" : (results.category === "medium" ? "#fff1d9" : "#e8f3ea");
-    const riskPercent = results.category === "high" ? 95 : (results.category === "medium" ? 66 : 33);
-    const redWidth = Math.min(100, results.redCount * 20);
-    const amberWidth = Math.min(100, results.amberCount * 20);
-    const flaggedWidth = Math.min(100, results.flaggedFactors.length * 12);
-
-    const { jsPDF } = await import("jspdf");
-    const pdf = new jsPDF({ unit: "pt", format: "a4" });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 42;
-    const contentWidth = pageWidth - margin * 2;
-    let y = margin;
-
-    const hexToRgb = (hex) => {
-      const normalized = hex.replace("#", "");
-      return [
-        parseInt(normalized.slice(0, 2), 16),
-        parseInt(normalized.slice(2, 4), 16),
-        parseInt(normalized.slice(4, 6), 16)
-      ];
-    };
-    const setFill = (hex) => pdf.setFillColor(...hexToRgb(hex));
-    const setText = (hex) => pdf.setTextColor(...hexToRgb(hex));
-    const ensureSpace = (height = 60) => {
-      if (y + height <= pageHeight - margin) return;
-      pdf.addPage();
-      y = margin;
-    };
-    const writeWrapped = (text, x, maxWidth, options = {}) => {
-      const lines = pdf.splitTextToSize(String(text || ""), maxWidth);
-      pdf.text(lines, x, y, options);
-      y += lines.length * 14;
-    };
-    const sectionTitle = (title) => {
-      ensureSpace(34);
-      setText("#1F2B22");
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(13);
-      pdf.text(title, margin, y);
-      y += 8;
-      pdf.setDrawColor(227, 231, 226);
-      pdf.line(margin, y, pageWidth - margin, y);
-      y += 18;
-    };
-    const answerRows = [
-      ["Personal Parameters", "Patient Age", getReadableValue("age", formData.age)],
-      ["Personal Parameters", "Height", getReadableValue("height", formData.height)],
-      ["Personal Parameters", "Weight", getReadableValue("weight", formData.weight)],
-      ["Personal Parameters", "Calculated BMI", getReadableValue("bmi", formData.bmi)],
-      ["Fertility Context", "Current Goal Focus", getReadableValue("tryingStatus", formData.tryingStatus)],
-      ["Fertility Context", "Active Try Duration", getReadableValue("tryDuration", formData.tryDuration)],
-      ["Fertility Context", "Previous Births", getReadableValue("prevBirth", formData.prevBirth)],
-      ["Fertility Context", "Intercourse Timing", getReadableValue("intercourseTiming", formData.intercourseTiming)],
-      ["Fertility Context", "Partner Sperm Factor", getReadableValue("partnerSperm", formData.partnerSperm)],
-      ["Hormonal & Ovarian Status", "Period Regularity", getReadableValue("cycleReg", formData.cycleReg)],
-      ["Hormonal & Ovarian Status", "Cycle Length", getReadableValue("cycleLength", formData.cycleLength)],
-      ["Hormonal & Ovarian Status", "PCOS Status", getReadableValue("pcos", formData.pcos)],
-      ["Hormonal & Ovarian Status", "Thyroid History", getReadableValue("thyroid", formData.thyroid)],
-      ["Hormonal & Ovarian Status", "Diabetes Condition", getReadableValue("diabetes", formData.diabetes)],
-      ["Pelvic & Medical History", "Endometriosis", getReadableValue("endo", formData.endo)],
-      ["Pelvic & Medical History", "Severe Pelvic/Period Pain", getReadableValue("pelvicPain", formData.pelvicPain)],
-      ["Pelvic & Medical History", "Uterine / Pelvic Surgery History", getCombinedReadableValue([
-        ["uterineHistory", "Uterine", formData.uterineHistory],
-        ["pelvicSurgery", "Pelvic surgery", formData.pelvicSurgery]
-      ])],
-      ["Pelvic & Medical History", "Pregnancy Losses", getReadableValue("pregnancyLosses", formData.pregnancyLosses)],
-      ["Medical Background", "Prior Ectopic Pregnancy", getReadableValue("ectopicPregnancy", formData.ectopicPregnancy)],
-      ["Medical Background", "STI History", getReadableValue("stiHistory", formData.stiHistory)],
-      ["Medical Background", "TB History / Treatment", getCombinedReadableValue([
-        ["tbHistory", "TB history", formData.tbHistory],
-        ["tbTreatment", "Treatment", formData.tbTreatment]
-      ])],
-      ["Medical Background", "Chemotherapy / Radiation", getReadableValue("cancerTreatment", formData.cancerTreatment)],
-      ["Medical Background", "Family Early Menopause", getReadableValue("familyEarlyMenopause", formData.familyEarlyMenopause)],
-      ["Lifestyle & Labs", "Cigarettes / Tobacco", getReadableValue("smoking", formData.smoking)],
-      ["Lifestyle & Labs", "Caffeine Consumption", getReadableValue("caffeine", formData.caffeine)],
-      ["Lifestyle & Labs", "Alcohol Intake", getReadableValue("alcohol", formData.alcohol)],
-      ["Lifestyle & Labs", "Recreational Drug Use", getReadableValue("recreationalDrugs", formData.recreationalDrugs)],
-      ["Lifestyle & Labs", "Optional Labs", getReadableValue("includeLab", formData.includeLab)]
-    ];
-
-    if (formData.includeLab === "yes") {
-      answerRows.push(
-        ["Lifestyle & Labs", "AMH Value", formData.amhValue ? `${formData.amhValue} ${formData.amhUnit}` : "Not entered"],
-        ["Lifestyle & Labs", "FSH Value", formData.fsh ? `${formData.fsh} IU/L` : "Not entered"],
-        ["Lifestyle & Labs", "Antral Follicle Count", formData.afc ? `${formData.afc} Follicles` : "Not entered"]
-      );
-    }
-
-    setText("#1F2B22");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(22);
-    pdf.text("Sora Fertility Clinic", margin, y);
-    y += 20;
-    pdf.setFontSize(10);
-    setText("#5F7D67");
-    pdf.text("Confidential Triage & FertiSTAT Report", margin, y);
-    y += 24;
-    pdf.setDrawColor(95, 125, 103);
-    pdf.line(margin, y, pageWidth - margin, y);
-    y += 24;
-
-    sectionTitle("Patient Details");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
-    const patientRows = [
-      ["Full Name", leadName],
-      ["Age", `${formData.age} Years`],
-      ["Mobile Line", leadPhone],
-      ["Delivery Email", leadEmail],
-      ["BMI", String(formData.bmi || "Not calculated")]
-    ];
-    patientRows.forEach(([label, value]) => {
-      ensureSpace(18);
-      setText("#63716b");
-      pdf.text(label, margin, y);
-      setText("#1F2B22");
-      pdf.setFont("helvetica", "bold");
-      pdf.text(String(value || "Not entered"), margin + 140, y);
-      pdf.setFont("helvetica", "normal");
-      y += 18;
-    });
-    y += 10;
-
-    sectionTitle("Clinical Risk Summary");
-    setFill(riskBg);
-    pdf.roundedRect(margin, y, contentWidth, 76, 8, 8, "F");
-    setText(riskColor);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(20);
-    pdf.text(`Triage Tier: ${results.category.toUpperCase()}`, margin + 18, y + 30);
-    setText("#1F2B22");
-    pdf.setFontSize(10);
-    pdf.text(`Referral Guidance: ${results.urgency || "Review with a qualified clinician."}`, margin + 18, y + 52);
-    y += 98;
-
-    ensureSpace(120);
-    sectionTitle("Report Charts");
-    const barStart = margin + 150;
-    const drawBar = (label, count, width, color) => {
-      ensureSpace(30);
-      setText("#1F2B22");
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(10);
-      pdf.text(`${label}: ${count}`, margin, y + 9);
-      pdf.setFillColor(237, 240, 237);
-      pdf.roundedRect(barStart, y, contentWidth - 150, 12, 6, 6, "F");
-      setFill(color);
-      pdf.roundedRect(barStart, y, (contentWidth - 150) * (width / 100), 12, 6, 6, "F");
-      y += 28;
-    };
-    drawBar("Red markers", results.redCount, redWidth, "#a93f3f");
-    drawBar("Amber markers", results.amberCount, amberWidth, "#d39a27");
-    drawBar("Flagged factors", results.flaggedFactors.length, flaggedWidth, "#5F7D67");
-    y += 8;
-
-    if (results.ovarianReserve) {
-      sectionTitle("Ovarian Reserve Calibration");
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(10);
-      writeWrapped(
-        `Based on AMH (${formData.amhValue} ${formData.amhUnit}), FSH (${formData.fsh} IU/L), and AFC (${formData.afc} follicles), this profile corresponds to AAFA Ovarian Reserve Cluster ${results.ovarianReserve.cluster}, indicating ${results.ovarianReserve.reserve} reserve parameters.`,
-        margin,
-        contentWidth
-      );
-      y += 8;
-    }
-
-    sectionTitle(`Flagged Risk Markers (${results.flaggedFactors.length})`);
-    if (results.flaggedFactors.length > 0) {
-      results.flaggedFactors.forEach((factor) => {
-        ensureSpace(42);
-        pdf.setDrawColor(...hexToRgb(factor.level === "red" ? "#a93f3f" : "#d39a27"));
-        pdf.setLineWidth(3);
-        pdf.line(margin, y - 8, margin, y + 20);
-        setText("#1F2B22");
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(10);
-        writeWrapped(`${factor.title}: ${factor.label}`, margin + 12, contentWidth - 12);
-        if (factor.detail) {
-          setText("#63716b");
-          pdf.setFont("helvetica", "normal");
-          writeWrapped(factor.detail, margin + 12, contentWidth - 12);
-        }
-        y += 8;
-      });
-    } else {
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(10);
-      writeWrapped("No red or amber parameters were identified. You present a green reference-level profile.", margin, contentWidth);
-      y += 8;
-    }
-
-    sectionTitle("Complete Entered Answers");
-    let currentGroup = "";
-    answerRows.forEach(([group, metric, value]) => {
-      if (group !== currentGroup) {
-        ensureSpace(24);
-        currentGroup = group;
-        setFill("#FAF9F6");
-        pdf.roundedRect(margin, y - 12, contentWidth, 20, 4, 4, "F");
-        setText("#5F7D67");
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(10);
-        pdf.text(group, margin + 8, y + 2);
-        y += 22;
+    setIsGeneratingPdf(true);
+    setError("");
+    
+    try {
+      const { jsPDF } = await import("jspdf");
+      const html2canvas = (await import("html2canvas")).default;
+      
+      const pdf = new jsPDF({ unit: "px", format: "a4", orientation: "portrait" });
+      const container = document.getElementById("premium-report-container");
+      
+      if (!container) throw new Error("Report container not found. It might still be loading.");
+      
+      const pages = container.querySelectorAll(".report-page");
+      
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        const canvas = await html2canvas(page, { scale: 2, useCORS: true, logging: false });
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       }
-      const metricLines = pdf.splitTextToSize(metric, 160);
-      const valueLines = pdf.splitTextToSize(String(value || "Not entered / Skipped"), contentWidth - 190);
-      const rowHeight = Math.max(metricLines.length, valueLines.length) * 12 + 10;
-      ensureSpace(rowHeight);
-      setText("#1F2B22");
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(9);
-      pdf.text(metricLines, margin + 8, y);
-      pdf.setFont("helvetica", "normal");
-      pdf.text(valueLines, margin + 188, y);
-      pdf.setDrawColor(237, 240, 237);
-      pdf.line(margin, y + rowHeight - 4, pageWidth - margin, y + rowHeight - 4);
-      y += rowHeight;
-    });
-
-    ensureSpace(70);
-    sectionTitle("Clinical Disclaimer");
-    setText("#63716b");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    writeWrapped(
-      "Sora Fertility risk assessments are designed for educational triage and statistics tracking based on peer-reviewed metrics (FertiSTAT, Bunting & Boivin, 2010). It does not constitute medical diagnosis, treatment prescription, or pregnancy guarantees. Always consult a licensed clinical professional for comprehensive path mapping.",
-      margin,
-      contentWidth
-    );
-
-    pdf.save(`Sora_Fertility_Report_${leadName.replace(/\s+/g, "_") || "Patient"}.pdf`);
-    return;
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${leadName} - Sora Fertility FertiSTAT Report</title>
-        <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #1F2B22;
-            background: #FAF9F6;
-            padding: 30px 15px;
-            margin: 0;
-            line-height: 1.6;
-          }
-          .container {
-            max-width: 680px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #e3e7e2;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-          }
-          .header {
-            text-align: center;
-            border-bottom: 2px solid #5F7D67;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-          }
-          .header h1 {
-            color: #1F2B22;
-            margin: 0;
-            font-size: 26px;
-            font-family: Georgia, serif;
-          }
-          .header p {
-            color: #5F7D67;
-            margin: 6px 0 0;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: bold;
-          }
-          .patient-info {
-            background: #FAF9F6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e3e7e2;
-          }
-          .patient-info h3 {
-            margin-top: 0;
-            color: #1F2B22;
-            border-bottom: 1px solid #e3e7e2;
-            padding-bottom: 8px;
-            font-size: 16px;
-          }
-          .patient-table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          .patient-table td {
-            padding: 6px 0;
-            font-size: 14px;
-          }
-          .patient-table td.label {
-            color: #63716b;
-            width: 40%;
-          }
-          .patient-table td.value {
-            font-weight: bold;
-          }
-          .risk-banner {
-            background: ${riskBg};
-            color: ${riskColor};
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid ${riskColor}40;
-          }
-          .risk-banner h2 {
-            margin: 0 0 6px;
-            text-transform: uppercase;
-            font-size: 18px;
-            letter-spacing: 0.05em;
-          }
-          .risk-banner p {
-            margin: 0;
-            font-size: 14px;
-            font-weight: bold;
-            color: #1F2B22;
-          }
-          .visual-grid {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 25px;
-          }
-          .chart-card {
-            background: #ffffff;
-            border: 1px solid #e3e7e2;
-            border-radius: 14px;
-            padding: 18px;
-          }
-          .gauge-wrap {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto;
-          }
-          .gauge-wrap svg {
-            width: 180px;
-            height: 180px;
-            transform: rotate(-90deg);
-          }
-          .gauge-track {
-            fill: none;
-            stroke: #edf0ed;
-            stroke-width: 18;
-          }
-          .gauge-fill {
-            fill: none;
-            stroke: ${riskColor};
-            stroke-width: 18;
-            stroke-linecap: round;
-          }
-          .gauge-center {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-          }
-          .gauge-center strong {
-            color: ${riskColor};
-            font-size: 26px;
-            letter-spacing: 0.04em;
-          }
-          .gauge-center span {
-            color: #63716b;
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: 700;
-          }
-          .metrics {
-            display: grid;
-            gap: 14px;
-          }
-          .metric-label {
-            display: flex;
-            justify-content: space-between;
-            color: #1F2B22;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 6px;
-          }
-          .bar {
-            height: 10px;
-            background: #edf0ed;
-            border-radius: 999px;
-            overflow: hidden;
-          }
-          .bar span {
-            display: block;
-            height: 100%;
-            border-radius: inherit;
-          }
-          .bar-red { background: #a93f3f; }
-          .bar-amber { background: #d39a27; }
-          .bar-green { background: #5F7D67; }
-          .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1F2B22;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            border-bottom: 1.5px solid #edf0ed;
-            padding-bottom: 6px;
-          }
-          .factor-card {
-            border-left: 3px solid #d39a27;
-            background: #FAF9F6;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 14px;
-          }
-          .factor-card.red {
-            border-left-color: #a93f3f;
-          }
-          .factor-card strong {
-            display: block;
-            margin-bottom: 2px;
-            color: #1F2B22;
-          }
-          .factor-card span {
-            color: #63716b;
-          }
-          .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 15px;
-          }
-          .data-table th {
-            background: #5F7D67;
-            color: white;
-            padding: 8px 10px;
-            text-align: left;
-          }
-          .data-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #edf0ed;
-          }
-          .data-group {
-            background: #FAF9F6;
-            font-weight: bold;
-            color: #5F7D67;
-          }
-          .footer {
-            font-size: 11px;
-            color: #63716b;
-            line-height: 1.5;
-            margin-top: 30px;
-            border-top: 1px solid #e3e7e2;
-            padding-top: 15px;
-            text-align: justify;
-          }
-          @media print {
-            body { background: white; padding: 0; }
-            .container { border: none; box-shadow: none; padding: 0; }
-            .no-print { display: none; }
-          }
-          @media (max-width: 700px) {
-            .visual-grid {
-              grid-template-columns: 1fr;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>Sora Fertility Clinic</h1>
-            <p>Confidential Triage & FertiSTAT Report</p>
-          </div>
-
-          <div class="patient-info">
-            <h3>Patient Information</h3>
-            <table class="patient-table">
-              <tr>
-                <td class="label">Full Name:</td>
-                <td class="value">${leadName}</td>
-              </tr>
-              <tr>
-                <td class="label">Age:</td>
-                <td class="value">${formData.age} Years</td>
-              </tr>
-              <tr>
-                <td class="label">Mobile Line:</td>
-                <td class="value">${leadPhone}</td>
-              </tr>
-              <tr>
-                <td class="label">Delivery Email:</td>
-                <td class="value">${leadEmail}</td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="risk-banner">
-            <h2>Triage Tier: ${results.category.toUpperCase()}</h2>
-            <p>Referral Guidance: ${results.urgency}</p>
-          </div>
-
-          <div class="visual-grid">
-            <div class="chart-card">
-              <div class="gauge-wrap">
-                <svg viewBox="0 0 180 180" aria-hidden="true">
-                  <circle class="gauge-track" cx="90" cy="90" r="70"></circle>
-                  <circle
-                    class="gauge-fill"
-                    cx="90"
-                    cy="90"
-                    r="70"
-                    stroke-dasharray="${2 * Math.PI * 70}"
-                    stroke-dashoffset="${2 * Math.PI * 70 * (1 - riskPercent / 100)}"
-                  ></circle>
-                </svg>
-                <div class="gauge-center">
-                  <strong>${results.category.toUpperCase()}</strong>
-                  <span>Triage Tier</span>
-                </div>
-              </div>
-            </div>
-            <div class="chart-card metrics">
-              <div>
-                <div class="metric-label"><span>Red clinical markers</span><span>${results.redCount}</span></div>
-                <div class="bar"><span class="bar-red" style="width: ${redWidth}%;"></span></div>
-              </div>
-              <div>
-                <div class="metric-label"><span>Amber caution markers</span><span>${results.amberCount}</span></div>
-                <div class="bar"><span class="bar-amber" style="width: ${amberWidth}%;"></span></div>
-              </div>
-              <div>
-                <div class="metric-label"><span>Total flagged factors</span><span>${results.flaggedFactors.length}</span></div>
-                <div class="bar"><span class="bar-green" style="width: ${flaggedWidth}%;"></span></div>
-              </div>
-            </div>
-          </div>
-
-          ${results.ovarianReserve ? `
-            <div style="background: #F5E3E0; border-left: 4px solid #DFBA89; border-radius: 8px; padding: 16px; margin-bottom: 25px;">
-              <h3 style="margin: 0 0 6px; color: #1F2B22; font-size: 15px;">🧬 Ovarian Reserve Calibration</h3>
-              <p style="margin: 0; font-size: 14px;">Correspond to **AAFA Ovarian Reserve Cluster ${results.ovarianReserve.cluster}** — indicating **${results.ovarianReserve.reserve}** reserve parameters.</p>
-            </div>
-          ` : ""}
-
-          ${results.triggers && results.triggers.length > 0 ? `
-            <div class="section-title">Clinical Referral Triggers</div>
-            <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
-              ${results.triggers.map(t => `<li style="margin-bottom: 6px;">${t}</li>`).join("")}
-            </ul>
-          ` : ""}
-
-          <div class="section-title">Flagged Risk Markers (${results.flaggedFactors.length})</div>
-          ${results.flaggedFactors.length > 0 ? 
-            results.flaggedFactors.map(f => `
-              <div class="factor-card ${f.level === "red" ? "red" : "amber"}">
-                <strong>${f.title}</strong>
-                <span>Status: ${f.label}</span>
-              </div>
-            `).join("") : 
-            `<p style="font-size: 14px; color: #63716b; font-style: italic;">No red or amber parameters identified. Green profile.</p>`
-          }
-
-          <div class="section-title">Complete Entered Answers</div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Metric Group</th>
-                <th>Clinical Metric</th>
-                <th>Value Entered</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="data-group"><td colSpan="3">Personal Parameters</td></tr>
-              <tr><td>Personal</td><td>Patient Age</td><td>${getReadableValue("age", formData.age)}</td></tr>
-              <tr><td>Personal</td><td>Height (cm)</td><td>${getReadableValue("height", formData.height)}</td></tr>
-              <tr><td>Personal</td><td>Weight (kg)</td><td>${getReadableValue("weight", formData.weight)}</td></tr>
-              <tr><td>Personal</td><td>Calculated BMI</td><td>${getReadableValue("bmi", formData.bmi)}</td></tr>
-
-              <tr class="data-group"><td colSpan="3">Fertility Context</td></tr>
-              <tr><td>Context</td><td>Current Goal Focus</td><td>${getReadableValue("tryingStatus", formData.tryingStatus)}</td></tr>
-              <tr><td>Context</td><td>Active Try Duration</td><td>${getReadableValue("tryDuration", formData.tryDuration)}</td></tr>
-              <tr><td>Context</td><td>Previous Births</td><td>${getReadableValue("prevBirth", formData.prevBirth)}</td></tr>
-              <tr><td>Context</td><td>Intercourse Timing</td><td>${getReadableValue("intercourseTiming", formData.intercourseTiming)}</td></tr>
-              <tr><td>Context</td><td>Partner Sperm Factor</td><td>${getReadableValue("partnerSperm", formData.partnerSperm)}</td></tr>
-
-              <tr class="data-group"><td colSpan="3">Hormonal & Ovarian Status</td></tr>
-              <tr><td>Hormonal</td><td>Period Regularity</td><td>${getReadableValue("cycleReg", formData.cycleReg)}</td></tr>
-              <tr><td>Hormonal</td><td>Cycle Length</td><td>${getReadableValue("cycleLength", formData.cycleLength)}</td></tr>
-              <tr><td>Hormonal</td><td>PCOS Status</td><td>${getReadableValue("pcos", formData.pcos)}</td></tr>
-              <tr><td>Hormonal</td><td>Thyroid History</td><td>${getReadableValue("thyroid", formData.thyroid)}</td></tr>
-              <tr><td>Hormonal</td><td>Diabetes Condition</td><td>${getReadableValue("diabetes", formData.diabetes)}</td></tr>
-
-              <tr class="data-group"><td colSpan="3">Pelvic & Medical History</td></tr>
-              <tr><td>Pelvic</td><td>Endometriosis</td><td>${getReadableValue("endo", formData.endo)}</td></tr>
-              <tr><td>Pelvic</td><td>Severe Pelvic/Period Pain</td><td>${getReadableValue("pelvicPain", formData.pelvicPain)}</td></tr>
-              <tr><td>Pelvic</td><td>Uterine / Pelvic Surgery History</td><td>${getCombinedReadableValue([
-                ["uterineHistory", "Uterine", formData.uterineHistory],
-                ["pelvicSurgery", "Pelvic surgery", formData.pelvicSurgery]
-              ])}</td></tr>
-              <tr><td>Pelvic</td><td>Pregnancy Losses</td><td>${getReadableValue("pregnancyLosses", formData.pregnancyLosses)}</td></tr>
-
-              <tr class="data-group"><td colSpan="3">Medical Background</td></tr>
-              <tr><td>Medical</td><td>Prior Ectopic Pregnancy</td><td>${getReadableValue("ectopicPregnancy", formData.ectopicPregnancy)}</td></tr>
-              <tr><td>Medical</td><td>STI History</td><td>${getReadableValue("stiHistory", formData.stiHistory)}</td></tr>
-              <tr><td>Medical</td><td>TB History / Treatment</td><td>${getCombinedReadableValue([
-                ["tbHistory", "TB history", formData.tbHistory],
-                ["tbTreatment", "Treatment", formData.tbTreatment]
-              ])}</td></tr>
-              <tr><td>Medical</td><td>Chemotherapy / Radiation</td><td>${getReadableValue("cancerTreatment", formData.cancerTreatment)}</td></tr>
-              <tr><td>Medical</td><td>Family Early Menopause</td><td>${getReadableValue("familyEarlyMenopause", formData.familyEarlyMenopause)}</td></tr>
-
-              <tr class="data-group"><td colSpan="3">Lifestyle & Labs</td></tr>
-              <tr><td>Lifestyle</td><td>Cigarettes / Tobacco</td><td>${getReadableValue("smoking", formData.smoking)}</td></tr>
-              <tr><td>Lifestyle</td><td>Caffeine Consumption</td><td>${getReadableValue("caffeine", formData.caffeine)}</td></tr>
-              <tr><td>Lifestyle</td><td>Alcohol Intake</td><td>${getReadableValue("alcohol", formData.alcohol)}</td></tr>
-              <tr><td>Lifestyle</td><td>Recreational Drug Use</td><td>${getReadableValue("recreationalDrugs", formData.recreationalDrugs)}</td></tr>
-              ${formData.includeLab === "yes" ? `
-                <tr><td>Labs</td><td>AMH Value</td><td>${formData.amhValue ? `${formData.amhValue} ${formData.amhUnit}` : "Not entered"}</td></tr>
-                <tr><td>Labs</td><td>FSH Value</td><td>${formData.fsh ? `${formData.fsh} IU/L` : "Not entered"}</td></tr>
-                <tr><td>Labs</td><td>Antral Follicle Count</td><td>${formData.afc ? `${formData.afc} Follicles` : "Not entered"}</td></tr>
-              ` : ""}
-            </tbody>
-          </table>
-
-          <div class="footer">
-            * Clinical Disclaimer: Sora Fertility risk assessments are designed for educational triage and statistics tracking based on peer-reviewed metrics (FertiSTAT, Bunting & Boivin, 2010). It does not constitute medical diagnosis, treatment prescription, or pregnancy guarantees. Always consult a licensed clinical professional for comprehensive path mapping.
-          </div>
-        </div>
-        <script>
-          window.addEventListener("load", () => {
-            document.title = "Sora_Fertility_Report_${leadName.replace(/\s+/g, "_")}";
-            setTimeout(() => window.print(), 250);
-          });
-        </script>
-      </body>
-      </html>
-    `;
-
-    const reportWindow = window.open("", "_blank");
-    if (!reportWindow) {
-      setError("Please allow pop-ups to download the PDF report.");
-      return;
+      
+      pdf.save(`Sora_Fertility_Report_${leadName.replace(/\\s+/g, "_") || "Patient"}.pdf`);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to generate PDF. Please try again.");
+    } finally {
+      setIsGeneratingPdf(false);
     }
-    reportWindow.document.open();
-    reportWindow.document.write(htmlContent);
-    reportWindow.document.close();
   };
 
   const handleRestart = () => {
@@ -1805,9 +1177,10 @@ export default function QuizWizard() {
               type="button" 
               className={styles.btnAction} 
               onClick={handleDownloadReport}
+              disabled={isGeneratingPdf}
             >
               <Download width={16} height={16} />
-              Download PDF Report
+              {isGeneratingPdf ? "Generating PDF..." : "Download Premium PDF Report"}
             </button>
           </div>
 
@@ -2160,6 +1533,17 @@ export default function QuizWizard() {
           <button className={styles.btnRestart} onClick={handleRestart}>
             <RotateCcw width={16} height={16} /> Restart Assessment
           </button>
+        </div>
+      )}
+      
+      {/* Hidden Premium Report Template for PDF Generation */}
+      {results && (
+        <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
+          <PremiumReportTemplate 
+            results={results} 
+            formData={formData} 
+            leadName={leadName} 
+          />
         </div>
       )}
     </div>
