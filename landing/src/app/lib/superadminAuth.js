@@ -59,9 +59,9 @@ export async function clearSuperadminSession() {
 }
 
 export function verifyPassword(password) {
-  const configured = process.env.SORA_SUPERADMIN_PASSWORD || "";
+  const configured = (process.env.SORA_SUPERADMIN_PASSWORD || "").trim();
   if (!configured) return false;
-  return timingSafeEqual(password, configured);
+  return timingSafeEqual(password.trim(), configured);
 }
 
 function createSessionToken() {
@@ -90,7 +90,7 @@ function sign(value) {
 }
 
 function getSessionSecret() {
-  return process.env.SORA_SUPERADMIN_SESSION_SECRET || process.env.SORA_SUPERADMIN_PASSWORD || "";
+  return (process.env.SORA_SUPERADMIN_SESSION_SECRET || process.env.SORA_SUPERADMIN_PASSWORD || "").trim();
 }
 
 function hasSessionSecret() {
