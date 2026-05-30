@@ -8,6 +8,7 @@ const registryPath = path.join(process.cwd(), "data", "clinics.json");
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabaseClinicsTable = safeIdentifier(process.env.SUPABASE_CLINICS_TABLE || "clinic_registry");
+
 const defaultClinics = [
   {
     clinicId: "clinic_krystal_clinic_4ded0a",
@@ -129,9 +130,31 @@ export async function updateClinic(clinicId, patch) {
 
 export async function recordAssessment(clinicId) {
   if (!clinicId) return;
+
+  const now = new Date();
+  const currentMonth = now.toISOString().slice(0, 7); // Format: YYYY-MM
+
   if (hasSupabase()) {
     try {
-      await supabaseRpc("increment_clinic_assessment", { clinic_id_input: clinicId });
+      // We read the current usage, update it with monthly tracking, and patch it back
+      const clinic = await getClinic(clinicId);
+      if (clinic) {
+        const usage = clinic.usage || {};
+        usage.totalAssessments = Number(usage.totalAssessments || 0) + 1;
+        usage.lastAssessmentAt = now.toISOString();
+        
+        if (usage.currentMonth !== currentMonth) {
+          usage.currentMonth = currentMonth;
+          usage.monthlyAssessments = 0;
+        }
+        usage.monthlyAssessments = Number(usage.monthlyAssessments || 0) + 1;
+
+        await supabaseRequest(`/${supabaseClinicsTable}?clinic_id=eq.${encodeURIComponent(clinicId)}`, {
+          method: "PATCH",
+          headers: { Prefer: "return=representation" },
+          body: JSON.stringify({ usage }),
+        });
+      }
       return;
     } catch (error) {
       console.error("Supabase assessment counter failed; using local registry fallback:", error);
@@ -144,8 +167,15 @@ export async function recordAssessment(clinicId) {
 
   clinic.usage = clinic.usage || {};
   clinic.usage.totalAssessments = Number(clinic.usage.totalAssessments || 0) + 1;
-  clinic.usage.lastAssessmentAt = new Date().toISOString();
-  clinic.updatedAt = new Date().toISOString();
+  clinic.usage.lastAssessmentAt = now.toISOString();
+  
+  if (clinic.usage.currentMonth !== currentMonth) {
+    clinic.usage.currentMonth = currentMonth;
+    clinic.usage.monthlyAssessments = 0;
+  }
+  clinic.usage.monthlyAssessments = Number(clinic.usage.monthlyAssessments || 0) + 1;
+  
+  clinic.updatedAt = now.toISOString();
   try {
     await writeRegistry(registry);
   } catch (error) {

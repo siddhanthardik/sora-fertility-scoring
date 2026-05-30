@@ -424,7 +424,7 @@ const getCombinedReadableValue = (items) => (
     .join("; ")
 );
 
-export default function QuizWizard() {
+export default function QuizWizard({ clinicId = CLINIC_ID }) {
   const leadStepIndex = steps.length;
   const resultStepIndex = steps.length + 1;
   const labToggleStepIndex = steps.findIndex((step) => step.id === "labToggle");
@@ -501,7 +501,7 @@ export default function QuizWizard() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Sora-Clinic-Id": CLINIC_ID
+        "X-Sora-Clinic-Id": clinicId
       },
       body: JSON.stringify(formData),
     });
@@ -609,7 +609,7 @@ export default function QuizWizard() {
 
   const buildLeadPayload = (triageResults, extra = {}) => ({
     source: "nextjs_full_27_questions",
-    clinicId: CLINIC_ID,
+    clinicId: clinicId,
     name: leadName.trim(),
     email: leadEmail.trim(),
     phone: leadPhone.trim(),

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { assessFertilityPayload } from "../../lib/fertilityAssessment";
 import { getClinic, originMatchesClinic, recordAssessment } from "../../lib/clinicRegistry";
+import { getSettings } from "../../lib/settingsRegistry";
 
 const DEFAULT_ALLOWED_ORIGINS = [
   "http://localhost:3000",
@@ -173,6 +174,20 @@ async function verifyClinicAccess(request) {
 
   if (!["active", "trial"].includes(clinic.status)) {
     return { ok: false, message: "This clinic is not active." };
+  }
+
+  const settings = await getSettings();
+  const planName = clinic.plan?.toLowerCase() || "starter";
+  const planLimit = settings.planLimits[planName];
+  
+  if (planLimit !== null && planLimit !== undefined) {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const isCurrentMonth = clinic.usage?.currentMonth === currentMonth;
+    const monthlyUsage = isCurrentMonth ? Number(clinic.usage?.monthlyAssessments || 0) : 0;
+    
+    if (monthlyUsage >= planLimit) {
+      return { ok: false, message: "This clinic has reached its monthly assessment limit for their current plan." };
+    }
   }
 
   if (clinic.verificationStatus !== "verified") {

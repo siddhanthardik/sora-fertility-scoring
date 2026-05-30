@@ -145,6 +145,117 @@ export async function POST(request) {
       renderErrorMsg = dbErr.name === "AbortError" ? "Render lead forward timed out." : dbErr.message;
     }
 
+    // 1b. Submit lead to Supabase 'leads' table
+    let supabaseSaved = false;
+    let supabaseErrorMsg = "";
+    
+    const supabaseUrl = process.env.SUPABASE_URL || "";
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+    
+    if (supabaseUrl && supabaseKey) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        
+        // Map all columns explicitly and translate values to strictly match database check constraints
+        const mapYesNo = (val) => {
+          if (!val || val === "notSure") return null;
+          if (["controlled", "uncontrolled", "occasional", "daily", "treated", "untreated"].includes(val)) return "yes";
+          return ["yes", "no"].includes(val) ? val : null;
+        };
+
+        const mapTryDuration = (val) => {
+          if (val === "over12") return "over12";
+          if (["notTrying", "under6", "sixToEleven"].includes(val)) return "under12";
+          return null;
+        };
+
+        const mapThyroid = (val) => {
+          return ["no", "treated", "untreated"].includes(val) ? val : null;
+        };
+
+        const dbPayload = {
+          clinic_id: clinicId || null,
+          name: String(rawPayload.name || ""),
+          email: String(rawPayload.email || ""),
+          phone: String(rawPayload.phone || ""),
+          age: rawPayload.age ? Number(rawPayload.age) : null,
+          height: rawPayload.height ? Number(rawPayload.height) : null,
+          weight: rawPayload.weight ? Number(rawPayload.weight) : null,
+          bmi: rawPayload.bmi ? Number(rawPayload.bmi) : null,
+          source: rawPayload.source === "whatsapp" ? "whatsapp" : "web_widget",
+          
+          // Translated Check Constraint Fields
+          prev_birth: mapYesNo(rawPayload.prevBirth),
+          cycle_reg: ["regular", "irregular"].includes(rawPayload.cycleReg) ? rawPayload.cycleReg : null,
+          pcos: mapYesNo(rawPayload.pcos),
+          endometriosis: mapYesNo(rawPayload.endo),
+          thyroid: mapThyroid(rawPayload.thyroid),
+          diabetes: mapYesNo(rawPayload.diabetes),
+          smoking: mapYesNo(rawPayload.smoking),
+          alcohol: mapYesNo(rawPayload.alcohol),
+          try_duration: mapTryDuration(rawPayload.tryDuration),
+          
+          // Labs
+          lab_amh: rawPayload.amhValue ? Number(rawPayload.amhValue) : null,
+          lab_amh_unit: rawPayload.amhUnit || null,
+          lab_fsh: rawPayload.fsh ? Number(rawPayload.fsh) : null,
+          lab_afc: rawPayload.afc ? Number(rawPayload.afc) : null,
+          
+          // Consents
+          consent_marketing: rawPayload.consent_marketing === true,
+          consent_research: rawPayload.consent_research === true,
+          
+          // Other medical info
+          tb_personal: rawPayload.tbHistory || null,
+          tb_contact: rawPayload.tbTreatment || null,
+          sti_history: rawPayload.stiHistory || null,
+          pelvic_surgery: rawPayload.pelvicSurgery || null,
+          family_early_menopause: rawPayload.familyEarlyMenopause || null,
+          recreational_drugs: rawPayload.recreationalDrugs || null,
+          caffeine: rawPayload.caffeine || null,
+          cancer_treatment: rawPayload.cancerTreatment || null,
+          
+          // Reports
+          risk_report: rawPayload.risk_category || null,
+          basic_score: rawPayload.basic_score ? Number(rawPayload.basic_score) : null,
+          enhanced_score: rawPayload.enhanced_score ? Number(rawPayload.enhanced_score) : null,
+          country: rawPayload.country || null,
+          
+          // Store entire raw payload as backup
+          raw_data: rawPayload
+        };
+        
+        const sbResponse = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/leads`, {
+          method: "POST",
+          headers: { 
+            "apikey": supabaseKey,
+            "Authorization": `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(dbPayload),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeout);
+        
+        if (sbResponse.ok) {
+          supabaseSaved = true;
+        } else {
+          const errJson = await sbResponse.json().catch(() => null);
+          supabaseErrorMsg = errJson?.message || `Supabase rejected payload: ${sbResponse.status}`;
+          console.error("Supabase insert error:", errJson || sbResponse.statusText);
+        }
+      } catch (sbErr) {
+        console.error("Failed to insert lead into Supabase:", sbErr);
+        supabaseErrorMsg = sbErr.name === "AbortError" ? "Supabase insert timed out." : sbErr.message;
+      }
+    } else {
+      supabaseErrorMsg = "Supabase URL or Key missing in environment variables.";
+      console.warn(supabaseErrorMsg);
+    }
+
     // 2. Dispatch Triage Report HTML Email using SMTP via Nodemailer
     let emailSent = false;
     let emailErrorMsg = "";
@@ -506,6 +617,8 @@ export async function POST(request) {
       success: true,
       render_database_saved: renderSaved,
       database_error: renderErrorMsg,
+      supabase_saved: supabaseSaved,
+      supabase_error: supabaseErrorMsg,
       email_dispatched: emailSent,
       email_error: emailErrorMsg,
       clinic_notification_dispatched: clinicNotificationSent,
