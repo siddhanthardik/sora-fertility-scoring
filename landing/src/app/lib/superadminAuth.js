@@ -15,17 +15,25 @@ export async function requireSuperadmin() {
 }
 
 export function requireSameOrigin(request) {
-  const expectedOrigin = new URL(request.url).origin;
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
 
   if (origin) {
-    if (origin !== expectedOrigin) throw new Error("Invalid request origin.");
+    try {
+      if (new URL(origin).host !== host) throw new Error("Invalid request origin.");
+    } catch {
+      throw new Error("Invalid request origin.");
+    }
     return;
   }
 
   if (referer) {
-    if (new URL(referer).origin !== expectedOrigin) throw new Error("Invalid request origin.");
+    try {
+      if (new URL(referer).host !== host) throw new Error("Invalid request origin.");
+    } catch {
+      throw new Error("Invalid request origin.");
+    }
     return;
   }
 
