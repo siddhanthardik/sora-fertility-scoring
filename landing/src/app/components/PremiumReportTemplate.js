@@ -362,7 +362,7 @@ export default function PremiumReportTemplate({ results, formData, leadName }) {
             </div>
             <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #e3e7e2' }}>
               <h4 style={{ fontWeight: 'bold', color: '#5F7D67', margin: 0 }}>Ovarian Reserve</h4>
-              <p style={{ fontSize: '14px', color: '#63716b', margin: '4px 0 0 0' }}>A term used to describe the reproductive potential left in a woman's two ovaries based on the number and quality of remaining eggs.</p>
+              <p style={{ fontSize: '14px', color: '#63716b', margin: '4px 0 0 0' }}>A term used to describe the reproductive potential left in a woman&apos;s two ovaries based on the number and quality of remaining eggs.</p>
             </div>
           </div>
         </div>

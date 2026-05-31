@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import QuizWizard from "./components/QuizWizard";
+import { ChunkErrorBoundary } from "./components/ChunkErrorBoundary";
 import styles from "./page.module.css";
 import {
   Activity,
@@ -334,7 +335,9 @@ export default function Home() {
             <button className={styles.modalClose} onClick={() => setIsQuizOpen(false)} aria-label="Close assessment">
               <X width={20} height={20} />
             </button>
+          <ChunkErrorBoundary>
             <QuizWizard />
+          </ChunkErrorBoundary>
           </div>
         </div>
       )}

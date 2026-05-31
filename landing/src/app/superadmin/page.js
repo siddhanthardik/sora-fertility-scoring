@@ -72,6 +72,7 @@ export default function SuperadminPage() {
 
   // Reset page when searching
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setCurrentPage(1);
   }, [searchQuery]);
 
@@ -113,6 +114,7 @@ export default function SuperadminPage() {
 
   useEffect(() => {
     // Session state is read from the server-only auth cookie on first load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     checkSession();
   }, [checkSession]);
 
@@ -518,7 +520,7 @@ export default function SuperadminPage() {
                 <div style={{ marginTop: '8px' }}>
                   <h3 style={{ marginBottom: '8px' }}>Widget Host URL</h3>
                   <p className={styles.settingsDesc} style={{ marginBottom: '16px' }}>
-                    The domain where your app is hosted (e.g. https://your-app.com). Used for the "Copy Embed" snippets.
+                    The domain where your app is hosted (e.g. https://your-app.com). Used for the &quot;Copy Embed&quot; snippets.
                   </p>
                   <input 
                     className={styles.input}
