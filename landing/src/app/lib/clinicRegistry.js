@@ -192,6 +192,11 @@ export function originMatchesClinic(origin, clinic) {
     return false;
   }
 
+  // Hardcode official domain to always be allowed for any clinic
+  if (hostname === "sorafertility.com" || hostname === "www.sorafertility.com") {
+    return true;
+  }
+
   return clinic.allowedDomains.some((domain) => {
     const normalized = domain.toLowerCase();
     return hostname === normalized || hostname.endsWith(`.${normalized}`);

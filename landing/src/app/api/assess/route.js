@@ -194,9 +194,7 @@ async function verifyClinicAccess(request) {
     return { ok: false, message: "This clinic is not verified yet." };
   }
 
-  const isSoraOfficialDomain = origin && origin.includes("sorafertility.com");
-
-  if (origin && !originMatchesClinic(origin, clinic) && !isSoraOfficialDomain && !(allowPublicDemo && isAllowedDemoOrigin(request))) {
+  if (origin && !originMatchesClinic(origin, clinic) && !(allowPublicDemo && isAllowedDemoOrigin(request))) {
     return { ok: false, message: "This domain is not approved for this clinic." };
   }
 
