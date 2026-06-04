@@ -336,7 +336,7 @@ export default function Home() {
               <X width={20} height={20} />
             </button>
           <ChunkErrorBoundary>
-            <QuizWizard />
+            <QuizWizard clinicId="clinic_sora_ivf_clinic_613110" />
           </ChunkErrorBoundary>
           </div>
         </div>
