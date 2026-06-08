@@ -177,3 +177,6 @@ button, input, select, textarea {
     display: none !important;
   }
 }
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
