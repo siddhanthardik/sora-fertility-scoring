@@ -29,7 +29,7 @@ export default function Home() {
           
           <div className={styles.heroVisual}>
             <div className={styles.dashboardWrapper}>
-              <Image src="/clinic-dashboard.jpg" alt="SORA Dashboard" width={600} height={400} className={styles.dashboardImg} priority />
+              <Image src="/doctors.jpg" alt="SORA Dashboard" width={600} height={400} className={styles.dashboardImg} priority />
               <div className={styles.glassCard}>
                 <div className={styles.glassIcon}><ArrowUpRight size={16} /></div>
                 <div>
@@ -87,8 +87,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* UNIFIED ECOSYSTEM SECTION */}
-      <section className={styles.ecoSection}>
+      {/* UNIFIED ECOSYSTEM SECTION (Benefits) */}
+      <section id="benefits" className={styles.ecoSection}>
         <div className={styles.ecoInner}>
           <div className={styles.ecoHeader}>
             <div className={styles.ecoHeaderLeft}>
@@ -115,6 +115,31 @@ export default function Home() {
               <div className={styles.ecoIcon}><Shield size={20} /></div>
               <h4 className={styles.ecoCardTitle}>Enterprise Security</h4>
               <p className={styles.ecoCardDesc}>Rest easy with HIPAA compliance, SOC2 adherence, and end-to-end encryption for all sensitive patient data.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS SECTION */}
+      <section id="how-it-works" className={styles.howItWorksSection}>
+        <div className={styles.howItWorksInner}>
+          <h2 className={styles.sectionTitleCenter}>How SORA Works</h2>
+          <div className={styles.accentLine}></div>
+          <div className={styles.stepsGrid}>
+            <div className={styles.stepCard}>
+              <div className={styles.stepNumber}>1</div>
+              <h3 className={styles.stepTitle}>Integrate & Customize</h3>
+              <p className={styles.stepDesc}>Deploy our white-label tools on your site and integrate the CRM with your existing clinic systems in minutes.</p>
+            </div>
+            <div className={styles.stepCard}>
+              <div className={styles.stepNumber}>2</div>
+              <h3 className={styles.stepTitle}>Capture & Qualify</h3>
+              <p className={styles.stepDesc}>Engage prospective patients with instant fertility reports, capturing high-intent leads automatically.</p>
+            </div>
+            <div className={styles.stepCard}>
+              <div className={styles.stepNumber}>3</div>
+              <h3 className={styles.stepTitle}>Manage & Convert</h3>
+              <p className={styles.stepDesc}>Track cycle progress, nurture leads securely, and turn prospects into loyal patients through our unified portal.</p>
             </div>
           </div>
         </div>

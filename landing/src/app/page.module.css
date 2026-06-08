@@ -597,3 +597,14 @@
     flex-direction: row;
   }
 }
+
+/* HOW IT WORKS SECTION */
+.howItWorksSection { background: white; padding: 80px 24px; border-top: 1px solid #eceef1; }
+.howItWorksInner { max-width: 1200px; margin: 0 auto; text-align: center; }
+.sectionTitleCenter { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: #191c1e; margin-bottom: 24px; text-align: center; }
+.stepsGrid { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 64px; text-align: left; }
+@media (min-width: 768px) { .stepsGrid { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
+.stepCard { display: flex; flex-direction: column; }
+.stepNumber { background: #dbe1ff; color: #0051d5; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 24px; }
+.stepTitle { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: #191c1e; margin-bottom: 12px; }
+.stepDesc { color: #45464d; font-size: 1rem; line-height: 1.6; }
