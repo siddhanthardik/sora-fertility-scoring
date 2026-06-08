@@ -1,8 +1,7 @@
 .footer {
-  background: #011434;
-  color: white;
-  padding: 80px 24px 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #eceef1;
+  color: #191c1e;
+  padding: 64px 24px 32px;
 }
 
 .footerInner {
@@ -13,8 +12,8 @@
 .footerTop {
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  margin-bottom: 60px;
+  gap: 48px;
+  margin-bottom: 48px;
 }
 
 @media (min-width: 768px) {
@@ -25,72 +24,102 @@
 }
 
 .footerBrand {
-  max-width: 300px;
+  max-width: 250px;
 }
 
-.brandName {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 800;
+.logoImage {
   margin-bottom: 16px;
-  color: white;
+  object-fit: contain;
 }
 
 .brandDesc {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: #45464d;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
-.footerLinks {
+.footerLinksWrapper {
   display: flex;
-  gap: 60px;
+  flex-direction: column;
+  gap: 40px;
+}
+
+@media (min-width: 600px) {
+  .footerLinksWrapper {
+    flex-direction: row;
+    gap: 80px;
+  }
 }
 
 .linkGroup {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .linkGroupTitle {
+  font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.4);
+  color: #191c1e;
   margin-bottom: 8px;
 }
 
 .linkItem {
-  color: rgba(255, 255, 255, 0.8);
+  color: #45464d;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   transition: color 0.2s;
 }
 
 .linkItem:hover {
-  color: white;
+  color: #0051d5;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.socialBtn {
+  background: none;
+  border: none;
+  color: #45464d;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.socialBtn:hover {
+  color: #0051d5;
 }
 
 .footerBottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 40px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   text-align: center;
 }
 
+@media (min-width: 768px) {
+  .footerBottom {
+    text-align: left;
+  }
+}
+
 .medicalDisclaimer {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-  line-height: 1.6;
-  max-width: 800px;
-  margin: 0 auto;
+  font-size: 0.7rem;
+  color: #45464d;
+  line-height: 1.5;
+  font-style: italic;
 }
 
 .copyright {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  color: #76777e;
 }
