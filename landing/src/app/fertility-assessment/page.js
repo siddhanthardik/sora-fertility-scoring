@@ -34,25 +34,29 @@ export default function Home() {
   const painPoints = [
     {
       icon: <Activity />,
-      text: "My cycles are irregular but my GP says everything is normal"
+      text: "My cycles are irregular but my GP says everything is normal",
+      colorClass: styles.iconRed
     },
     {
       icon: <Clock />,
-      text: "I've been trying for 8 months and I don't know if I should worry"
+      text: "I've been trying for 8 months and I don't know if I should worry",
+      colorClass: styles.iconPurple
     },
     {
       icon: <FileText />,
-      text: "My AMH results came back and I don't understand what they mean"
+      text: "My AMH results came back and I don't understand what they mean",
+      colorClass: styles.iconBlue
     },
     {
       icon: <Search />,
-      text: "I feel like I'm waiting for someone to tell me what to do next"
+      text: "I feel like I'm waiting for someone to tell me what to do next",
+      colorClass: styles.iconYellow
     }
   ];
 
   return (
     <div className={styles.container}>
-      <Navbar onCtaClick={() => setIsQuizOpen(true)} />
+      <Navbar onCtaClick={() => setIsQuizOpen(true)} ctaText="Start fertility test" ctaColor="#2563eb" />
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
@@ -66,7 +70,7 @@ export default function Home() {
               A private, evidence-aligned fertility risk score — designed for women 25–45 who want clarity, not more waiting. Free. 5 minutes. No clinic required.
             </p>
             <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={() => setIsQuizOpen(true)}>
-              Start My Free Assessment <ArrowRight size={20} />
+              Start My Free Test <ArrowRight size={20} />
             </button>
           </div>
           <div className={styles.heroImageWrapper}>
@@ -78,31 +82,20 @@ export default function Home() {
       {/* TRUST BAR */}
       <div className={styles.trustBar}>
         <div className={styles.trustItem}>
-          <div className={styles.trustItemIcon}><Activity size={24} /></div>
-          <div>
-            <span>27+</span>
-            clinical inputs
-          </div>
+          <div className={styles.trustItemIcon}><Activity size={18} /></div>
+          <div>2M+ clinical inputs</div>
         </div>
         <div className={styles.trustItem}>
-          <div className={styles.trustItemIcon}><Clock size={24} /></div>
-          <div>
-            <span>5 min</span>
-            to complete
-          </div>
+          <div className={styles.trustItemIcon}><Clock size={18} /></div>
+          <div>5 min to complete</div>
         </div>
         <div className={styles.trustItem}>
-          <div className={styles.trustItemIcon}><AlertTriangle size={24} /></div>
-          <div>
-            <span>3</span>
-            risk bands
-          </div>
+          <div className={styles.trustItemIcon}><AlertTriangle size={18} /></div>
+          <div>3 risk bands</div>
         </div>
         <div className={styles.trustItem}>
-          <div className={styles.trustItemIcon}><Shield size={24} /></div>
-          <div>
-            Server-side scoring
-          </div>
+          <div className={styles.trustItemIcon}><Shield size={18} /></div>
+          <div>Server-side scoring</div>
         </div>
       </div>
 
@@ -118,7 +111,7 @@ export default function Home() {
         <div className={styles.problemGrid}>
           {painPoints.map((point, idx) => (
             <div className={styles.problemCard} key={idx}>
-              <div className={styles.problemIcon}>{point.icon}</div>
+              <div className={`${styles.problemIcon} ${point.colorClass}`}>{point.icon}</div>
               <div className={styles.problemText}>{point.text}</div>
             </div>
           ))}
@@ -131,6 +124,7 @@ export default function Home() {
           <h2 className={styles.howTitle}>Your risk score, in 3 steps.</h2>
           
           <div className={styles.howSteps}>
+            <div className={styles.howDashedLine}></div>
             <div className={styles.howStep}>
               <div className={styles.stepNumber}>1</div>
               <h3 className={styles.stepTitle}>Answer 27+ private questions</h3>
@@ -205,19 +199,25 @@ export default function Home() {
           
           <div className={styles.privacyCards}>
             <div className={styles.privacyCard}>
-              <ShieldOff className={styles.privacyIcon} size={36} />
+              <div className={styles.privacyIcon}>
+                <ShieldOff size={32} />
+              </div>
               <h4>Not a medical diagnosis</h4>
               <p>SORA is an evidence-aligned risk awareness tool. It helps you understand signals and prepare for a professional conversation.</p>
             </div>
             
             <div className={styles.privacyCard}>
-              <Shield className={styles.privacyIcon} size={36} />
+              <div className={styles.privacyIcon}>
+                <Shield size={32} />
+              </div>
               <h4>Scored server-side</h4>
               <p>Your responses are securely processed on our servers and never stored in your browser or exposed to third parties.</p>
             </div>
 
             <div className={styles.privacyCard}>
-              <UserX className={styles.privacyIcon} size={36} />
+              <div className={styles.privacyIcon}>
+                <UserX size={32} />
+              </div>
               <h4>No account required</h4>
               <p>No email address needed to start. You can take the entire assessment completely anonymously.</p>
             </div>

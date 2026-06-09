@@ -1,23 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, RefreshCw, Star, Shield, ArrowUpRight } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import DemoModal from "./components/DemoModal";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
   return (
     <div className={styles.container}>
-      <Navbar ctaText="Request Demo" />
+      <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
+      <Navbar hideCta={true} />
 
       {/* HERO SECTION */}
       <section className={styles.heroSection}>
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
-            <div className={styles.badge}>ENTERPRISE REPRODUCTIVE HEALTH</div>
-            <h1 className={styles.heroTitle}>End-to-End IVF Clinic Management</h1>
+            <div className={styles.badge}>ADVANCED FERTILITY PLATFORM</div>
+            <h1 className={styles.heroTitle}>Elevating Fertility Care Through Intelligent Software</h1>
             <p className={styles.heroDesc}>
               SORA brings enterprise-grade CRM software and patient-facing fertility risk tools into one unified platform. Designed exclusively to optimize fertility clinic workflows and acquire high-intent patients.
             </p>
@@ -96,7 +101,7 @@ export default function Home() {
               <p className={styles.ecoDesc}>Our platform eliminates the fragmentation between marketing, intake, and clinical management.</p>
             </div>
             <div className={styles.ecoHeaderRight}>
-              <button className={styles.btnBlack}>Platform Overview</button>
+              <button className={styles.btnBlack} onClick={() => setIsDemoModalOpen(true)}>Platform Overview</button>
             </div>
           </div>
 
@@ -167,7 +172,7 @@ export default function Home() {
               </p>
               <p className={styles.quoteAuthor}>— CLINICAL DIRECTOR, REPRODUCTIVE PARTNERS</p>
             </div>
-            <button className={styles.btnPrimary}>Schedule a Demo</button>
+            <button className={styles.btnPrimary} onClick={() => setIsDemoModalOpen(true)}>Schedule a Demo</button>
           </div>
         </div>
       </section>
@@ -180,8 +185,8 @@ export default function Home() {
             Join the growing network of clinics optimizing their patient outcomes with SORA's intelligent fertility software.
           </p>
           <div className={styles.ctaDarkActions}>
-            <button className={styles.btnPrimaryLg}>Request a Personalized Demo</button>
-            <button className={styles.btnOutlineDark}>Contact Sales</button>
+            <button className={styles.btnPrimaryLg} onClick={() => setIsDemoModalOpen(true)}>Request a Personalized Demo</button>
+            <button className={styles.btnOutlineDark} onClick={() => setIsDemoModalOpen(true)}>Contact Sales</button>
           </div>
         </div>
       </section>

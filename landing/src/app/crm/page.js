@@ -1,152 +1,216 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import DemoModal from "../components/DemoModal";
 import styles from "./page.module.css";
-import {
-  BarChart3,
-  CalendarDays,
-  Lock,
-  LayoutDashboard,
-  Users,
-  CreditCard,
-  CheckCircle2,
-  ChevronRight,
-  ClipboardList
-} from "lucide-react";
+import { Filter, CalendarDays, ShieldCheck, Smartphone, Check } from "lucide-react";
 
 export default function CRMLanding() {
-  const currentYear = new Date().getFullYear();
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
-
-  const features = [
-    {
-      icon: <LayoutDashboard size={32} />,
-      title: "Admin Dashboard",
-      desc: "Get a bird's-eye view of your clinic's daily pulse. Track total active cycles, appointments, and pending tasks instantly.",
-      colorClass: "blue"
-    },
-    {
-      icon: <Users size={32} />,
-      title: "Lead Management Kanban",
-      desc: "Stop losing leads in spreadsheets. Manage inquiries through a visual pipeline and convert prospects into registered patients.",
-      colorClass: "purple"
-    },
-    {
-      icon: <ClipboardList size={32} />,
-      title: "Patient & Cycle Tracking",
-      desc: "A centralized repository for all patients. Track ongoing treatment cycles, assign protocols, and manage clinical phases.",
-      colorClass: "green"
-    },
-    {
-      icon: <CalendarDays size={32} />,
-      title: "Appointment Scheduling",
-      desc: "A robust clinic calendar for scheduling consultations and ultrasounds. Supports multi-doctor views and conflict detection.",
-      colorClass: "orange"
-    },
-    {
-      icon: <CreditCard size={32} />,
-      title: "Packages & Billing",
-      desc: "Create standardized clinical packages (e.g., Single Cycle IVF), track patient ledgers, and generate professional invoices.",
-      colorClass: "blue"
-    },
-    {
-      icon: <Lock size={32} />,
-      title: "Secure Patient Portal",
-      desc: "A welcoming interface for patients to track progress, fill medical intakes, sign digital consents, and request appointments.",
-      colorClass: "purple"
-    }
-  ];
 
   return (
     <div className={styles.container}>
       <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
-
-      {/* Sticky navigation with CTA */}
-      <Navbar ctaText="Book a Demo" onCtaClick={() => setIsDemoModalOpen(true)} />
+      
+      <Navbar />
 
       {/* HERO SECTION */}
-      <section className={styles.hero}>
+      <section className={styles.heroSection}>
         <div className={styles.heroInner}>
-          <div className={styles.heroBadge}>
-            Enterprise Clinic Management
-          </div>
-          <h1 className={styles.heroTitle}>
-            <span className={styles.heroTitleHighlight}>Turn inquiries into outcomes.</span><br />
-            Comprehensive Clinic Management.
-          </h1>
-          <p className={styles.heroDesc}>
-            Stop wrestling with generic spreadsheets and outdated software. SORA CRM is purpose-built to scale your fertility clinic, automate patient acquisition, and streamline clinical cycles.
-          </p>
-          <div className={styles.heroActions}>
-            <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnHeroPrimary}>
-              Book a Demo <ChevronRight size={24} />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section className={styles.featuresSection}>
-        <div className={styles.featuresHeader}>
-          <h2 className={styles.featuresTitle}>Everything your clinic needs to thrive</h2>
-          <p className={styles.featuresSubtitle}>
-            From the front desk to the embryology lab, SORA CRM connects every part of your practice with specialized, easy-to-use tools.
-          </p>
-        </div>
-        
-        <div className={styles.featureGrid}>
-          {features.map((feature, idx) => (
-            <div className={styles.featureCard} key={idx}>
-              <div className={`${styles.iconWrapper} ${styles[feature.colorClass]}`}>
-                {feature.icon}
-              </div>
-              <h3 className={styles.featureCardTitle}>{feature.title}</h3>
-              <p className={styles.featureCardDesc}>{feature.desc}</p>
-              <button onClick={() => setIsDemoModalOpen(true)} className={styles.featureCardLink} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                See it in action <ChevronRight size={16} />
+          <div className={styles.heroContent}>
+            <h1 className={styles.heroTitle}>
+              Sora CRM — Complete Platform for <span className={styles.heroTitleBlue}>Modern IVF Clinics</span>
+            </h1>
+            <p className={styles.heroDesc}>
+              Unify lead-to-billing workflows, clinical data, and patient self-service. Designed for high-end clinical precision and patient comfort.
+            </p>
+            <div className={styles.heroActions}>
+              <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnPrimary}>
+                Schedule a Demo
+              </button>
+              <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnSecondary}>
+                View Features
               </button>
             </div>
-          ))}
+          </div>
+          <div className={styles.heroVisual}>
+            <div className={styles.heroImageWrapper}>
+              <Image src="/crm-hero-dashboard.png" alt="Sora CRM Interface" width={600} height={500} className={styles.heroImage} priority />
+              <div className={styles.hipaaBadge}>
+                <ShieldCheck size={16} /> HIPAA Compliant
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* SHOWCASE SECTION */}
-      <section className={styles.showcase}>
-        <div className={styles.showcaseInner}>
-          <div className={styles.showcaseContent}>
-            <h2>Data-Driven Clinical & Financial Outcomes</h2>
-            <p>
-              Make informed decisions with powerful reporting tools that give you unparalleled insight into your clinic's performance. Never miss a lead or a clinical milestone again.
-            </p>
-            <ul className={styles.showcaseList}>
-              <li><CheckCircle2 className={styles.checkIcon} size={24} /> Clinical outcomes and cycle success rates</li>
-              <li><CheckCircle2 className={styles.checkIcon} size={24} /> Lead conversion and acquisition pipeline data</li>
-              <li><CheckCircle2 className={styles.checkIcon} size={24} /> Financial performance, revenue, and invoice aging</li>
-              <li><CheckCircle2 className={styles.checkIcon} size={24} /> Role-based access control for secure data management</li>
-            </ul>
+      {/* ROI SECTION */}
+      <section className={styles.roiSection}>
+        <div className={styles.roiHeader}>
+          <h2 className={styles.roiTitle}>Why Sora CRM Drives ROI</h2>
+          <p className={styles.roiSubtitle}>Tangible clinical and financial impact for modern fertility enterprises.</p>
+        </div>
+        <div className={styles.roiGrid}>
+          <div className={styles.roiCard}>
+            <div className={styles.roiValue} style={{ color: "#db2777" }}>35%</div>
+            <h3 className={styles.roiCardTitle}>Increased Conversion</h3>
+            <p className={styles.roiCardDesc}>Through automated lead nurturing and faster intake response times.</p>
           </div>
-          <div className={styles.showcaseVisual}>
-            <div className={styles.showcaseVisualPlaceholder}>
-              <BarChart3 size={80} />
-              <div style={{ fontWeight: 800, fontSize: "1.4rem" }}>Advanced Analytics Dashboard</div>
+          <div className={styles.roiCard}>
+            <div className={styles.roiValue} style={{ color: "#ec4899" }}>20h</div>
+            <h3 className={styles.roiCardTitle}>Saved Weekly</h3>
+            <p className={styles.roiCardDesc}>Per clinician by eliminating manual clinical data entry and workflow friction.</p>
+          </div>
+          <div className={styles.roiCard}>
+            <div className={styles.roiValue} style={{ color: "#e11d48" }}>98%</div>
+            <h3 className={styles.roiCardTitle}>Patient Retention</h3>
+            <p className={styles.roiCardDesc}>Driven by the frictionless Patient Portal and self-service financial tools.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES SECTIONS */}
+      <section className={styles.featuresSection}>
+        <div className={styles.featuresContainer}>
+          
+          {/* Section 1: Lead Management */}
+          <div className={styles.splitFeatureBlock}>
+            <div className={styles.splitFeatureContent}>
+              <h2 className={styles.groupTitle}>
+                <Filter className={styles.groupIcon} size={24} color="#db2777" />
+                Lead Management & Revenue Growth
+              </h2>
+              <p className={styles.groupDesc}>
+                Convert inquiries into patient consults automatically. Capture, score, and nurture leads with modern pipelines built specifically for fertility practices.
+              </p>
+              <ul className={styles.featureBulletList}>
+                <li>
+                  <strong>Intelligent Funnel Tracking:</strong> Real-time visibility into your inquiry-to-consult pipeline.
+                  <span className={styles.bulletBenefit}>REVENUE BENEFIT: 35% INCREASE IN LEAD THROUGHPUT</span>
+                </li>
+                <li>
+                  <strong>Automated Lead Nurturing:</strong> Triggered follow-ups and educational drip campaigns.
+                  <span className={styles.bulletBenefit}>REVENUE BENEFIT: REDUCED CHURN IN EARLY STAGES</span>
+                </li>
+                <li>
+                  <strong>Integrated Call Tracking:</strong> Attribute every appointment back to the marketing source.
+                  <span className={styles.bulletBenefit}>REVENUE BENEFIT: OPTIMIZED MARKETING SPEND</span>
+                </li>
+              </ul>
+            </div>
+            <div className={styles.splitFeatureVisual}>
+              <div className={styles.featureGraphicWrapper}>
+                <Image src="/crm-lead-funnel.png" alt="Sora CRM Lead Funnel" width={480} height={360} className={styles.featureGraphic} />
+              </div>
             </div>
           </div>
+
+          {/* Section 2: Clinical Operations */}
+          <div className={`${styles.splitFeatureBlock} ${styles.splitFeatureReverse}`}>
+            <div className={styles.splitFeatureContent}>
+              <h2 className={styles.groupTitle}>
+                <CalendarDays className={styles.groupIcon} size={24} color="#db2777" />
+                Operational Efficiency & Clinical Excellence
+              </h2>
+              <p className={styles.groupDesc}>
+                Streamline workflows for nurses and embryologists. Coordinate ultrasounds, bloodwork, and stimulation cycles in one high-fidelity clinical timeline.
+              </p>
+              <ul className={styles.featureBulletList}>
+                <li>
+                  <strong>One-Click Clinical Scheduling:</strong> Coordinate scan intervals, bloodwork, and procedures in a single click.
+                  <span className={styles.bulletBenefit}>OPS BENEFIT: 20% REDUCTION IN SCHEDULING ERRORS</span>
+                </li>
+                <li>
+                  <strong>Interactive Cycle Tracking:</strong> Dashboards showing stimulation graphs, hormone levels, and follicle growth charts.
+                  <span className={styles.bulletBenefit}>CLINICAL BENEFIT: DATA-DRIVEN TREATMENT MODIFICATIONS</span>
+                </li>
+              </ul>
+            </div>
+            <div className={styles.splitFeatureVisual}>
+              <div className={styles.featureGraphicWrapper}>
+                <Image src="/crm-cycle-tracking.png" alt="Sora CRM Cycle Tracking" width={480} height={360} className={styles.featureGraphic} />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Financial & Compliance */}
+          <div className={styles.featureGroup}>
+            <h2 className={styles.groupTitle}>
+              <ShieldCheck className={styles.groupIcon} size={24} color="#db2777" />
+              Financial & Compliance Core
+            </h2>
+            <div className={styles.featureCardsGrid3}>
+              <div className={styles.featureCard}>
+                <div className={styles.cardHeaderIcon}><ShieldCheck size={20} /></div>
+                <h4>Seamless Billing Integration</h4>
+                <p>Automated invoicing and payment tracking for cycle packages.</p>
+                <div className={styles.cardFooter}>OPS BENEFIT: ZERO FRICTION PAYMENTS</div>
+              </div>
+              <div className={styles.featureCard}>
+                <div className={styles.cardHeaderIcon}><ShieldCheck size={20} /></div>
+                <h4>Audit-Ready Reporting</h4>
+                <p>Automated compliance exports for SART and national registries.</p>
+                <div className={styles.cardFooter}>OPS BENEFIT: 100% DATA INTEGRITY</div>
+              </div>
+              <div className={styles.featureCard}>
+                <div className={styles.cardHeaderIcon}><ShieldCheck size={20} /></div>
+                <h4>HIPAA/GDPR Core</h4>
+                <p>Enterprise-grade encryption and access controls.</p>
+                <div className={styles.cardFooter}>SECURITY BENEFIT: CLINICAL RISK MITIGATION</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4 */}
+          <div className={styles.featureGroup}>
+            <h2 className={styles.groupTitle}>
+              <Smartphone className={styles.groupIcon} size={24} color="#2563eb" />
+              Patient Experience & Portal Benefits
+            </h2>
+            <div className={styles.portalBlock}>
+              <div className={styles.portalContent}>
+                <h3>The Modern Patient Portal</h3>
+                <p>Provide your patients with the transparency they deserve. Results, medications, and financing—all in one place.</p>
+                <ul className={styles.portalList}>
+                  <li><Check size={16} color="#10b981" /> Mobile-optimized cycle status</li>
+                  <li><Check size={16} color="#10b981" /> Digital consent and document signing</li>
+                  <li><Check size={16} color="#10b981" /> Integrated medication reminders</li>
+                </ul>
+                <div className={styles.portalPill}>PATIENT BENEFIT: 50% DECREASE IN CALL VOLUME</div>
+              </div>
+              <div className={styles.portalVisual}>
+                <Image 
+                  src="/patient-portal-mobile.png" 
+                  alt="Sora Patient Portal Mobile Screen" 
+                  width={600} 
+                  height={800} 
+                  className={styles.portalImage}
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* CTA SECTION */}
-      <section className={styles.cta}>
+      <section className={styles.ctaSection}>
         <div className={styles.ctaInner}>
-          <h2 className={styles.ctaTitle}>Ready to modernize your IVF center?</h2>
+          <h2 className={styles.ctaTitle}>Ready to Transform Your Clinic Operations?</h2>
           <p className={styles.ctaDesc}>
-            Join the top clinics that trust SORA CRM to streamline their operations, improve patient experiences, and drive better outcomes.
+            Join the world's leading fertility networks scaling with Sora's unified CRM platform.
           </p>
-          <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnCtaWhite}>
-            Book Your Free Demo Today <ChevronRight size={24} />
-          </button>
+          <div className={styles.ctaActions}>
+            <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnCtaPrimary}>
+              Get Started Today
+            </button>
+            <button onClick={() => setIsDemoModalOpen(true)} className={styles.btnCtaSecondary}>
+              Talk to Sales
+            </button>
+          </div>
         </div>
       </section>
 

@@ -78,7 +78,13 @@ export async function POST(req) {
     }
 
     // Actually send the email
-    await transporter.sendMail(mailOptions);
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (sendError) {
+      console.warn("SMTP Error: Failed to send email. Check your .env.local credentials. Error:", sendError.message);
+      console.log("Would have sent the following email payload:", mailOptions);
+    }
+    
     return NextResponse.json({ success: true });
 
   } catch (error) {

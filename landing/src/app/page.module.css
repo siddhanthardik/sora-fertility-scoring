@@ -13,7 +13,7 @@
 }
 
 .btnPrimary, .btnPrimaryLg {
-  background: #0051d5;
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
   color: white;
   font-family: var(--font-sans);
   font-weight: 600;
@@ -25,6 +25,7 @@
   cursor: pointer;
   border: none;
   transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
 }
 
 .btnPrimary {
@@ -38,12 +39,14 @@
 }
 
 .btnPrimary:hover, .btnPrimaryLg:hover {
-  background: #003ea8;
+  background: linear-gradient(135deg, #db2777 0%, #e11d48 100%);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
 }
 
 .btnSecondary {
   background: white;
-  color: #0051d5;
+  color: #e11d48;
   font-family: var(--font-sans);
   font-weight: 600;
   border-radius: 8px;
@@ -52,14 +55,14 @@
   justify-content: center;
   text-decoration: none;
   cursor: pointer;
-  border: 1px solid #0051d5;
+  border: 1px solid #f43f5e;
   padding: 12px 24px;
   font-size: 1rem;
   transition: all 0.2s;
 }
 
 .btnSecondary:hover {
-  background: rgba(0, 81, 213, 0.05);
+  background: #fff0f5;
 }
 
 .btnBlack {
@@ -107,9 +110,9 @@
 
 /* HERO SECTION */
 .heroSection {
-  background-color: #f7f9fc;
-  padding: 80px 24px 120px;
-  border-bottom: 1px solid #e0e3e6;
+  background: linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%);
+  padding: 20px 24px 120px;
+  border-bottom: 1px solid #fce7f3;
 }
 
 .heroInner {
@@ -135,8 +138,8 @@
 
 .badge {
   display: inline-block;
-  background: #dbe1ff;
-  color: #003ea8;
+  background: #fce7f3;
+  color: #e11d48;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 6px 16px;
@@ -230,7 +233,7 @@
 
 /* SUITES SECTION */
 .suitesSection {
-  background: #f7f9fc;
+  background: #fdf2f8;
   padding: 80px 24px;
 }
 
@@ -243,7 +246,7 @@
 .accentLine {
   width: 60px;
   height: 3px;
-  background: #0051d5;
+  background: #f43f5e;
   margin: 0 auto 64px;
   border-radius: 2px;
 }
@@ -290,12 +293,12 @@
 }
 
 .suiteIconPrimary {
-  background: #dbe1ff;
-  color: #0051d5;
+  background: #fce7f3;
+  color: #e11d48;
 }
 
 .suiteIconSecondary {
-  background: #dbe1ff;
+  background: #fce7f3;
   color: #64748B;
 }
 
@@ -347,7 +350,7 @@
 .nestedLabel {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #0051d5;
+  color: #e11d48;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
@@ -359,7 +362,7 @@
 }
 
 .suiteLink {
-  color: #0051d5;
+  color: #e11d48;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -370,7 +373,7 @@
 
 /* UNIFIED ECOSYSTEM SECTION */
 .ecoSection {
-  background: #f2f4f7;
+  background: #fff5f7;
   padding: 80px 24px;
 }
 
@@ -435,8 +438,8 @@
 .ecoIcon {
   width: 40px;
   height: 40px;
-  background: #f7f9fc;
-  color: #0051d5;
+  background: #fdf2f8;
+  color: #e11d48;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -498,11 +501,11 @@
   position: absolute;
   top: -24px;
   right: -24px;
-  background: #0051d5;
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
   color: white;
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 81, 213, 0.3);
+  box-shadow: 0 10px 30px rgba(244, 63, 94, 0.3);
   text-align: center;
 }
 
@@ -533,7 +536,7 @@
 }
 
 .quoteBlock {
-  border-left: 3px solid #0051d5;
+  border-left: 3px solid #f43f5e;
   padding-left: 24px;
   margin-bottom: 40px;
 }
@@ -550,7 +553,7 @@
 .quoteAuthor {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0051d5;
+  color: #e11d48;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -558,7 +561,7 @@
 
 /* DARK CTA SECTION */
 .ctaDarkSection {
-  background: #101a36;
+  background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
   padding: 100px 24px;
   text-align: center;
   background-image: radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -605,6 +608,6 @@
 .stepsGrid { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 64px; text-align: left; }
 @media (min-width: 768px) { .stepsGrid { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
 .stepCard { display: flex; flex-direction: column; }
-.stepNumber { background: #dbe1ff; color: #0051d5; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 24px; }
+.stepNumber { background: #fce7f3; color: #e11d48; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 24px; }
 .stepTitle { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: #191c1e; margin-bottom: 12px; }
 .stepDesc { color: #45464d; font-size: 1rem; line-height: 1.6; }

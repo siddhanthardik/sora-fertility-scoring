@@ -76,6 +76,7 @@ export async function createClinic(input) {
     status: input.status === "trial" ? "trial" : "active",
     verificationStatus: "pending",
     plan: cleanText(input.plan || "starter"),
+    widgetToken: crypto.randomBytes(24).toString("hex"),
     usage: {
       totalAssessments: 0,
       totalReports: 0,
@@ -348,6 +349,7 @@ function toDbClinic(clinic) {
     allowed_domains: clinic.allowedDomains,
     status: clinic.status,
     verification_status: clinic.verificationStatus,
+    widget_token: clinic.widgetToken,
     plan: clinic.plan,
     usage: clinic.usage,
     created_at: clinic.createdAt,
@@ -365,6 +367,7 @@ function fromDbClinic(row) {
     allowedDomains: Array.isArray(row.allowed_domains) ? row.allowed_domains : [],
     status: row.status,
     verificationStatus: row.verification_status,
+    widgetToken: row.widget_token,
     plan: row.plan,
     usage: row.usage || { totalAssessments: 0, totalReports: 0, lastAssessmentAt: null },
     createdAt: row.created_at,

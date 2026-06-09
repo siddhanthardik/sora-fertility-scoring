@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/sora-logo.png" sizes="any" />
       </head>
       <body>{children}</body>
     </html>

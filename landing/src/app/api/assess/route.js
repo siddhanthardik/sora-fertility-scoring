@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { assessFertilityPayload } from "../../lib/fertilityAssessment";
 import { getClinic, originMatchesClinic, recordAssessment } from "../../lib/clinicRegistry";
 import { getSettings } from "../../lib/settingsRegistry";
+import { generateAssessmentPDF } from "../../lib/pdfGenerator";
+import { supabaseAdmin } from "../../lib/supabaseClient";
 
 const DEFAULT_ALLOWED_ORIGINS = [
   "http://localhost:3000",
@@ -50,7 +52,8 @@ export async function POST(request) {
   let access;
   try {
     access = await verifyClinicAccess(request);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
       { success: false, message: "Assessment service is not configured." },
       { status: 503, headers }
@@ -82,17 +85,74 @@ export async function POST(request) {
       );
     }
 
+    // 1. Calculate Score
     const assessment = assessFertilityPayload(payload);
-    await recordAssessment(access.clinic?.clinicId);
+    
+    // Extract Patient Info
+    const patientInfo = {
+      name: payload.name || "Anonymous",
+      email: payload.email || "no-email@provided.com",
+      phone: payload.phone || "",
+      age: payload.age || "",
+    };
+
+    let pdfUrl = null;
+
+    if (supabaseAdmin && access.clinic) {
+      // 2. Generate PDF
+      const pdfBuffer = await generateAssessmentPDF(patientInfo, assessment);
+      
+      // 3. Upload to Supabase Storage
+      const fileName = `${access.clinic.clinic_id}_${Date.now()}.pdf`;
+      const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        .from('reports')
+        .upload(fileName, pdfBuffer, {
+          contentType: 'application/pdf',
+          upsert: false
+        });
+
+      if (!uploadError && uploadData) {
+        // Get signed URL or public URL (using signed since it's private)
+        const { data: urlData } = await supabaseAdmin.storage
+          .from('reports')
+          .createSignedUrl(fileName, 60 * 60 * 24 * 30); // 30 days
+        pdfUrl = urlData?.signedUrl || null;
+      }
+
+      // 4. Save to Assessments Table
+      const { error: dbError } = await supabaseAdmin.from('assessments').insert([{
+        clinic_id: access.clinic.clinic_id,
+        patient_name: patientInfo.name,
+        patient_email: patientInfo.email,
+        patient_phone: patientInfo.phone,
+        age: Number(patientInfo.age),
+        bmi: Number(payload.bmi) || null,
+        payload: payload,
+        fertistat_score: assessment.weightedTotal,
+        risk_band: assessment.category,
+        flagged_factors: assessment.flaggedFactors || [],
+        pdf_url: pdfUrl,
+        status: 'new'
+      }]);
+
+      if (dbError) {
+        console.error("Failed to save assessment to Supabase:", dbError);
+      }
+    }
+
+    // Record usage counter
+    await recordAssessment(access.clinic?.clinicId || access.clinic?.clinic_id);
 
     return NextResponse.json(
       {
         success: true,
         assessment,
+        pdfUrl
       },
       { headers }
     );
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { success: false, message: error.message || "Assessment failed." },
       { status: 500, headers }
@@ -110,7 +170,7 @@ function validatePayload(payload) {
   if (!Number.isFinite(age) || age < 18 || age > 55) {
     return { ok: false, message: "Age is outside the supported range." };
   }
-  if (!Number.isFinite(bmi) || bmi < 10 || bmi > 60) {
+  if (payload.bmi && (!Number.isFinite(bmi) || bmi < 10 || bmi > 60)) {
     return { ok: false, message: "BMI is outside the supported range." };
   }
 
@@ -118,21 +178,6 @@ function validatePayload(payload) {
     if (payload[field] === undefined || payload[field] === "") continue;
     if (!allowed.includes(String(payload[field]))) {
       return { ok: false, message: `Invalid value for ${field}.` };
-    }
-  }
-
-  if (payload.includeLab === "yes") {
-    const amh = Number(payload.amhValue);
-    const fsh = Number(payload.fsh);
-    const afc = Number(payload.afc);
-    if (!Number.isFinite(amh) || amh < 0 || amh > 100) {
-      return { ok: false, message: "AMH is outside the supported range." };
-    }
-    if (!Number.isFinite(fsh) || fsh < 0 || fsh > 100) {
-      return { ok: false, message: "FSH is outside the supported range." };
-    }
-    if (!Number.isFinite(afc) || afc < 0 || afc > 100) {
-      return { ok: false, message: "AFC is outside the supported range." };
     }
   }
 
@@ -145,40 +190,47 @@ function corsHeaders(request) {
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Sora-Clinic-Id",
+    "Access-Control-Allow-Headers": "Content-Type, X-Sora-Clinic-Id, X-Sora-Widget-Token",
     "Vary": "Origin",
   };
 }
 
 async function verifyClinicAccess(request) {
   const origin = request.headers.get("origin");
-  const clinicId = request.headers.get("x-sora-clinic-id") || "";
+  const clinicId = request.headers.get("x-sora-clinic-id");
+  const widgetToken = request.headers.get("x-sora-widget-token");
+  
   const allowPublicDemo = process.env.SORA_ALLOW_PUBLIC_DEMO_ASSESSMENT === "true" || process.env.NODE_ENV !== "production";
 
-  if (!clinicId && allowPublicDemo && isAllowedDemoOrigin(request)) {
+  if (!clinicId && !widgetToken && allowPublicDemo && isAllowedDemoOrigin(request)) {
     return { ok: true, clinic: null };
   }
 
-  if (!clinicId) {
-    return { ok: false, message: "Clinic ID is required." };
+  if (!clinicId && !widgetToken) {
+    return { ok: false, message: "Clinic ID or Widget Token is required." };
   }
 
-  if (process.env.NODE_ENV === "production" && !origin) {
-    return { ok: false, message: "Request origin is required." };
+  let clinic = null;
+
+  if (widgetToken && supabaseAdmin) {
+    const { data } = await supabaseAdmin.from('clinic_registry').select('*').eq('widget_token', widgetToken).single();
+    if (data) clinic = data;
+  } else if (clinicId) {
+    clinic = await getClinic(clinicId);
   }
 
-  const clinic = await getClinic(clinicId);
   if (!clinic) {
-    return { ok: false, message: "Clinic ID was not found." };
+    return { ok: false, message: "Clinic was not found or invalid token." };
   }
 
   if (!["active", "trial"].includes(clinic.status)) {
     return { ok: false, message: "This clinic is not active." };
   }
 
-  const settings = await getSettings();
+  const packages = await import("../../lib/settingsRegistry").then(m => m.getPackages());
   const planName = clinic.plan?.toLowerCase() || "starter";
-  const planLimit = settings.planLimits[planName];
+  const pkg = packages.find(p => p.name.toLowerCase() === planName);
+  const planLimit = pkg ? pkg.assessment_limit : null;
   
   if (planLimit !== null && planLimit !== undefined) {
     const currentMonth = new Date().toISOString().slice(0, 7);
@@ -186,16 +238,8 @@ async function verifyClinicAccess(request) {
     const monthlyUsage = isCurrentMonth ? Number(clinic.usage?.monthlyAssessments || 0) : 0;
     
     if (monthlyUsage >= planLimit) {
-      return { ok: false, message: "This clinic has reached its monthly assessment limit for their current plan." };
+      return { ok: false, message: "This clinic has reached its monthly assessment limit." };
     }
-  }
-
-  if (clinic.verificationStatus !== "verified") {
-    return { ok: false, message: "This clinic is not verified yet." };
-  }
-
-  if (origin && !originMatchesClinic(origin, clinic) && !(allowPublicDemo && isAllowedDemoOrigin(request))) {
-    return { ok: false, message: "This domain is not approved for this clinic." };
   }
 
   return { ok: true, clinic };

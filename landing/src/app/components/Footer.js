@@ -34,7 +34,7 @@ export default function Footer() {
 
             <div className={styles.linkGroup}>
               <div className={styles.linkGroupTitle}>CONNECT</div>
-              <Link href="#" className={styles.linkItem}>Contact Support</Link>
+              <Link href="/contact" className={styles.linkItem}>Contact Support</Link>
               <Link href="#" className={styles.linkItem}>Clinic Login</Link>
               <div className={styles.socialLinks}>
                 <button className={styles.socialBtn} aria-label="Share">

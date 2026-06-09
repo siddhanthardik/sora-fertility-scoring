@@ -1,51 +1,104 @@
-import { promises as fs } from "fs";
-import path from "path";
+import "server-only";
+import { supabaseAdmin } from "./supabaseClient";
 
-const settingsPath = path.join(process.cwd(), "data", "settings.json");
-
-const defaultSettings = {
-  widgetHostUrl: "http://localhost:3000",
-  planLimits: {
-    starter: 100,
-    growth: 500,
-    enterprise: null,
+export async function getPackages() {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin
+    .from("sora_packages")
+    .select("*")
+    .order("price_inr", { ascending: true });
+    
+  if (error) {
+    console.error("Error fetching packages from Supabase:", error);
+    return [];
   }
-};
-
-export async function getSettings() {
-  try {
-    const content = await fs.readFile(settingsPath, "utf8");
-    const parsed = JSON.parse(content);
-    return { ...defaultSettings, ...parsed };
-  } catch (error) {
-    return defaultSettings;
-  }
+  return data;
 }
 
-export async function updateSettings(newSettings) {
-  const current = await getSettings();
+export async function getPackage(packageId) {
+  if (!supabaseAdmin) return null;
+  const { data, error } = await supabaseAdmin
+    .from("sora_packages")
+    .select("*")
+    .eq("id", packageId)
+    .single();
+    
+  if (error) return null;
+  return data;
+}
+
+export async function updatePackage(packageId, updates) {
+  if (!supabaseAdmin) throw new Error("Supabase is not configured.");
   
-  // Merge the new limits if provided
-  let updatedLimits = current.planLimits;
-  if (newSettings.planLimits) {
-    updatedLimits = { ...current.planLimits };
-    for (const [plan, limit] of Object.entries(newSettings.planLimits)) {
-      if (limit === "" || limit === null || limit === "null" || limit === "Unlimited") {
-        updatedLimits[plan] = null;
-      } else {
-        updatedLimits[plan] = Number(limit);
-      }
-    }
+  const { data, error } = await supabaseAdmin
+    .from("sora_packages")
+    .update({
+      name: updates.name,
+      price_inr: updates.price_inr,
+      assessment_limit: updates.assessment_limit,
+      features: updates.features,
+      is_active: updates.is_active,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", packageId)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function createPackage(pkg) {
+  if (!supabaseAdmin) throw new Error("Supabase is not configured.");
+  
+  const { data, error } = await supabaseAdmin
+    .from("sora_packages")
+    .insert([{
+      id: pkg.id,
+      name: pkg.name,
+      price_inr: pkg.price_inr,
+      assessment_limit: pkg.assessment_limit,
+      features: pkg.features,
+      is_active: true
+    }])
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getSettings() {
+  if (!supabaseAdmin) return { widgetHostUrl: "http://localhost:3000" };
+  const { data, error } = await supabaseAdmin
+    .from("sora_settings")
+    .select("key, value");
+    
+  if (error) {
+    console.error("Error fetching settings:", error);
+    return { widgetHostUrl: "http://localhost:3000" };
   }
-
-  const updatedSettings = {
-    ...current,
-    planLimits: updatedLimits,
-    widgetHostUrl: newSettings.widgetHostUrl !== undefined ? newSettings.widgetHostUrl : current.widgetHostUrl
-  };
-
-  await fs.mkdir(path.dirname(settingsPath), { recursive: true });
-  await fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), "utf8");
   
-  return updatedSettings;
+  const settings = { widgetHostUrl: "http://localhost:3000" };
+  for (const row of data) {
+    if (row.key === 'widgetHostUrl') settings.widgetHostUrl = row.value;
+  }
+  
+  return settings;
+}
+
+export async function updateSettings(updates) {
+  if (!supabaseAdmin) throw new Error("Supabase is not configured.");
+  
+  if (updates.widgetHostUrl !== undefined) {
+    await supabaseAdmin
+      .from("sora_settings")
+      .upsert({ 
+        key: 'widgetHostUrl', 
+        value: updates.widgetHostUrl,
+        updated_at: new Date().toISOString()
+      });
+  }
+  
+  return getSettings();
 }

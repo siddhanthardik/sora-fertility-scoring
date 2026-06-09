@@ -1,0 +1,250 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  color: #1a202c;
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+.contactSection {
+  flex: 1;
+  padding: 80px 24px 120px;
+  background: linear-gradient(180deg, #fff0f5 0%, #ffffff 100%);
+  display: flex;
+  justify-content: center;
+}
+
+.contactInner {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 80px;
+}
+
+@media (max-width: 900px) {
+  .contactInner {
+    flex-direction: column;
+    gap: 40px;
+  }
+}
+
+.contactInfo {
+  flex: 1;
+  max-width: 500px;
+}
+
+.badge {
+  display: inline-block;
+  background: #fce7f3;
+  color: #e11d48;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--font-display, serif);
+  font-size: 3rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.desc {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+.infoBlocks {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.infoBlock {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.infoIcon {
+  width: 48px;
+  height: 48px;
+  background: #fce7f3;
+  color: #e11d48;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoBlock h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.infoBlock p {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.contactFormWrapper {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 600px) {
+  .contactFormWrapper {
+    padding: 24px;
+  }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #111827;
+  background: #f9fafb;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: #f43f5e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.1);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.errorMsg {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.btnSubmit {
+  width: 100%;
+  margin-top: 24px;
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+  color: white;
+  font-weight: 600;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+}
+
+.btnSubmit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #db2777 0%, #e11d48 100%);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
+  transform: translateY(-1px);
+}
+
+.btnSubmit:disabled {
+  background: #fbcfe8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.successState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  height: 100%;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background: #fce7f3;
+  color: #e11d48;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.successTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.successDesc {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.6;
+}

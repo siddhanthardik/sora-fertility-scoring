@@ -1,7 +1,8 @@
 .footer {
-  background: #eceef1;
-  color: #191c1e;
-  padding: 64px 24px 32px;
+  background: #fff0f5;
+  color: #1f2937;
+  padding: 80px 24px 40px;
+  border-top: 1px solid #fce7f3;
 }
 
 .footerInner {
@@ -30,6 +31,7 @@
 .logoImage {
   margin-bottom: 16px;
   object-fit: contain;
+  filter: invert(30%) sepia(85%) saturate(3061%) hue-rotate(320deg) brightness(97%) contrast(106%);
 }
 
 .brandDesc {
@@ -74,7 +76,7 @@
 }
 
 .linkItem:hover {
-  color: #0051d5;
+  color: #e11d48;
 }
 
 .socialLinks {
@@ -96,7 +98,7 @@
 }
 
 .socialBtn:hover {
-  color: #0051d5;
+  color: #e11d48;
 }
 
 .footerBottom {

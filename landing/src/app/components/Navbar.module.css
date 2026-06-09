@@ -5,7 +5,7 @@
   top: 0;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  padding: 16px 24px;
+  padding: 8px 24px;
 }
 
 .headerInner {
@@ -24,6 +24,8 @@
 
 .logoImage {
   object-fit: contain;
+  margin: -10px 0;
+  filter: invert(30%) sepia(85%) saturate(3061%) hue-rotate(320deg) brightness(97%) contrast(106%);
 }
 
 
@@ -52,7 +54,7 @@
 }
 
 .navLink:hover {
-  color: #011434;
+  color: #e11d48;
 }
 
 .dropdownContainer {
@@ -102,12 +104,12 @@
 }
 
 .dropdownItem:hover {
-  background-color: var(--color-bg-light);
-  color: #011434;
+  background-color: #fff0f5;
+  color: #e11d48;
 }
 
 .btnNavCta {
-  background: linear-gradient(135deg, #011434, #1a2d52);
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
   color: white;
   padding: 10px 24px;
   border-radius: 999px;
@@ -121,7 +123,7 @@
 
 .btnNavCta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(1, 20, 52, 0.25);
+  box-shadow: 0 6px 14px rgba(244, 63, 94, 0.25);
 }
 
 @keyframes fadeIn {
@@ -133,4 +135,57 @@
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
+}
+
+/* Mobile Menu Styles */
+.mobileMenuBtn {
+  display: block;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (min-width: 768px) {
+  .mobileMenuBtn {
+    display: none;
+  }
+}
+
+.desktopCta {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktopCta {
+    display: block;
+  }
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px 24px;
+  background: white;
+  border-top: 1px solid var(--color-border);
+  gap: 16px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.mobileNavLink {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mobileCtaWrapper {
+  margin-top: 8px;
+  display: flex;
 }

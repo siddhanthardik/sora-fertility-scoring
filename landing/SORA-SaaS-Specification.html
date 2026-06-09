@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SORA SaaS — Full Technical Specification for Antigravity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0E1117;
+  --bg2:       #141924;
+  --bg3:       #1C2333;
+  --border:    rgba(255,255,255,0.08);
+  --border2:   rgba(255,255,255,0.14);
+  --teal:      #2DD4BF;
+  --teal-dim:  rgba(45,212,191,0.12);
+  --gold:      #FBBF24;
+  --gold-dim:  rgba(251,191,36,0.12);
+  --rose:      #F87171;
+  --rose-dim:  rgba(248,113,113,0.10);
+  --blue:      #60A5FA;
+  --blue-dim:  rgba(96,165,250,0.10);
+  --green:     #4ADE80;
+  --green-dim: rgba(74,222,128,0.10);
+  --purple:    #A78BFA;
+  --purple-dim:rgba(167,139,250,0.10);
+  --text:      #E2E8F0;
+  --text2:     #94A3B8;
+  --text3:     #4A5568;
+  --mono:      'IBM Plex Mono', monospace;
+  --sans:      'IBM Plex Sans', sans-serif;
+  --serif:     'IBM Plex Serif', serif;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+.sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 28px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.main { padding: 48px 56px 80px; max-width: 900px; }
+
+/* Sidebar */
+.sb-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.sb-logo-mark { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--text); }
+.sb-logo-mark span { color: var(--teal); }
+.sb-logo-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+.sb-section { padding: 0 12px; margin-bottom: 6px; }
+.sb-section-label { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 12px 4px; }
+.sb-link { display: flex; align-items: center; gap: 9px; padding: 7px 12px; border-radius: 4px; font-size: 12.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; }
+.sb-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sb-link.active { background: var(--teal-dim); color: var(--teal); }
+.sb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.sb-num { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-left: auto; }
+
+/* Header */
+.doc-header { margin-bottom: 52px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.doc-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); background: var(--teal-dim); border: 1px solid rgba(45,212,191,0.2); padding: 4px 12px; border-radius: 2px; display: inline-block; margin-bottom: 16px; }
+.doc-title { font-family: var(--serif); font-size: 34px; font-weight: 600; line-height: 1.2; color: var(--text); margin-bottom: 12px; }
+.doc-subtitle { font-size: 15px; color: var(--text2); font-weight: 300; line-height: 1.7; max-width: 640px; }
+.doc-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+.meta-item { font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+.meta-item span { color: var(--text2); }
+
+/* Section */
+.spec-section { margin-bottom: 64px; scroll-margin-top: 32px; }
+.spec-section-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.section-num { font-family: var(--mono); font-size: 11px; color: var(--text3); min-width: 28px; }
+.section-title { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--text); }
+.section-tag { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-left: auto; }
+
+/* Feature Block */
+.feature-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 14px; overflow: hidden; }
+.feature-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; user-select: none; }
+.feature-header:hover { background: rgba(255,255,255,0.025); }
+.feat-icon { width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.feat-title { font-size: 13.5px; font-weight: 500; color: var(--text); flex: 1; }
+.feat-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; flex-shrink: 0; }
+.feat-chevron { font-size: 12px; color: var(--text3); transition: transform 0.2s; flex-shrink: 0; }
+.feature-block.open .feat-chevron { transform: rotate(180deg); }
+.feature-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+.feature-block.open .feature-body { display: block; }
+
+/* Spec rows */
+.spec-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.spec-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+.spec-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12.5px; vertical-align: top; }
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table td:first-child { color: var(--text); font-weight: 500; min-width: 180px; }
+.spec-table td:nth-child(2) { color: var(--text2); font-weight: 300; }
+
+/* Code block */
+.code-block { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 16px 18px; font-family: var(--mono); font-size: 12px; color: var(--text2); line-height: 1.8; margin-top: 12px; overflow-x: auto; }
+.code-block .k { color: var(--teal); }
+.code-block .s { color: var(--gold); }
+.code-block .c { color: var(--text3); }
+.code-block .v { color: var(--rose); }
+.code-block .n { color: var(--blue); }
+
+/* Pills & badges */
+.pill { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 2px; font-weight: 500; }
+.pill-teal   { background: var(--teal-dim);   color: var(--teal);   border: 1px solid rgba(45,212,191,0.2);  }
+.pill-gold   { background: var(--gold-dim);   color: var(--gold);   border: 1px solid rgba(251,191,36,0.2);  }
+.pill-rose   { background: var(--rose-dim);   color: var(--rose);   border: 1px solid rgba(248,113,113,0.2); }
+.pill-blue   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(96,165,250,0.2);  }
+.pill-green  { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(74,222,128,0.2);  }
+.pill-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+
+/* Toggle grid */
+.toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; }
+.toggle-label { font-size: 12px; color: var(--text2); }
+.toggle-switch { width: 36px; height: 20px; border-radius: 10px; position: relative; cursor: pointer; flex-shrink: 0; }
+.toggle-on  { background: var(--teal); }
+.toggle-off { background: var(--bg3); border: 1px solid var(--border2); }
+.toggle-thumb { position: absolute; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; transition: left 0.15s; }
+.toggle-on  .toggle-thumb { left: 18px; }
+.toggle-off .toggle-thumb { left: 2px; }
+
+/* Plan columns */
+.plan-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
+.plan-col { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+.plan-col.featured { border-color: rgba(45,212,191,0.3); background: rgba(45,212,191,0.04); }
+.plan-name-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.plan-feat-item { font-size: 11.5px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; gap: 6px; align-items: flex-start; font-weight: 300; }
+.plan-feat-item:last-child { border-bottom: none; }
+.plan-feat-item::before { content: '·'; color: var(--teal); flex-shrink: 0; }
+.plan-feat-item.off { color: var(--text3); }
+.plan-feat-item.off::before { content: '·'; color: var(--text3); }
+
+/* Flow diagram */
+.flow { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
+.flow-step { display: flex; gap: 16px; }
+.flow-left { display: flex; flex-direction: column; align-items: center; }
+.flow-dot-outer { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--teal); background: var(--bg); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; color: var(--teal); flex-shrink: 0; }
+.flow-line { width: 1px; flex: 1; background: var(--border); margin: 3px auto; min-height: 20px; }
+.flow-right { padding: 0 0 24px; flex: 1; }
+.flow-step-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+.flow-step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+
+/* Callout */
+.callout { border-radius: 4px; padding: 14px 18px; margin-top: 14px; font-size: 12.5px; line-height: 1.65; }
+.callout-teal   { background: var(--teal-dim);   border-left: 3px solid var(--teal);   color: rgba(45,212,191,0.9);  }
+.callout-gold   { background: var(--gold-dim);   border-left: 3px solid var(--gold);   color: rgba(251,191,36,0.9);  }
+.callout-rose   { background: var(--rose-dim);   border-left: 3px solid var(--rose);   color: rgba(248,113,113,0.9); }
+
+/* Field spec */
+.field-spec { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.field-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; }
+.field-name { font-family: var(--mono); font-size: 11px; color: var(--blue); min-width: 160px; }
+.field-type { font-family: var(--mono); font-size: 10px; color: var(--purple); min-width: 80px; }
+.field-desc { font-size: 11.5px; color: var(--text2); font-weight: 300; }
+.field-req { font-family: var(--mono); font-size: 9px; color: var(--rose); margin-left: auto; flex-shrink: 0; }
+
+/* Package table */
+.pkg-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.pkg-table th { background: var(--bg3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 10px 14px; text-align: left; }
+.pkg-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12.5px; font-family: var(--mono); vertical-align: middle; }
+.pkg-table tr:last-child td { border-bottom: none; }
+.pkg-table td:first-child { color: var(--teal); }
+.pkg-table td:nth-child(2) { color: var(--gold); }
+.pkg-table td:nth-child(3) { color: var(--text2); font-size: 11px; font-family: var(--sans); font-weight: 300; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 28px 20px 60px; }
+  .plan-cols { grid-template-columns: 1fr; }
+  .toggle-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">SORA<span>.</span></div>
+    <div class="sb-logo-sub">SaaS Specification · Antigravity Build</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Overview</div>
+    <a class="sb-link active" href="#overview"><div class="sb-dot" style="background:#2DD4BF"></div>Product Overview<span class="sb-num">§1</span></a>
+    <a class="sb-link" href="#stack"><div class="sb-dot" style="background:#60A5FA"></div>Tech Stack & Packages<span class="sb-num">§2</span></a>
+    <a class="sb-link" href="#flow"><div class="sb-dot" style="background:#FBBF24"></div>Clinic Onboarding Flow<span class="sb-num">§3</span></a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Admin Panels</div>
+    <a class="sb-link" href="#superadmin"><div class="sb-dot" style="background:#F87171"></div>Superadmin Panel<span class="sb-num">§4</span></a>
+    <a class="sb-link" href="#clinicadmin"><div class="sb-dot" style="background:#A78BFA"></div>Clinic Admin Panel<span class="sb-num">§5</span></a>
+    <a class="sb-link" href="#widget"><div class="sb-dot" style="background:#4ADE80"></div>Embeddable Widget<span class="sb-num">§6</span></a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Core Systems</div>
+    <a class="sb-link" href="#assessment"><div class="sb-dot" style="background:#2DD4BF"></div>Assessment Engine<span class="sb-num">§7</span></a>
+    <a class="sb-link" href="#report"><div class="sb-dot" style="background:#FBBF24"></div>Report & Branding<span class="sb-num">§8</span></a>
+    <a class="sb-link" href="#email"><div class="sb-dot" style="background:#60A5FA"></div>Email Delivery<span class="sb-num">§9</span></a>
+    <a class="sb-link" href="#plans"><div class="sb-dot" style="background:#F87171"></div>Plans & Feature Toggles<span class="sb-num">§10</span></a>
+    <a class="sb-link" href="#billing"><div class="sb-dot" style="background:#4ADE80"></div>Billing & Trial Logic<span class="sb-num">§11</span></a>
+    <a class="sb-link" href="#security"><div class="sb-dot" style="background:#A78BFA"></div>Security & Privacy<span class="sb-num">§12</span></a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Deployment</div>
+    <a class="sb-link" href="#db"><div class="sb-dot" style="background:#2DD4BF"></div>Database Schema<span class="sb-num">§13</span></a>
+    <a class="sb-link" href="#api"><div class="sb-dot" style="background:#60A5FA"></div>API Endpoints<span class="sb-num">§14</span></a>
+    <a class="sb-link" href="#commands"><div class="sb-dot" style="background:#FBBF24"></div>Antigravity Commands<span class="sb-num">§15</span></a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <div class="doc-header">
+    <div class="doc-badge">Antigravity Build Specification · v1.0</div>
+    <div class="doc-title">SORA Fertility SaaS —<br>Complete Feature Specification</div>
+    <div class="doc-subtitle">Full technical and product brief for building the SORA multi-tenant SaaS platform: Superadmin panel, Clinic admin panel, embeddable widget, automated trial activation, plan-based feature toggles, lead email delivery, and SORA-branded reports.</div>
+    <div class="doc-meta">
+      <div class="meta-item">Product: <span>SORA Fertility SaaS</span></div>
+      <div class="meta-item">Stack: <span>React + Node.js + MongoDB + Razorpay</span></div>
+      <div class="meta-item">Target: <span>IVF Clinics B2B</span></div>
+      <div class="meta-item">Trial: <span>Auto-activated on signup</span></div>
+    </div>
+  </div>
+
+  <!-- §1 OVERVIEW -->
+  <div class="spec-section" id="overview">
+    <div class="spec-section-header">
+      <div class="section-num">§1</div>
+      <div class="section-title">Product Overview</div>
+      <div class="section-tag">Architecture</div>
+    </div>
+
+    <p style="color:var(--text2);font-weight:300;line-height:1.75;margin-bottom:20px;">SORA is a multi-tenant B2B SaaS platform. Each IVF clinic is a <strong style="color:var(--text);font-weight:500;">Tenant</strong>. SORA's Superadmin controls all tenants, plans, and feature flags. Clinics manage their own widget, view leads, and access reports from their admin dashboard. Patients interact only with the embeddable widget — no clinic-side login required.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-bottom:16px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Three-layer architecture</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-dot-outer">1</div><div class="flow-line"></div></div>
+          <div class="flow-right">
+            <div class="flow-step-title">SORA Superadmin Panel <span class="pill pill-rose" style="margin-left:6px;">Private URL</span></div>
+            <div class="flow-step-desc">Global control panel for SORA team only. Manage all clinic accounts, activate/suspend plans, toggle individual features per clinic, view aggregate analytics, manage billing, send announcements. Accessible at <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">admin.sorafertility.com/superadmin</code></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-dot-outer">2</div><div class="flow-line"></div></div>
+          <div class="flow-right">
+            <div class="flow-step-title">Clinic Admin Panel <span class="pill pill-teal" style="margin-left:6px;">Per Tenant</span></div>
+            <div class="flow-step-desc">Each clinic gets their own login at <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">app.sorafertility.com/clinic/[clinic-slug]</code>. They see their leads, reports, widget embed code, and account/billing status. Features shown depend on their active plan and superadmin toggles.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-dot-outer" style="border-color:var(--gold);color:var(--gold);">3</div></div>
+          <div class="flow-right">
+            <div class="flow-step-title">Embeddable Patient Widget <span class="pill pill-gold" style="margin-left:6px;">Public</span></div>
+            <div class="flow-step-desc">A single JS snippet that clinics paste onto any webpage. Patients complete the 5-min fertility assessment. Results are scored server-side and delivered as a SORA-branded PDF report. Lead details are emailed to the clinic instantly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §2 STACK -->
+  <div class="spec-section" id="stack">
+    <div class="spec-section-header">
+      <div class="section-num">§2</div>
+      <div class="section-title">Tech Stack & Package Manager</div>
+      <div class="section-tag">Dependencies</div>
+    </div>
+
+    <div class="callout callout-gold" style="margin-bottom:20px;"><strong>Package manager: npm</strong> — Use <code>npm install</code> throughout. Do not use yarn or pnpm. Lock file: <code>package-lock.json</code>. Node version: 20.x LTS.</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--teal-dim);">⚙</div>
+        <div class="feat-title">Backend — Node.js / Express</div>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="pkg-table">
+          <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>express</td><td>^4.18</td><td>HTTP server & routing</td></tr>
+            <tr><td>mongoose</td><td>^8.x</td><td>MongoDB ODM — all data models</td></tr>
+            <tr><td>jsonwebtoken</td><td>^9.x</td><td>JWT auth for superadmin & clinic sessions</td></tr>
+            <tr><td>bcryptjs</td><td>^2.x</td><td>Password hashing</td></tr>
+            <tr><td>nodemailer</td><td>^6.x</td><td>Email delivery — lead alerts + welcome emails</td></tr>
+            <tr><td>@sendgrid/mail</td><td>^8.x</td><td>Transactional email fallback (production)</td></tr>
+            <tr><td>razorpay</td><td>^2.x</td><td>Billing — subscription plans + webhook</td></tr>
+            <tr><td>pdfkit</td><td>^0.14</td><td>Generate SORA-branded PDF assessment reports</td></tr>
+            <tr><td>multer</td><td>^1.x</td><td>Clinic logo upload handling</td></tr>
+            <tr><td>sharp</td><td>^0.33</td><td>Logo image resizing for reports</td></tr>
+            <tr><td>cors</td><td>^2.x</td><td>CORS — allow widget embed cross-origin</td></tr>
+            <tr><td>helmet</td><td>^7.x</td><td>HTTP security headers</td></tr>
+            <tr><td>express-rate-limit</td><td>^7.x</td><td>Rate limit assessment endpoint</td></tr>
+            <tr><td>dotenv</td><td>^16.x</td><td>Environment variable management</td></tr>
+            <tr><td>uuid</td><td>^9.x</td><td>Unique clinic IDs and widget tokens</td></tr>
+            <tr><td>dayjs</td><td>^1.x</td><td>Date handling for trial expiry logic</td></tr>
+            <tr><td>joi</td><td>^17.x</td><td>Request validation schemas</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block" style="margin-top:16px;">
+          <span class="c"># Install all backend packages at once</span><br>
+          npm install express mongoose jsonwebtoken bcryptjs nodemailer<br>
+          &nbsp;&nbsp;@sendgrid/mail razorpay pdfkit multer sharp cors<br>
+          &nbsp;&nbsp;helmet express-rate-limit dotenv uuid dayjs joi
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--blue-dim);">⚛</div>
+        <div class="feat-title">Frontend — React (Vite + TailwindCSS)</div>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="pkg-table">
+          <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>react</td><td>^18.x</td><td>UI framework</td></tr>
+            <tr><td>react-dom</td><td>^18.x</td><td>DOM rendering</td></tr>
+            <tr><td>react-router-dom</td><td>^6.x</td><td>SPA routing — superadmin & clinic dashboards</td></tr>
+            <tr><td>vite</td><td>^5.x</td><td>Build tool & dev server</td></tr>
+            <tr><td>tailwindcss</td><td>^3.x</td><td>Utility CSS — all UI styling</td></tr>
+            <tr><td>axios</td><td>^1.x</td><td>HTTP client for all API calls</td></tr>
+            <tr><td>recharts</td><td>^2.x</td><td>Charts in clinic & superadmin dashboards</td></tr>
+            <tr><td>react-hook-form</td><td>^7.x</td><td>All form handling incl. clinic signup</td></tr>
+            <tr><td>react-hot-toast</td><td>^2.x</td><td>Toast notifications (success/error/info)</td></tr>
+            <tr><td>lucide-react</td><td>^0.x</td><td>Icon system throughout UI</td></tr>
+            <tr><td>date-fns</td><td>^3.x</td><td>Date formatting in dashboards</td></tr>
+            <tr><td>clsx</td><td>^2.x</td><td>Conditional class merging</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block" style="margin-top:16px;">
+          <span class="c"># Scaffold Vite + React</span><br>
+          npm create vite@latest sora-admin -- --template react<br>
+          <span class="c"># Install frontend deps</span><br>
+          npm install react-router-dom axios recharts react-hook-form<br>
+          &nbsp;&nbsp;react-hot-toast lucide-react date-fns clsx<br>
+          npm install -D tailwindcss postcss autoprefixer<br>
+          npx tailwindcss init -p
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--purple-dim);">🗄</div>
+        <div class="feat-title">Database & Infrastructure</div>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="pkg-table">
+          <thead><tr><th>Service</th><th>Choice</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Database</td><td>MongoDB Atlas</td><td>Free M0 for dev, M10 for prod. Multi-tenant via clinicId field on every document.</td></tr>
+            <tr><td>File Storage</td><td>Cloudinary (free tier)</td><td>Clinic logos + generated PDF report storage. Use multer-cloudinary-storage.</td></tr>
+            <tr><td>Email</td><td>SendGrid (free 100/day)</td><td>Transactional email. SMTP fallback via nodemailer for dev.</td></tr>
+            <tr><td>Payments</td><td>Razorpay</td><td>Subscription plans. Webhook for payment events.</td></tr>
+            <tr><td>Hosting — Backend</td><td>Railway.app</td><td>One-click Node deploy. Add MongoDB + env vars from dashboard.</td></tr>
+            <tr><td>Hosting — Frontend</td><td>Vercel</td><td>Deploy sora-admin React app. Set VITE_API_URL env var.</td></tr>
+            <tr><td>Widget CDN</td><td>Cloudflare Pages</td><td>Serve embed.js with wide CORS headers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- §3 ONBOARDING FLOW -->
+  <div class="spec-section" id="flow">
+    <div class="spec-section-header">
+      <div class="section-num">§3</div>
+      <div class="section-title">Clinic Onboarding — Auto Trial Activation</div>
+      <div class="section-tag">Zero friction signup</div>
+    </div>
+
+    <div class="callout callout-teal">Goal: A clinic submits their details on the B2B landing page and is <strong>automatically live on a 14-day free trial</strong> — no manual approval from SORA team required. They receive their embed code by email within 60 seconds.</div>
+
+    <div class="flow" style="margin-top:20px;">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer">1</div><div class="flow-line"></div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Clinic submits registration form <span class="pill pill-teal" style="margin-left:6px;">Landing Page</span></div>
+          <div class="flow-step-desc">Fields: Clinic name, Doctor name, Designation, Clinic city, Phone, Email (becomes login), Password, Website URL. POST to <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">POST /api/clinics/register</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer">2</div><div class="flow-line"></div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Backend auto-creates tenant record</div>
+          <div class="flow-step-desc">Creates Clinic document with: <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">status: "trial"</code>, <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">plan: "trial"</code>, <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">trialEndsAt: now + 14 days</code>, <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">widgetToken: uuid()</code>, <code style="font-family:var(--mono);font-size:11px;color:var(--teal);">assessmentLimit: 50</code>. All features default ON for trial period.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer">3</div><div class="flow-line"></div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Welcome email sent automatically <span class="pill pill-blue" style="margin-left:6px;">Nodemailer / SendGrid</span></div>
+          <div class="flow-step-desc">Email contains: Login URL, embed snippet with their unique widget token, 3-step quickstart guide, and link to book a demo call. Sent within 60 seconds of registration.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer">4</div><div class="flow-line"></div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Clinic logs in to their admin panel</div>
+          <div class="flow-step-desc">They can immediately: view their embed code, customise widget colours, see the live lead dashboard, and access their first reports. No SORA approval step.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer">5</div><div class="flow-line"></div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Superadmin notified of new signup <span class="pill pill-gold" style="margin-left:6px;">Internal alert</span></div>
+          <div class="flow-step-desc">SORA team receives email: clinic name, city, website, plan = trial. Can choose to reach out proactively. All new clinics visible in superadmin dashboard under "New Signups" table.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-dot-outer" style="border-color:var(--gold);color:var(--gold);">6</div></div>
+        <div class="flow-right">
+          <div class="flow-step-title">Trial expiry handling</div>
+          <div class="flow-step-desc">Day 11: Upgrade reminder email sent. Day 14: Widget stops accepting new submissions. Existing leads remain accessible. Clinic sees upgrade prompt in dashboard. Superadmin can extend trial manually.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §4 SUPERADMIN -->
+  <div class="spec-section" id="superadmin">
+    <div class="spec-section-header">
+      <div class="section-num">§4</div>
+      <div class="section-title">Superadmin Panel</div>
+      <div class="section-tag">SORA internal only</div>
+    </div>
+    <div class="callout callout-rose" style="margin-bottom:20px;">Access: Protected by separate superadmin credentials stored in .env. Single account, no self-signup. URL: <code style="font-family:var(--mono);font-size:11px;">/superadmin/login</code> with IP allowlist in production.</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--rose-dim);">🏥</div>
+        <div class="feat-title">All Clinics Management Table</div>
+        <span class="feat-badge pill-rose">Core</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Column</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Clinic Name</td><td>Clickable — opens clinic detail view</td></tr>
+            <tr><td>Doctor / Contact</td><td>Name, email, phone</td></tr>
+            <tr><td>City</td><td>Registration city</td></tr>
+            <tr><td>Plan</td><td>Trial / Starter / Pro / Enterprise — editable dropdown</td></tr>
+            <tr><td>Status</td><td>Active / Suspended / Trial / Expired — toggle button</td></tr>
+            <tr><td>Trial Ends</td><td>Date + days remaining. Extend button (+7/+14 days)</td></tr>
+            <tr><td>Assessments Used</td><td>Used / Limit this month (e.g. 43/100)</td></tr>
+            <tr><td>Joined</td><td>Registration date</td></tr>
+            <tr><td>Last Active</td><td>Last assessment timestamp</td></tr>
+            <tr><td>Actions</td><td>View · Edit Plan · Suspend · Extend Trial · Impersonate</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-gold" style="margin-top:12px;">Impersonate feature: Superadmin can log into any clinic's dashboard as that clinic — for support and debugging. Shows "[Viewing as: Clinic Name]" banner throughout.</div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--purple-dim);">🎛</div>
+        <div class="feat-title">Per-Clinic Feature Toggle Panel</div>
+        <span class="feat-badge pill-purple">Key Feature</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px;font-weight:300;">Each clinic has an individual feature toggle map. Superadmin can turn any feature on or off regardless of the clinic's plan — useful for trials, custom deals, and troubleshooting. Changes take effect immediately with no redeploy.</p>
+        <div class="toggle-grid">
+          <div class="toggle-row"><span class="toggle-label">Lead email notifications</span><div class="toggle-switch toggle-on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">PDF report generation</span><div class="toggle-switch toggle-on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">CRM webhook push</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">High-risk alert email</span><div class="toggle-switch toggle-on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Analytics dashboard</span><div class="toggle-switch toggle-on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">White-label branding</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">CSV export</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Multi-location mode</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Widget custom colours</span><div class="toggle-switch toggle-on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Assessment limit override</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">API access</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Priority support badge</span><div class="toggle-switch toggle-off"><div class="toggle-thumb"></div></div></div>
+        </div>
+        <div class="callout callout-teal" style="margin-top:14px;">All toggles stored in <code style="font-family:var(--mono);font-size:11px;">clinic.features{}</code> object in MongoDB. Widget and clinic dashboard read this object on every request via a <code style="font-family:var(--mono);font-size:11px;">GET /api/clinics/:id/features</code> endpoint. No redeploy required.</div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--teal-dim);">📊</div>
+        <div class="feat-title">Global Analytics Dashboard</div>
+        <span class="feat-badge pill-teal">Overview</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Metric</th><th>Display</th></tr></thead>
+          <tbody>
+            <tr><td>Total clinics</td><td>Trial / Starter / Pro / Enterprise breakdown — donut chart</td></tr>
+            <tr><td>Total assessments (all time)</td><td>Line chart — daily volume across all tenants</td></tr>
+            <tr><td>Risk band distribution</td><td>Bar chart — Low / Amber / High % across all assessments</td></tr>
+            <tr><td>MRR (Monthly Recurring Revenue)</td><td>Current MRR + month-over-month growth</td></tr>
+            <tr><td>Trials expiring soon</td><td>List of clinics expiring in next 7 days</td></tr>
+            <tr><td>Most active clinics</td><td>Top 10 by assessment volume this month</td></tr>
+            <tr><td>Geographic spread</td><td>City-wise clinic distribution table</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--gold-dim);">💳</div>
+        <div class="feat-title">Billing & Plan Management</div>
+        <span class="feat-badge pill-gold">Finance</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Action</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Change clinic plan</td><td>Dropdown: Trial → Starter → Pro → Enterprise. Triggers feature map update automatically.</td></tr>
+            <tr><td>Apply discount</td><td>Enter % discount for a clinic. Razorpay subscription adjusted.</td></tr>
+            <tr><td>View payment history</td><td>Per-clinic payment log with Razorpay payment IDs</td></tr>
+            <tr><td>Manual payment mark</td><td>For bank transfer / offline payment — mark as paid with notes</td></tr>
+            <tr><td>Invoices</td><td>Auto-generated GST invoice per clinic per month. PDF download from superadmin.</td></tr>
+            <tr><td>Override assessment limit</td><td>Set custom monthly assessment cap for any clinic, any plan</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- §5 CLINIC ADMIN -->
+  <div class="spec-section" id="clinicadmin">
+    <div class="spec-section-header">
+      <div class="section-num">§5</div>
+      <div class="section-title">Clinic Admin Panel</div>
+      <div class="section-tag">Per-tenant dashboard</div>
+    </div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--teal-dim);">📋</div>
+        <div class="feat-title">Lead Management Dashboard</div>
+        <span class="feat-badge pill-teal">Core</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <p style="font-size:12.5px;color:var(--text2);font-weight:300;margin-bottom:14px;">Main view after login. Shows all assessments completed by patients via the clinic's widget.</p>
+        <table class="spec-table">
+          <thead><tr><th>Column</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Patient name</td><td>As entered in widget (optional — if provided)</td></tr>
+            <tr><td>Phone / Email</td><td>Contact details submitted</td></tr>
+            <tr><td>Age</td><td>From assessment inputs</td></tr>
+            <tr><td>Risk Band</td><td>Color-coded pill: 🔴 High / 🟠 Amber / 🟢 Low</td></tr>
+            <tr><td>Top Flagged Factor</td><td>E.g. "Irregular cycles + Low AMH"</td></tr>
+            <tr><td>Referral Urgency</td><td>Immediate / Soon / Monitor</td></tr>
+            <tr><td>Submitted</td><td>Date + time</td></tr>
+            <tr><td>Report</td><td>Download PDF button (SORA-branded)</td></tr>
+            <tr><td>Status</td><td>New / Contacted / Consultation booked / Converted — clinic sets this</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <span class="pill pill-teal">Filter by risk band</span>
+          <span class="pill pill-gold">Filter by date range</span>
+          <span class="pill pill-blue">Search by name/phone</span>
+          <span class="pill pill-green">CSV export (Starter+)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--green-dim);">🔌</div>
+        <div class="feat-title">Widget Embed Centre</div>
+        <span class="feat-badge pill-green">Setup</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <p style="font-size:12.5px;color:var(--text2);font-weight:300;margin-bottom:14px;">The single most important page for clinic onboarding. Shows their unique embed code, customisation options, and live preview.</p>
+        <table class="spec-table">
+          <thead><tr><th>Feature</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Embed snippet</td><td>Pre-filled with clinic's unique widgetToken. One-click copy button.</td></tr>
+            <tr><td>Widget preview</td><td>Live iframe preview showing what their widget looks like</td></tr>
+            <tr><td>Primary colour</td><td>Colour picker — changes widget button/accent colour. Saved to clinic config.</td></tr>
+            <tr><td>Widget position</td><td>Bottom-right / Bottom-left / Inline (embedded in page body)</td></tr>
+            <tr><td>Language</td><td>English / Hindi (if Hindi version built)</td></tr>
+            <tr><td>Button label</td><td>Editable: "Check My Fertility Score" / "Take the Free Test" / custom</td></tr>
+            <tr><td>Confirmation message</td><td>Text shown to patient after completing assessment</td></tr>
+            <tr><td>Redirect URL</td><td>Optional: after submission, redirect patient to clinic's booking page</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block" style="margin-top:14px;">
+          <span class="c">&lt;!-- Auto-generated snippet shown to clinic --&gt;</span><br>
+          <span class="k">&lt;script</span><br>
+          &nbsp;&nbsp;<span class="n">src</span>=<span class="s">"https://widget.sorafertility.com/embed.js"</span><br>
+          &nbsp;&nbsp;<span class="n">data-token</span>=<span class="s">"CLINIC_UNIQUE_TOKEN"</span><br>
+          &nbsp;&nbsp;<span class="n">data-color</span>=<span class="s">"#0D9488"</span><br>
+          &nbsp;&nbsp;<span class="n">data-position</span>=<span class="s">"bottom-right"</span><br>
+          &nbsp;&nbsp;<span class="n">data-label</span>=<span class="s">"Check My Fertility Score"</span><br>
+          <span class="k">&gt;&lt;/script&gt;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--blue-dim);">📈</div>
+        <div class="feat-title">Analytics (Starter & Pro)</div>
+        <span class="feat-badge pill-blue">Plan-gated</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Chart / Metric</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Assessments over time</td><td>Line chart — daily volume. 7d / 30d / 90d toggle.</td></tr>
+            <tr><td>Risk band breakdown</td><td>Donut chart — % High / Amber / Low for the period</td></tr>
+            <tr><td>Top flagged factors</td><td>Bar chart — most common risk inputs across all leads</td></tr>
+            <tr><td>Lead status funnel</td><td>New → Contacted → Consultation → Converted pipeline</td></tr>
+            <tr><td>Assessments used</td><td>Progress bar vs plan limit. Shows renewal date.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-rose" style="margin-top:12px;">If clinic is on Trial plan, analytics charts are visible but blurred with an "Upgrade to Starter" overlay. This shows value before requiring payment.</div>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--gold-dim);">⚙</div>
+        <div class="feat-title">Account & Notification Settings</div>
+        <span class="feat-badge pill-gold">Settings</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Setting</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Lead alert email(s)</td><td>Up to 3 email addresses. New lead notification sent to all.</td></tr>
+            <tr><td>High-risk only alerts</td><td>Toggle: receive email only for High-risk leads (reduces noise)</td></tr>
+            <tr><td>WhatsApp alert</td><td>Phone number for WhatsApp lead notification (Pro+, via WhatsApp Business API)</td></tr>
+            <tr><td>Clinic profile</td><td>Name, logo upload, city, website — used in report footer</td></tr>
+            <tr><td>CRM webhook URL</td><td>Paste webhook endpoint. SORA POSTs lead JSON on every submission. (Pro+)</td></tr>
+            <tr><td>Password change</td><td>Standard reset flow</td></tr>
+            <tr><td>Plan & billing</td><td>Current plan, next billing date, upgrade/downgrade button</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- §6 WIDGET -->
+  <div class="spec-section" id="widget">
+    <div class="spec-section-header">
+      <div class="section-num">§6</div>
+      <div class="section-title">Embeddable Patient Widget</div>
+      <div class="section-tag">Public-facing</div>
+    </div>
+
+    <div class="callout callout-teal" style="margin-bottom:20px;">The widget is a self-contained JS file served from CDN. It injects a floating button + modal overlay onto any host page. All API calls go to SORA's backend — the host page never sees patient data.</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--green-dim);">🧩</div>
+        <div class="feat-title">Widget Technical Behaviour</div>
+        <span class="feat-badge pill-green">Frontend</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Behaviour</th><th>Implementation</th></tr></thead>
+          <tbody>
+            <tr><td>Load mechanism</td><td>Single &lt;script&gt; tag. Widget reads data-* attributes for config. Injects shadow DOM to prevent CSS conflicts with host page.</td></tr>
+            <tr><td>Floating button</td><td>Fixed bottom-right (or position from config). Shows label text. Pulses gently. Opens modal on click.</td></tr>
+            <tr><td>Modal overlay</td><td>Full-screen overlay. Multi-step form — 6–8 steps. Progress bar at top. Back/Next navigation.</td></tr>
+            <tr><td>Assessment steps</td><td>Step 1: Contact (name/email/phone). Step 2: Age & cycle. Step 3: Medical history. Step 4: Lifestyle. Step 5: Partner. Step 6: Optional labs (AMH/FSH/AFC). Step 7: Submit.</td></tr>
+            <tr><td>Scoring call</td><td>On submit: POST /api/assess with clinicToken + inputs. Server scores and returns riskBand, flags, report URL.</td></tr>
+            <tr><td>Patient result screen</td><td>Shows risk band, top 2 flagged factors, and "Your full report has been prepared." CTA to book consultation.</td></tr>
+            <tr><td>Redirect</td><td>Optional redirect to clinic's booking URL after 5 seconds, if configured.</td></tr>
+            <tr><td>SORA branding</td><td>"Powered by SORA Fertility" footer link always visible in widget. Non-removable except on Enterprise.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-gold" style="margin-top:12px;">Shadow DOM is critical — it prevents the host page's CSS from breaking the widget layout. Build widget as a web component or use a scoped style injection pattern.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §7 ASSESSMENT ENGINE -->
+  <div class="spec-section" id="assessment">
+    <div class="spec-section-header">
+      <div class="section-num">§7</div>
+      <div class="section-title">Assessment Engine (FertiSTAT)</div>
+      <div class="section-tag">Server-side only</div>
+    </div>
+
+    <div class="callout callout-rose" style="margin-bottom:20px;">The scoring algorithm runs entirely server-side. It is never exposed in the widget JS or any frontend code. The widget only sends raw inputs and receives a risk band back.</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--teal-dim);">🔬</div>
+        <div class="feat-title">27+ Input Fields (Assessment Form)</div>
+        <span class="feat-badge pill-teal">Data Model</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <div class="field-spec">
+          <div class="field-row"><span class="field-name">age</span><span class="field-type">Number</span><span class="field-desc">Patient age in years. High weight in scoring.</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">cycleRegular</span><span class="field-type">Boolean</span><span class="field-desc">Are menstrual cycles regular (21–35 day range)?</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">cycleLength</span><span class="field-type">Number</span><span class="field-desc">Average cycle length in days</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">tryingMonths</span><span class="field-type">Number</span><span class="field-desc">Months actively trying to conceive</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">hasPCOS</span><span class="field-type">Boolean</span><span class="field-desc">Diagnosed PCOS — red flag input</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">hasThyroid</span><span class="field-type">Boolean</span><span class="field-desc">Thyroid disorder (hypo/hyper)</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">hasEndometriosis</span><span class="field-type">Boolean</span><span class="field-desc">Diagnosed or suspected endometriosis</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">hasTuberculosis</span><span class="field-type">Boolean</span><span class="field-desc">History of genital TB or pelvic TB</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">hasDiabetes</span><span class="field-type">Boolean</span><span class="field-desc">Type 1 or Type 2 diabetes</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">miscarriageCount</span><span class="field-type">Number</span><span class="field-desc">Number of prior pregnancy losses (0,1,2,3+)</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">ectopicHistory</span><span class="field-type">Boolean</span><span class="field-desc">History of ectopic pregnancy — red flag</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">bmi</span><span class="field-type">Number</span><span class="field-desc">Body mass index — calculated or self-reported</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">smokingStatus</span><span class="field-type">String</span><span class="field-desc">Never / Former / Current</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">alcoholFrequency</span><span class="field-type">String</span><span class="field-desc">Never / Occasional / Regular</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">stressLevel</span><span class="field-type">Number</span><span class="field-desc">Self-reported stress: 1–5 scale</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">partnerFactorSuspected</span><span class="field-type">Boolean</span><span class="field-desc">Any known or suspected male factor</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">amhValue</span><span class="field-type">Number</span><span class="field-desc">AMH in ng/mL — optional lab input</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">fshValue</span><span class="field-type">Number</span><span class="field-desc">FSH in IU/L — optional lab input</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">afcCount</span><span class="field-type">Number</span><span class="field-desc">Antral follicle count — optional ultrasound input</span><span class="field-req">Optional</span></div>
+          <div class="field-row"><span class="field-name">previousIVF</span><span class="field-type">Boolean</span><span class="field-desc">Has patient undergone IVF before?</span><span class="field-req">Required</span></div>
+          <div class="field-row"><span class="field-name">surgeryHistory</span><span class="field-type">Boolean</span><span class="field-desc">Pelvic/abdominal surgery history</span><span class="field-req">Optional</span></div>
+        </div>
+        <div class="callout callout-teal" style="margin-top:14px;">Scoring algorithm: Weighted point system across 6 domains (Age/Cycle, Medical, Reproductive History, Lifestyle, Labs, Partner). Total score maps to: 0–39 = Low, 40–69 = Amber, 70+ = High. Red flags (ectopic, TB, endometriosis, 2+ miscarriages) auto-elevate to minimum Amber regardless of total score.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §8 REPORT -->
+  <div class="spec-section" id="report">
+    <div class="spec-section-header">
+      <div class="section-num">§8</div>
+      <div class="section-title">SORA-Branded PDF Report</div>
+      <div class="section-tag">PDFKit · Always SORA branded</div>
+    </div>
+
+    <div class="callout callout-teal" style="margin-bottom:20px;">Every report carries SORA branding. The clinic's name and logo appear in the footer only. SORA logo and "Powered by SORA Fertility Intelligence" appears in the header of every page. This is non-negotiable across all plans including Enterprise (unless separately agreed).</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--gold-dim);">📄</div>
+        <div class="feat-title">Report Page Layout (PDFKit)</div>
+        <span class="feat-badge pill-gold">Design Spec</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Section</th><th>Content</th><th>Branding</th></tr></thead>
+          <tbody>
+            <tr><td>Header (every page)</td><td>SORA wordmark + "Fertility Intelligence Report" label + date</td><td>SORA logo — always present</td></tr>
+            <tr><td>Page 1 — Summary</td><td>Patient first name, Risk Band (large colour block), overall score</td><td>SORA teal colour system</td></tr>
+            <tr><td>Page 1 — Risk band</td><td>🔴 HIGH / 🟠 AMBER / 🟢 LOW — full-width coloured banner with plain English explanation</td><td>SORA colour system</td></tr>
+            <tr><td>Page 2 — Flagged factors</td><td>Red factors (immediate attention) and Amber factors (monitor) listed with plain descriptions</td><td>SORA icons</td></tr>
+            <tr><td>Page 2 — Domain scores</td><td>Bar chart per domain: Age/Cycle · Medical · Reproductive · Lifestyle · Labs · Partner</td><td>SORA chart style</td></tr>
+            <tr><td>Page 3 — Next steps</td><td>Personalised referral urgency + 3 recommended actions based on risk band and top flags</td><td>SORA tone + voice</td></tr>
+            <tr><td>Page 3 — Disclaimer</td><td>"This report is for educational risk awareness only and does not constitute a medical diagnosis…"</td><td>Standard SORA disclaimer</td></tr>
+            <tr><td>Footer (every page)</td><td>Clinic name + city + phone. "Assessment facilitated by [Clinic Name]"</td><td>Clinic name only — no clinic logo on Starter. Logo added on Pro+.</td></tr>
+            <tr><td>Back page</td><td>"sorafertility.com · Powered by SORA Fertility Intelligence"</td><td>SORA watermark</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-gold" style="margin-top:12px;">PDF is generated server-side immediately on assessment submission. Stored in Cloudinary. URL sent in lead notification email to clinic. Patient sees their risk band in the widget — they do not receive the full PDF directly unless clinic configures patient email delivery (Pro feature).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §9 EMAIL -->
+  <div class="spec-section" id="email">
+    <div class="spec-section-header">
+      <div class="section-num">§9</div>
+      <div class="section-title">Email Delivery System</div>
+      <div class="section-tag">Nodemailer + SendGrid</div>
+    </div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--blue-dim);">📧</div>
+        <div class="feat-title">All Triggered Emails</div>
+        <span class="feat-badge pill-blue">6 email types</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Email</th><th>Trigger</th><th>To</th><th>Content</th></tr></thead>
+          <tbody>
+            <tr><td>Welcome + Embed Code</td><td>Clinic registration</td><td>Clinic email</td><td>Welcome message, login URL, copy-paste embed snippet, quickstart guide link, SORA support email</td></tr>
+            <tr><td>New Lead Alert</td><td>Every assessment submission</td><td>Clinic lead emails (up to 3)</td><td>Patient name/phone/email, Risk band (colour coded), Top 2 flagged factors, Referral urgency, PDF report download link, CTA: "Log in to view full lead →"</td></tr>
+            <tr><td>High-Risk Alert</td><td>Assessment returns High risk</td><td>Clinic email (if toggle on)</td><td>Urgent subject line: "⚠ High-Risk Lead — Immediate Review". Same lead details but styled as urgent. Recommend calling within 24h.</td></tr>
+            <tr><td>Trial Expiry Warning</td><td>Day 11 of trial</td><td>Clinic email</td><td>"Your free trial ends in 3 days." Plan comparison + upgrade CTA. Razorpay payment link.</td></tr>
+            <tr><td>Trial Expired</td><td>Day 14 + 1 hour</td><td>Clinic email</td><td>"Your trial has ended." Widget paused. Upgrade to reactivate. SORA team contact offer.</td></tr>
+            <tr><td>Superadmin new signup</td><td>Clinic registration</td><td>SORA admin email</td><td>Clinic name, city, doctor, website, plan=trial. Internal notification only.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-teal" style="margin-top:12px;">All outbound emails sent from <code style="font-family:var(--mono);font-size:11px;">noreply@sorafertility.com</code>. Reply-to set to <code style="font-family:var(--mono);font-size:11px;">support@sorafertility.com</code>. Use HTML email templates with SORA branding (teal header, clean layout, mobile-responsive).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §10 PLANS -->
+  <div class="spec-section" id="plans">
+    <div class="spec-section-header">
+      <div class="section-num">§10</div>
+      <div class="section-title">Plans & Feature Toggle Matrix</div>
+      <div class="section-tag">Superadmin controlled</div>
+    </div>
+
+    <div class="callout callout-teal" style="margin-bottom:20px;">Plans define default feature sets. Superadmin can override any individual feature for any clinic regardless of plan. Changes apply immediately — no redeploy.</div>
+
+    <div class="plan-cols">
+      <div class="plan-col">
+        <div class="plan-name-label">Trial (14 days)</div>
+        <div class="plan-feat-item">50 assessments max</div>
+        <div class="plan-feat-item">Lead dashboard (read-only)</div>
+        <div class="plan-feat-item">Widget embed (all channels)</div>
+        <div class="plan-feat-item">Lead email notification</div>
+        <div class="plan-feat-item">SORA-branded PDF report</div>
+        <div class="plan-feat-item">Widget colour customise</div>
+        <div class="plan-feat-item off">Analytics dashboard (blurred)</div>
+        <div class="plan-feat-item off">CSV export</div>
+        <div class="plan-feat-item off">CRM webhook</div>
+        <div class="plan-feat-item off">High-risk alert email</div>
+        <div class="plan-feat-item off">Clinic logo on report</div>
+        <div class="plan-feat-item off">API access</div>
+        <div class="plan-feat-item off">White-label</div>
+      </div>
+      <div class="plan-col featured">
+        <div class="plan-name-label" style="color:var(--teal);">Starter — ₹5,000/mo</div>
+        <div class="plan-feat-item">100 assessments/month</div>
+        <div class="plan-feat-item">Full lead dashboard</div>
+        <div class="plan-feat-item">Widget embed (all channels)</div>
+        <div class="plan-feat-item">Lead email notification</div>
+        <div class="plan-feat-item">SORA-branded PDF report</div>
+        <div class="plan-feat-item">Widget customisation</div>
+        <div class="plan-feat-item">Basic analytics dashboard</div>
+        <div class="plan-feat-item">CSV export</div>
+        <div class="plan-feat-item">High-risk alert email</div>
+        <div class="plan-feat-item off">Clinic logo on report footer</div>
+        <div class="plan-feat-item off">CRM webhook</div>
+        <div class="plan-feat-item off">API access</div>
+        <div class="plan-feat-item off">White-label</div>
+      </div>
+      <div class="plan-col">
+        <div class="plan-name-label">Pro — ₹15,000/mo</div>
+        <div class="plan-feat-item">500 assessments/month</div>
+        <div class="plan-feat-item">Full lead dashboard + notes</div>
+        <div class="plan-feat-item">Widget embed (all channels)</div>
+        <div class="plan-feat-item">Lead email notification (3 emails)</div>
+        <div class="plan-feat-item">SORA-branded PDF (clinic logo in footer)</div>
+        <div class="plan-feat-item">Full widget customisation</div>
+        <div class="plan-feat-item">Full analytics + funnel view</div>
+        <div class="plan-feat-item">CSV export</div>
+        <div class="plan-feat-item">High-risk alert email</div>
+        <div class="plan-feat-item">Clinic logo on report footer</div>
+        <div class="plan-feat-item">CRM webhook push</div>
+        <div class="plan-feat-item">WhatsApp lead alert</div>
+        <div class="plan-feat-item off">White-label</div>
+      </div>
+    </div>
+
+    <div class="callout callout-gold" style="margin-top:16px;">Feature toggle map stored as: <code style="font-family:var(--mono);font-size:11px;">clinic.features = &#123; leadEmail: true, pdfReport: true, csvExport: false, crmWebhook: false, analyticsBasic: true, analyticsFull: false, whitelabel: false, highRiskAlert: true, clinicLogoOnReport: false, apiAccess: false &#125;</code>. Each toggle is a boolean. Superadmin can flip any key at any time for any clinic.</div>
+  </div>
+
+  <!-- §11 BILLING -->
+  <div class="spec-section" id="billing">
+    <div class="spec-section-header">
+      <div class="section-num">§11</div>
+      <div class="section-title">Billing & Trial Logic</div>
+      <div class="section-tag">Razorpay + Cron</div>
+    </div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--green-dim);">💳</div>
+        <div class="feat-title">Razorpay Subscription Setup</div>
+        <span class="feat-badge pill-green">Billing</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Item</th><th>Implementation</th></tr></thead>
+          <tbody>
+            <tr><td>Starter plan</td><td>Razorpay subscription plan ID: ₹5,000/month + 18% GST = ₹5,900/month. Create in Razorpay dashboard.</td></tr>
+            <tr><td>Pro plan</td><td>Razorpay subscription plan ID: ₹15,000/month + 18% GST = ₹17,700/month.</td></tr>
+            <tr><td>Upgrade flow</td><td>Clinic clicks Upgrade → Razorpay checkout opens → On payment.authorized webhook → update clinic.plan + clinic.features in MongoDB.</td></tr>
+            <tr><td>Trial auto-start</td><td>On registration: set clinic.trialEndsAt = Date.now() + 14*24*60*60*1000. No Razorpay involvement during trial.</td></tr>
+            <tr><td>Trial expiry cron</td><td>Daily cron job (node-cron): find clinics where trialEndsAt &lt; now AND plan === "trial". Set clinic.status = "expired". Widget checks this on load and blocks submissions.</td></tr>
+            <tr><td>Assessment limit cron</td><td>Monthly reset: on 1st of each month, reset clinic.assessmentsThisMonth = 0 for all active clinics.</td></tr>
+            <tr><td>GST invoice</td><td>Auto-generate PDF invoice (PDFKit) on each payment. Include clinic GSTIN field in profile. Store in Cloudinary. Available for download in clinic billing page.</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block" style="margin-top:14px;">
+          npm install node-cron<br><br>
+          <span class="c">// Trial expiry check — runs daily at 9am IST</span><br>
+          <span class="k">cron</span>.<span class="n">schedule</span>(<span class="s">'0 9 * * *'</span>, <span class="k">async</span> () => &#123;<br>
+          &nbsp;&nbsp;<span class="k">const</span> expired = <span class="k">await</span> Clinic.find(&#123;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;plan: <span class="s">'trial'</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;trialEndsAt: &#123; <span class="v">$lt</span>: <span class="k">new</span> Date() &#125;<br>
+          &nbsp;&nbsp;&#125;);<br>
+          &nbsp;&nbsp;expired.forEach(c => &#123; c.status = <span class="s">'expired'</span>; c.save(); &#125;);<br>
+          &#125;);
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §12 SECURITY -->
+  <div class="spec-section" id="security">
+    <div class="spec-section-header">
+      <div class="section-num">§12</div>
+      <div class="section-title">Security & Privacy</div>
+      <div class="section-tag">Non-negotiable</div>
+    </div>
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--purple-dim);">🔒</div>
+        <div class="feat-title">Security Implementation Checklist</div>
+        <span class="feat-badge pill-purple">Must-have</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <table class="spec-table">
+          <thead><tr><th>Area</th><th>Implementation</th></tr></thead>
+          <tbody>
+            <tr><td>Auth — Clinic</td><td>JWT (7-day expiry). httpOnly cookie. Refresh token stored in DB.</td></tr>
+            <tr><td>Auth — Superadmin</td><td>Separate JWT secret. IP allowlist middleware in production.</td></tr>
+            <tr><td>Widget token</td><td>UUID v4 per clinic. Validated server-side on every assessment POST. Rate limited: 30 submissions/hour per token.</td></tr>
+            <tr><td>Patient data</td><td>No PII stored beyond name/phone/email + assessment inputs. No cookies set on patient browser. Assessment data linked to clinicId only.</td></tr>
+            <tr><td>Passwords</td><td>bcryptjs, saltRounds: 12. Never stored plain. Never returned in API responses.</td></tr>
+            <tr><td>API security</td><td>helmet() on all routes. express-rate-limit on /api/assess (30/hour), /api/clinics/register (5/hour).</td></tr>
+            <tr><td>CORS</td><td>Widget endpoint: CORS open (any origin). Admin API: CORS restricted to app.sorafertility.com and admin.sorafertility.com.</td></tr>
+            <tr><td>Scoring privacy</td><td>FertiSTAT scoring code is server-only. Never in widget JS. Never in frontend bundle.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- §13 DB SCHEMA -->
+  <div class="spec-section" id="db">
+    <div class="spec-section-header">
+      <div class="section-num">§13</div>
+      <div class="section-title">MongoDB Collections</div>
+      <div class="section-tag">Mongoose schemas</div>
+    </div>
+    <div class="code-block">
+<span class="c">// Collection: clinics</span><br>
+&#123;<br>
+&nbsp;&nbsp;_id, clinicName, doctorName, designation,<br>
+&nbsp;&nbsp;email, passwordHash, phone, city, website,<br>
+&nbsp;&nbsp;widgetToken: <span class="s">uuid</span>,<br>
+&nbsp;&nbsp;plan: <span class="s">"trial|starter|pro|enterprise"</span>,<br>
+&nbsp;&nbsp;status: <span class="s">"active|trial|expired|suspended"</span>,<br>
+&nbsp;&nbsp;trialEndsAt: <span class="k">Date</span>,<br>
+&nbsp;&nbsp;assessmentLimit: <span class="n">Number</span>,<br>
+&nbsp;&nbsp;assessmentsThisMonth: <span class="n">Number</span>,<br>
+&nbsp;&nbsp;features: &#123; <span class="c">/* all feature booleans */</span> &#125;,<br>
+&nbsp;&nbsp;leadEmails: [<span class="s">String</span>],   <span class="c">// up to 3</span><br>
+&nbsp;&nbsp;logoUrl: <span class="s">String</span>,<br>
+&nbsp;&nbsp;widgetConfig: &#123; color, position, label, redirectUrl &#125;,<br>
+&nbsp;&nbsp;razorpaySubId: <span class="s">String</span>,<br>
+&nbsp;&nbsp;createdAt, updatedAt<br>
+&#125;<br><br>
+<span class="c">// Collection: assessments</span><br>
+&#123;<br>
+&nbsp;&nbsp;_id, clinicId: <span class="k">ref</span>(<span class="s">'clinics'</span>),<br>
+&nbsp;&nbsp;patientName, patientEmail, patientPhone,<br>
+&nbsp;&nbsp;inputs: &#123; <span class="c">/* all 27+ fields */</span> &#125;,<br>
+&nbsp;&nbsp;riskBand: <span class="s">"low|amber|high"</span>,<br>
+&nbsp;&nbsp;score: <span class="n">Number</span>,<br>
+&nbsp;&nbsp;flaggedFactors: [<span class="s">String</span>],<br>
+&nbsp;&nbsp;referralUrgency: <span class="s">"immediate|soon|monitor"</span>,<br>
+&nbsp;&nbsp;reportUrl: <span class="s">String</span>,  <span class="c">// Cloudinary PDF URL</span><br>
+&nbsp;&nbsp;status: <span class="s">"new|contacted|booked|converted"</span>,<br>
+&nbsp;&nbsp;submittedAt: <span class="k">Date</span><br>
+&#125;<br><br>
+<span class="c">// Collection: superadmins</span><br>
+&#123; _id, email, passwordHash, lastLogin &#125;
+    </div>
+  </div>
+
+  <!-- §14 API ENDPOINTS -->
+  <div class="spec-section" id="api">
+    <div class="spec-section-header">
+      <div class="section-num">§14</div>
+      <div class="section-title">Key API Endpoints</div>
+      <div class="section-tag">Express routes</div>
+    </div>
+    <div class="code-block">
+<span class="c">// AUTH</span><br>
+<span class="k">POST</span>   /api/clinics/register        <span class="c">// Signup → auto trial</span><br>
+<span class="k">POST</span>   /api/clinics/login           <span class="c">// Returns JWT</span><br>
+<span class="k">POST</span>   /api/superadmin/login        <span class="c">// Superadmin auth</span><br><br>
+<span class="c">// WIDGET (public, rate-limited)</span><br>
+<span class="k">POST</span>   /api/assess                  <span class="c">// Submit assessment, return riskBand</span><br>
+<span class="k">GET</span>    /api/widget-config/:token    <span class="c">// Widget reads clinic config</span><br><br>
+<span class="c">// CLINIC ADMIN (JWT protected)</span><br>
+<span class="k">GET</span>    /api/leads                   <span class="c">// Paginated lead list</span><br>
+<span class="k">PATCH</span>  /api/leads/:id/status        <span class="c">// Update lead status</span><br>
+<span class="k">GET</span>    /api/leads/:id/report        <span class="c">// Get PDF URL</span><br>
+<span class="k">GET</span>    /api/analytics               <span class="c">// Dashboard stats</span><br>
+<span class="k">PUT</span>    /api/clinic/settings         <span class="c">// Update lead emails, logo, widget config</span><br>
+<span class="k">GET</span>    /api/clinic/embed-code       <span class="c">// Returns current embed snippet</span><br><br>
+<span class="c">// SUPERADMIN (separate JWT)</span><br>
+<span class="k">GET</span>    /api/admin/clinics           <span class="c">// All clinics table</span><br>
+<span class="k">PATCH</span>  /api/admin/clinics/:id/plan  <span class="c">// Change plan</span><br>
+<span class="k">PATCH</span>  /api/admin/clinics/:id/features <span class="c">// Toggle features</span><br>
+<span class="k">PATCH</span>  /api/admin/clinics/:id/status   <span class="c">// Suspend/activate</span><br>
+<span class="k">POST</span>   /api/admin/clinics/:id/extend-trial <span class="c">// Add days</span><br>
+<span class="k">GET</span>    /api/admin/analytics         <span class="c">// Global platform stats</span>
+    </div>
+  </div>
+
+  <!-- §15 ANTIGRAVITY COMMANDS -->
+  <div class="spec-section" id="commands">
+    <div class="spec-section-header">
+      <div class="section-num">§15</div>
+      <div class="section-title">Antigravity Build Commands</div>
+      <div class="section-tag">Paste these into Antigravity chat</div>
+    </div>
+
+    <div class="callout callout-gold" style="margin-bottom:20px;">Use these as sequential prompts in Antigravity. Each command builds one layer. Complete §2 (install packages) before starting any other section.</div>
+
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleBlock(this)">
+        <div class="feat-icon" style="background:var(--gold-dim);">🤖</div>
+        <div class="feat-title">Antigravity Prompt Sequence</div>
+        <span class="feat-badge pill-gold">Copy-paste ready</span>
+        <div class="feat-chevron">▾</div>
+      </div>
+      <div class="feature-body">
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 1 — Project scaffold</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Create a Node.js + Express backend project called sora-api. Use npm as package manager. Install: express mongoose jsonwebtoken bcryptjs nodemailer razorpay pdfkit multer sharp cors helmet express-rate-limit dotenv uuid dayjs joi node-cron. Create folder structure: /routes /models /middleware /services /utils /emails. Add .env file with placeholders for MONGO_URI, JWT_SECRET, SUPERADMIN_JWT_SECRET, SENDGRID_API_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, CLOUDINARY_URL."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 2 — MongoDB models</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Create Mongoose models for: (1) Clinic — with fields: clinicName, doctorName, designation, email, passwordHash, phone, city, website, widgetToken (uuid), plan (enum: trial/starter/pro/enterprise, default: trial), status (enum: active/trial/expired/suspended, default: trial), trialEndsAt (Date), assessmentLimit (Number, default: 50), assessmentsThisMonth (Number, default: 0), features (Object with booleans: leadEmail, pdfReport, csvExport, crmWebhook, analyticsBasic, analyticsFull, highRiskAlert, clinicLogoOnReport, whatsappAlert, apiAccess — all default false except leadEmail and pdfReport), leadEmails (Array of String, max 3), logoUrl, widgetConfig (Object: color, position, label, redirectUrl), razorpaySubId, createdAt, updatedAt. (2) Assessment — with fields: clinicId (ref Clinic), patientName, patientEmail, patientPhone, inputs (Object with all 27 assessment fields), riskBand (enum: low/amber/high), score (Number), flaggedFactors (Array String), referralUrgency (enum: immediate/soon/monitor), reportUrl (String), status (enum: new/contacted/booked/converted, default: new), submittedAt. (3) Superadmin — email, passwordHash, lastLogin."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 3 — Auth + Clinic registration with auto trial</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build POST /api/clinics/register. It should: validate inputs with Joi, hash password with bcryptjs, generate a unique widgetToken with uuid(), set plan='trial', status='trial', trialEndsAt = 14 days from now, assessmentLimit=50, default features object (leadEmail:true, pdfReport:true, all others false). Save to MongoDB. Then send a welcome email using nodemailer/SendGrid to the clinic email with: their login URL (app.sorafertility.com), their embed snippet (pre-filled with widgetToken), and a quickstart guide. Also send an internal notification email to the SORA admin email from .env. Return JWT on success. Also build POST /api/clinics/login returning JWT. Build POST /api/superadmin/login with separate JWT secret."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 4 — FertiSTAT scoring engine</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build a server-side scoring service in /services/fertistat.js. It takes the assessment inputs object and returns: riskBand (low/amber/high), score (0-100), flaggedFactors (array of strings), referralUrgency (immediate/soon/monitor). Scoring logic: assign weighted points across 6 domains — Age/Cycle (age>35 = 15pts, age>38 = 25pts, irregular cycles = 10pts, trying>12mo = 10pts), Medical (PCOS = 12pts, thyroid = 8pts, endometriosis = 15pts, TB = 20pts, diabetes = 8pts), Reproductive (each miscarriage = 8pts, ectopic = 20pts), Lifestyle (BMI<18.5 or >30 = 8pts, smoking = 10pts), Labs (AMH<1 = 20pts, AMH<0.5 = 30pts, FSH>10 = 15pts, AFC<7 = 15pts), Partner (partnerFactorSuspected = 10pts). Auto-elevate to minimum Amber if: ectopicHistory, hasTuberculosis, hasEndometriosis, or miscarriageCount>=2. Map total score: 0-39=low, 40-69=amber, 70+=high. Referral urgency: high=immediate, amber=soon, low=monitor. This file must never be imported in any frontend code."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 5 — Assessment endpoint + PDF report + lead email</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build POST /api/assess (public, rate-limited to 30/hour per IP). It should: validate clinicToken against Clinic collection, check clinic status is active/trial, check assessmentsThisMonth < assessmentLimit, run FertiSTAT scoring service, save Assessment document, increment clinic.assessmentsThisMonth, generate a PDF report using PDFKit with: SORA logo header (text-based, teal), patient first name, risk band as large coloured block (red/amber/green), flagged factors list (red and amber separated), domain score bars, personalised next steps based on risk band, and SORA disclaimer footer. If clinic.features.clinicLogoOnReport is true, add clinic name and logo to report footer. Always add 'Powered by SORA Fertility Intelligence — sorafertility.com' to last page. Upload PDF to Cloudinary, save URL to assessment. If clinic.features.leadEmail is true, send lead alert email to all clinic.leadEmails with patient details, risk band, flagged factors, PDF link, and login CTA. If clinic.features.highRiskAlert is true AND riskBand is 'high', send urgent high-risk alert email. Return { riskBand, flaggedFactors, referralUrgency } to widget."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 6 — Superadmin panel (React)</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build the Superadmin React dashboard at /superadmin. Pages: Login (email/password → superadmin JWT), Dashboard (global stats: total clinics by plan donut chart, assessments line chart, MRR card, trials expiring this week list), Clinics Table (all clinics with columns: name, doctor, city, plan dropdown, status badge, trial days left, assessments used/limit, joined date, actions: view/suspend/extend trial), Clinic Detail page (shows clinic info, feature toggle grid with 12 boolean toggles that PATCH /api/admin/clinics/:id/features on change, plan selector, assessment limit override input, billing history table). Use Tailwind for styling. Dark theme matching SORA brand (bg: #0A1628, accent: teal #0D9488). Use recharts for charts. Use react-hot-toast for success/error feedback on all actions."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 7 — Clinic admin panel (React)</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build the Clinic Admin React dashboard at /clinic. Pages: Login (email/password → clinic JWT), Leads Dashboard (table with columns: patient name, phone, age, risk band colour pill, top flagged factor, referral urgency, submitted date/time, PDF download button, status dropdown editable by clinic — new/contacted/booked/converted; filter by risk band and date range; CSV export button if feature enabled), Widget Embed Centre (shows embed snippet pre-filled with widgetToken, one-click copy button, colour picker for widget accent, position selector, label text input, redirect URL input, live preview iframe, installation guide tabs for WordPress/Wix/Webflow/HTML), Analytics (charts: assessments over time, risk band donut, top flags bar chart, lead funnel — show upgrade prompt overlay if feature not enabled), Settings (lead notification emails, logo upload, WhatsApp number if enabled, CRM webhook URL if enabled, password change, billing section showing current plan, trial days remaining, upgrade button). Trial expiry banner at top of all pages when trialEndsAt < 5 days."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 8 — Embeddable widget JS</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Build the SORA embeddable widget as a vanilla JS file (embed.js) served from CDN. It reads data-token, data-color, data-position, data-label, data-redirect from the script tag. On load: fetch GET /api/widget-config/:token to validate token and get config. If clinic is expired/suspended, do nothing. Otherwise inject: a floating button (fixed position per data-position, background=data-color, label=data-label, gentle pulse animation), and a full-screen modal overlay with a multi-step form (8 steps: Contact info → Age and cycle → Medical history checkboxes → Lifestyle → Partner → Optional labs → Confirm → Loading). Use Shadow DOM to prevent CSS conflicts. On final submit: POST /api/assess with token + inputs. Show result screen: risk band as large coloured header, top 2 flagged factors, referral urgency message, and 'Book a consultation' button (links to clinic booking URL or sorafertility.com). Always show 'Powered by SORA Fertility · sorafertility.com' footer in widget. Do not use any external JS libraries in the widget — vanilla only."</div>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.1em;">PROMPT 9 — Cron jobs + Razorpay webhooks</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;font-style:italic;">"Add node-cron jobs to the backend: (1) Daily at 9am IST: find all clinics where plan='trial' AND trialEndsAt < now, set status='expired', send trial expired email via SendGrid. (2) Day 11 check: daily cron, find clinics where plan='trial' AND trialEndsAt is between now and now+3days AND trialWarningEmailSent is false, send trial warning email, set trialWarningEmailSent=true. (3) Monthly on 1st at midnight IST: reset assessmentsThisMonth=0 for all clinics. Also build POST /api/webhooks/razorpay: verify Razorpay webhook signature, handle payment.authorized event (update clinic.plan, update clinic.features based on new plan, send payment confirmation email to clinic), handle subscription.cancelled event (set clinic.status='expired')."</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+function toggleBlock(header) {
+  const block = header.closest('.feature-block');
+  block.classList.toggle('open');
+}
+document.querySelectorAll('.sb-link').forEach(link => {
+  link.addEventListener('click', function(e) {
+    document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+// Highlight active sidebar link on scroll
+const sections = document.querySelectorAll('.spec-section');
+const sidebarLinks = document.querySelectorAll('.sb-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+  sidebarLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
