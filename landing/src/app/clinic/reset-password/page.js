@@ -7,7 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "../login/login.module.css";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
@@ -165,5 +165,15 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className={styles.pageContainer}>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
