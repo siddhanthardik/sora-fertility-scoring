@@ -9,3 +9,8 @@ ALTER TABLE assessments
 ADD COLUMN IF NOT EXISTS report_type TEXT DEFAULT 'basic',
 ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'free',
 ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT;
+
+-- 3. Add password reset fields to clinic_registry
+ALTER TABLE clinic_registry
+ADD COLUMN IF NOT EXISTS reset_token TEXT,
+ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ;

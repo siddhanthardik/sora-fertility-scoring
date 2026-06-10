@@ -85,7 +85,12 @@ export default function ClinicLoginPage() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="password">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
+              <Link href="/clinic/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: '500' }}>
+                Forgot Password?
+              </Link>
+            </div>
             <div className={styles.passwordWrapper}>
               <input
                 type={showPassword ? "text" : "password"}
