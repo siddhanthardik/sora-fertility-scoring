@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "rzp_secret_placeholder",
-});
-
 export async function POST(request) {
   try {
     const origin = request.headers.get("origin") || "";
@@ -16,6 +11,11 @@ export async function POST(request) {
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
+      key_secret: process.env.RAZORPAY_KEY_SECRET || "rzp_secret_placeholder",
+    });
 
     const body = await request.json();
     const { clinicId, amount = 199 } = body;
