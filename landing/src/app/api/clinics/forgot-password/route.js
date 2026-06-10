@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "../../../../lib/supabaseClient";
+import { supabaseAdmin } from "../../../lib/supabaseClient";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
