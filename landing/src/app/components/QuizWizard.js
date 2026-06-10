@@ -1175,6 +1175,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
 
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Confidential Email Address</label>
+                  <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '-4px', marginBottom: '8px' }}>Report will be delivered on this email.</p>
                   <div className={styles.inputWrapper}>
                     <Mail className={styles.inputIcon} />
                     <input 
