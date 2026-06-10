@@ -17,7 +17,8 @@ import {
   ShieldOff,
   UserX,
   X,
-  FileText
+  FileText,
+  Check
 } from "lucide-react";
 
 export default function Home() {
@@ -236,14 +237,14 @@ export default function Home() {
             Take the Free Assessment <ArrowRight size={20} />
           </button>
 
-          <div className={styles.testimonialBox}>
-            <div className={styles.quoteMark}>"</div>
-            <div className={styles.testimonialQuote}>
-              I'd spent months telling myself everything was probably fine. SORA gave me the clarity to finally book an appointment — and I'm so glad I did.
-            </div>
-            <div className={styles.testimonialAuthor}>
-              — Priya, 31, Delhi
-            </div>
+          <div className={styles.featuresBox}>
+            <h3 className={styles.featuresTitle}>What's inside your Premium Report?</h3>
+            <ul className={styles.featuresList}>
+              <li><Check size={18} className={styles.featureIcon}/> Detailed visual charts of your hormonal health</li>
+              <li><Check size={18} className={styles.featureIcon}/> Personalised breakdown of all flagged risk factors</li>
+              <li><Check size={18} className={styles.featureIcon}/> Clinical referral urgency assessment</li>
+              <li><Check size={18} className={styles.featureIcon}/> Evidence-based next steps for your fertility journey</li>
+            </ul>
           </div>
         </div>
       </section>

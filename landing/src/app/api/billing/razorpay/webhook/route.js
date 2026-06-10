@@ -23,7 +23,13 @@ export async function POST(request) {
       const payment = payload.payload.payment.entity;
       const notes = payment.notes;
       
-      if (notes && notes.clinic_id && notes.plan) {
+      if (notes && notes.type === "consumer_report") {
+        // Update the consumer report payment status
+        await supabaseAdmin
+          .from("assessments")
+          .update({ payment_status: "verified" })
+          .eq("razorpay_order_id", payment.order_id);
+      } else if (notes && notes.clinic_id && notes.plan) {
         // Upgrade the plan in Supabase
         await supabaseAdmin
           .from("clinic_registry")

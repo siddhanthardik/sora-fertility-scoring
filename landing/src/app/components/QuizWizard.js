@@ -424,15 +424,19 @@ const getCombinedReadableValue = (items) => (
     .join("; ")
 );
 
-export default function QuizWizard({ clinicId = CLINIC_ID }) {
+export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }) {
   const leadStepIndex = steps.length;
-  const resultStepIndex = steps.length + 1;
+  const checkoutStepIndex = steps.length + 1;
+  const resultStepIndex = steps.length + 2;
   const labToggleStepIndex = steps.findIndex((step) => step.id === "labToggle");
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [reportType, setReportType] = useState("basic");
+  const [paymentStatus, setPaymentStatus] = useState("free");
+  const [razorpayOrderId, setRazorpayOrderId] = useState("");
 
   // Form State matching all 27 clinical parameters
   const [formData, setFormData] = useState({
@@ -503,7 +507,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
         "Content-Type": "application/json",
         "X-Sora-Clinic-Id": clinicId
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, reportType, paymentStatus, razorpayOrderId }),
     });
     const result = await response.json().catch(() => null);
 
@@ -687,8 +691,80 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
     }
 
     setError("");
-    setLoading(true);
+    
+    // Check if Premium is allowed
+    if (reportSettings?.allowPremium && reportSettings?.forceReportType !== "basic") {
+      setCurrentStep(checkoutStepIndex);
+    } else {
+      await submitFinalAssessment("basic");
+    }
+  };
 
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) { resolve(true); return; }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const initiatePremiumCheckout = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await loadRazorpay();
+      if (!res) throw new Error("Razorpay SDK failed to load.");
+
+      const orderRes = await fetch("/api/billing/razorpay/consumer-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clinicId, amount: 199 })
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || !orderData.success) throw new Error("Could not create payment order.");
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_placeholder",
+        amount: orderData.order.amount,
+        currency: "INR",
+        name: "SORA Fertility",
+        description: "Premium Detailed Assessment Report",
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          setRazorpayOrderId(response.razorpay_order_id);
+          setPaymentStatus("paid");
+          await submitFinalAssessment("premium", response.razorpay_order_id);
+        },
+        prefill: {
+          name: leadName,
+          email: leadEmail,
+          contact: leadPhone
+        },
+        theme: {
+          color: "var(--color-primary)"
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        setError("Payment failed. Please try again.");
+      });
+      rzp.open();
+    } catch (err) {
+      setError(err.message || "Checkout failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitFinalAssessment = async (selectedType = "basic", orderId = null) => {
+    setLoading(true);
+    setReportType(selectedType);
+    if (orderId) setRazorpayOrderId(orderId);
+    
     let triageResults;
     try {
       triageResults = await requestAssessment();
@@ -699,26 +775,22 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
     }
 
     const payload = buildLeadPayload(triageResults);
-
     try {
       const response = await fetch(LEAD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const resData = await response.json().catch(() => null);
-
       if (!response.ok || resData?.success === false) {
-        console.warn("Render lead API warning:", resData?.message || "Lead failed to save on Render node. Using client-side fail-safe.");
+        console.warn("Lead failed to save on Render node. Using client-side fail-safe.");
       }
-
       setResults(triageResults);
-      setCurrentStep(resultStepIndex); // Gracefully transition to results dashboard
+      setCurrentStep(resultStepIndex);
     } catch (err) {
-      console.warn("Network or CORS error during lead submission, showing assessed result without lead confirmation:", err);
+      console.warn("Network error during lead submission:", err);
       setResults(triageResults);
-      setCurrentStep(resultStepIndex); // Always guarantee report generation
+      setCurrentStep(resultStepIndex);
     } finally {
       setLoading(false);
     }
@@ -887,7 +959,50 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
             </div>
           )}
 
-          {currentStep < leadStepIndex ? (
+      {/* STEP CHECKOUT */}
+      {currentStep === checkoutStepIndex ? (
+        <div className={styles.wizardContent}>
+          <div className={styles.header}>
+            <h2 className={styles.title}>Choose Your Report</h2>
+            <p className={styles.subtitle}>Select the level of detail you need for your fertility evaluation.</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+            {/* Premium Option */}
+            <div style={{ padding: '24px', border: '2px solid var(--color-primary)', borderRadius: '12px', backgroundColor: 'var(--color-surface)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-12px', right: '20px', backgroundColor: 'var(--color-primary)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>RECOMMENDED</div>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-text-main)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={20} color="var(--color-primary)" /> Premium Detailed Report</h3>
+              <p style={{ color: 'var(--color-text-muted)', margin: '0 0 16px 0' }}>Comprehensive clinical analysis, beautiful visual graphs, factor breakdown, and a personalized 12-month action plan.</p>
+              <h4 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)', margin: '0 0 16px 0' }}>₹199</h4>
+              <button 
+                type="button" 
+                className={styles.btnPrimary} 
+                onClick={initiatePremiumCheckout}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Unlock Premium Report"}
+              </button>
+            </div>
+
+            {/* Basic Option */}
+            <div style={{ padding: '24px', border: '1px solid var(--color-border)', borderRadius: '12px', backgroundColor: 'var(--color-surface)' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-text-main)', margin: '0 0 8px 0' }}>Basic Overview</h3>
+              <p style={{ color: 'var(--color-text-muted)', margin: '0 0 16px 0' }}>A simple summary of your fertility risk band without detailed breakdown or graphs.</p>
+              <h4 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text-main)', margin: '0 0 16px 0' }}>Free</h4>
+              <button 
+                type="button" 
+                className={styles.btnSecondary} 
+                onClick={() => submitFinalAssessment("basic")}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Get Free Basic Report"}
+              </button>
+            </div>
+          </div>
+          
+          {error && <p className={styles.errorMessage}><AlertTriangle width={16} height={16} /> {error}</p>}
+        </div>
+      ) : currentStep < leadStepIndex ? (
             /* RENDERING ALL 27 QUESTIONS INDIVIDUALLY */
             <div>
               {(() => {
@@ -1173,15 +1288,24 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
 
           {/* Actions Button Bar */}
           <div className={styles.actionsRow}>
-            <button 
-              type="button" 
-              className={styles.btnAction} 
-              onClick={handleDownloadReport}
-              disabled={isGeneratingPdf}
-            >
-              <Download width={16} height={16} />
-              {isGeneratingPdf ? "Generating PDF..." : "Download Premium PDF Report"}
-            </button>
+            {reportType === "premium" && (
+              <button
+                className={styles.btnCta}
+                onClick={handleDownloadReport}
+                disabled={isGeneratingPdf}
+              >
+                {isGeneratingPdf ? "Generating PDF..." : <><Download width={18} height={18} /> Download Detailed Report</>}
+              </button>
+            )}
+            {reportType === "basic" && (
+              <button
+                className={styles.btnSecondary}
+                onClick={() => initiatePremiumCheckout()}
+                style={{ marginTop: '16px' }}
+              >
+                Unlock Premium Detailed Report (₹199)
+              </button>
+            )}
           </div>
 
           {/* Category Recommendation Banner */}
@@ -1537,12 +1661,13 @@ export default function QuizWizard({ clinicId = CLINIC_ID }) {
       )}
       
       {/* Hidden Premium Report Template for PDF Generation */}
-      {results && (
+      {results && reportType === "premium" && (
         <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
           <PremiumReportTemplate 
             results={results} 
             formData={formData} 
             leadName={leadName} 
+            reportSettings={reportSettings}
           />
         </div>
       )}

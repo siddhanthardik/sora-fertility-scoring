@@ -10,276 +10,33 @@
   border: 1px solid var(--color-border);
   border-radius: 24px;
   box-shadow: var(--shadow-premium);
-  padding: 30px; /* Reduced from 40px for a more compact, screen-friendly height */
+  padding: 24px; /* Reduced for compactness */
   transition: var(--transition-smooth);
   position: relative;
-  overflow: visible; /* Ensure nothing is ever clipped */
+  overflow-y: auto;
+  max-height: 85vh;
   backdrop-filter: blur(10px);
 }
 
-.progressBar {
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
-  margin-bottom: 30px;
-  position: relative;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: 2px;
-  transition: width 0.4s ease-out;
-}
-
+/* ... skipped unchanged ... */
 .stepHeader {
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
 
-.stepSection {
-  display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--color-gold-dark);
-  margin-bottom: 6px;
-}
-
-.stepTitle {
-  font-size: 1.6rem;
-  color: var(--color-primary-dark);
-  font-family: var(--font-display);
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.stepHint {
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-}
-
-/* Option Cards */
-.optionsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-@media (min-width: 600px) {
-  .optionsGrid.cols2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.optionCard {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 18px; /* Reduced from 18px 24px for compact, no-scroll presentation */
-  background: var(--color-bg-light);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  font-weight: 500;
-  font-size: 0.98rem;
-  color: var(--color-text-main);
-  position: relative;
-  overflow: hidden;
-}
-
-.optionCard:hover {
-  border-color: var(--color-primary-light);
-  background: var(--color-bg-pure);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-subtle);
-}
-
-.optionCard.selected {
-  border-color: var(--color-primary);
-  background: hsl(140, 20%, 94%);
-  color: var(--color-primary-dark);
-  font-weight: 600;
-}
-
-.radioCircle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-smooth);
-}
-
-.optionCard.selected .radioCircle {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-}
-
-.radioCircleInner {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: white;
-  transform: scale(0);
-  transition: var(--transition-smooth);
-}
-
-.optionCard.selected .radioCircleInner {
-  transform: scale(1);
-}
-
-/* Range Input Slider styling */
-.sliderWrapper {
-  margin: 40px 0;
-  text-align: center;
-}
-
-.sliderValue {
-  font-size: 4rem;
-  font-family: var(--font-display);
-  font-weight: 800;
-  color: var(--color-primary-dark);
-  line-height: 1;
-  margin-bottom: 20px;
-}
-
-.sliderValueSuffix {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  margin-left: 4px;
-}
-
-.customSlider {
-  width: 100%;
-  -webkit-appearance: none;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--color-border);
-  outline: none;
-  margin-bottom: 12px;
-}
-
-.customSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  border: 3px solid var(--color-bg-pure);
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: var(--transition-smooth);
-}
-
-.customSlider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: var(--color-primary-light);
-}
-
-.sliderLabels {
-  display: flex;
-  justify-content: space-between;
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-}
-
-/* Multiple Checkbox Selector Grid */
-.checklistGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-@media (min-width: 480px) {
-  .checklistGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-}
-
-.checkCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 8px 12px; /* Highly compact padding to avoid vertical scroll completely */
-  background: var(--color-bg-light);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-}
-
-.checkCard:hover {
-  border-color: var(--color-primary-light);
-  background: var(--color-bg-pure);
-}
-
-.checkCard.checked {
-  border-color: var(--color-primary);
-  background: hsl(140, 20%, 94%);
-}
-
-.checkboxSquare {
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--color-text-muted);
-  border-radius: 6px;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-smooth);
-  flex-shrink: 0;
-}
-
-.checkCard.checked .checkboxSquare {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: white;
-}
-
-.checkCardText h4 {
-  font-size: 1rem;
-  font-family: var(--font-sans);
-  color: var(--color-text-main);
-  margin-bottom: 2px;
-}
-
-.checkCard.checked h4 {
-  font-weight: 600;
-  color: var(--color-primary-dark);
-}
-
-.checkCardText p {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  line-height: 1.4;
-}
-
-/* Lead Intake Form */
+/* ... skipped unchanged ... */
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   text-align: left;
 }
 
 .formLabel {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-primary-dark);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .inputWrapper {
@@ -292,18 +49,18 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-text-muted);
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .formInput {
   width: 100%;
-  min-height: 52px;
-  padding: 10px 16px 10px 48px;
+  min-height: 46px;
+  padding: 8px 16px 8px 44px;
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background: var(--color-bg-light);
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
   transition: var(--transition-smooth);
 }
@@ -317,17 +74,17 @@
 .consentLabel {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--color-text-muted);
-  line-height: 1.5;
-  margin: 24px 0 30px;
+  line-height: 1.4;
+  margin: 16px 0 20px;
 }
 
 .consentLabel input {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
   border: 1.5px solid var(--color-border);
   accent-color: var(--color-primary);

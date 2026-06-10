@@ -55,7 +55,7 @@ export default function ClinicLoginPage() {
     <div className={styles.pageContainer}>
       <div className={styles.card}>
         <div className={styles.brand}>
-          <Image src="/sora-logo.png" alt="SORA Logo" width={240} height={75} style={{ objectFit: "contain" }} priority />
+          <Image src="/sora-logo.png" alt="SORA Logo" width={240} height={75} style={{ width: "auto", height: "auto", objectFit: "contain" }} priority />
         </div>
 
         <div className={styles.cardHeader}>

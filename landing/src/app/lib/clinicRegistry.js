@@ -25,6 +25,12 @@ const defaultClinics = [
     status: "active",
     verificationStatus: "verified",
     plan: "starter",
+    reportSettings: {
+      allowPremium: true,
+      whiteLabel: false,
+      customLogoUrl: null,
+      forceReportType: "user_choice"
+    },
     usage: {
       totalAssessments: 0,
       totalReports: 0,
@@ -77,6 +83,12 @@ export async function createClinic(input) {
     verificationStatus: "pending",
     plan: cleanText(input.plan || "starter"),
     widgetToken: crypto.randomBytes(24).toString("hex"),
+    reportSettings: {
+      allowPremium: true,
+      whiteLabel: false,
+      customLogoUrl: null,
+      forceReportType: "user_choice"
+    },
     usage: {
       totalAssessments: 0,
       totalReports: 0,
@@ -198,6 +210,10 @@ export function originMatchesClinic(origin, clinic) {
     return true;
   }
 
+  if (process.env.NODE_ENV !== "production" && (hostname === "localhost" || hostname === "127.0.0.1")) {
+    return true;
+  }
+
   return clinic.allowedDomains.some((domain) => {
     const normalized = domain.toLowerCase();
     return hostname === normalized || hostname.endsWith(`.${normalized}`);
@@ -302,6 +318,7 @@ function buildUpdatedClinic(current, patch) {
     status: patch.status !== undefined ? cleanText(patch.status) : current.status,
     verificationStatus: patch.verificationStatus !== undefined ? cleanText(patch.verificationStatus) : current.verificationStatus,
     plan: patch.plan !== undefined ? cleanText(patch.plan) : current.plan,
+    reportSettings: patch.reportSettings !== undefined ? patch.reportSettings : (current.reportSettings || { allowPremium: true, whiteLabel: false, customLogoUrl: null, forceReportType: "user_choice" }),
     usage: current.usage || { totalAssessments: 0, totalReports: 0, lastAssessmentAt: null },
     updatedAt: new Date().toISOString(),
   };
@@ -351,6 +368,7 @@ function toDbClinic(clinic) {
     verification_status: clinic.verificationStatus,
     widget_token: clinic.widgetToken,
     plan: clinic.plan,
+    report_settings: clinic.reportSettings,
     usage: clinic.usage,
     created_at: clinic.createdAt,
     updated_at: clinic.updatedAt,
@@ -369,6 +387,7 @@ function fromDbClinic(row) {
     verificationStatus: row.verification_status,
     widgetToken: row.widget_token,
     plan: row.plan,
+    reportSettings: row.report_settings || { allowPremium: true, whiteLabel: false, customLogoUrl: null, forceReportType: "user_choice" },
     usage: row.usage || { totalAssessments: 0, totalReports: 0, lastAssessmentAt: null },
     createdAt: row.created_at,
     updatedAt: row.updated_at,

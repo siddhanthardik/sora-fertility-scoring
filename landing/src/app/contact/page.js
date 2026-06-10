@@ -72,14 +72,14 @@ export default function ContactUs() {
                 <div className={styles.infoIcon}><Phone size={20} /></div>
                 <div>
                   <h4>Call Us</h4>
-                  <p>+1 (800) 555-0199</p>
+                  <p>+917838033664</p>
                 </div>
               </div>
               <div className={styles.infoBlock}>
                 <div className={styles.infoIcon}><MapPin size={20} /></div>
                 <div>
                   <h4>Headquarters</h4>
-                  <p>123 Innovation Drive, San Francisco, CA</p>
+                  <p>D-89, Chhatarpur Enclave, Phase II, Chhatarpur, New Delhi - 110068</p>
                 </div>
               </div>
             </div>

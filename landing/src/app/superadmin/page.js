@@ -46,6 +46,16 @@ export default function SuperadminPage() {
   const [widgetHostUrl, setWidgetHostUrl] = useState("http://localhost:3000");
   const [limitsMessage, setLimitsMessage] = useState("");
 
+  const [clinicSettingsOpen, setClinicSettingsOpen] = useState(false);
+  const [editingClinic, setEditingClinic] = useState(null);
+  const [reportSettings, setReportSettings] = useState({
+    allowPremium: false,
+    forceReportType: 'basic',
+    whiteLabel: false,
+    customLogoUrl: '',
+    clinicName: ''
+  });
+
   const [packages, setPackages] = useState([]);
   const [newFeatureText, setNewFeatureText] = useState({});
 
@@ -248,6 +258,25 @@ export default function SuperadminPage() {
     alert(`Copied embed snippet for ${clinic.name}.`);
   }
 
+  function openClinicSettings(clinic) {
+    setEditingClinic(clinic);
+    setReportSettings({
+      allowPremium: clinic.reportSettings?.allowPremium || false,
+      forceReportType: clinic.reportSettings?.forceReportType || 'basic',
+      whiteLabel: clinic.reportSettings?.whiteLabel || false,
+      customLogoUrl: clinic.reportSettings?.customLogoUrl || '',
+      clinicName: clinic.reportSettings?.clinicName || clinic.name || ''
+    });
+    setClinicSettingsOpen(true);
+  }
+
+  async function saveClinicSettings(e) {
+    e.preventDefault();
+    await updateClinic(editingClinic.clinicId, { reportSettings });
+    setClinicSettingsOpen(false);
+    setEditingClinic(null);
+  }
+
   if (loading) {
     return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>Loading SORA Superadmin...</div>;
   }
@@ -257,7 +286,7 @@ export default function SuperadminPage() {
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
           <div className={styles.loginHeader}>
-            <Image src="/sora-logo.png" alt="SORA Logo" width={210} height={68} style={{ objectFit: "contain", marginBottom: "1rem" }} priority />
+            <Image src="/sora-logo.png" alt="SORA Logo" width={210} height={68} style={{ width: "auto", height: "auto", objectFit: "contain", marginBottom: "1rem" }} priority />
             <p>Restricted Access. Superadmins only.</p>
           </div>
           <form onSubmit={login}>
@@ -285,7 +314,7 @@ export default function SuperadminPage() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <Image src="/sora-logo.png" alt="SORA Logo" width={180} height={53} style={{ objectFit: "contain" }} priority />
+          <Image src="/sora-logo.png" alt="SORA Logo" width={180} height={53} style={{ width: "auto", height: "auto", objectFit: "contain" }} priority />
         </div>
         <nav className={styles.sidebarNav}>
           <button 
@@ -461,6 +490,9 @@ export default function SuperadminPage() {
                         </div>
                       </td>
                       <td style={{textAlign: 'right'}}>
+                        <button onClick={() => openClinicSettings(clinic)} className={styles.btnIcon} style={{marginRight: '8px'}}>
+                          <Settings size={16} /> Setup
+                        </button>
                         <button onClick={() => copyEmbed(clinic)} className={styles.btnIcon}>
                           <Copy size={16} /> Code
                         </button>
@@ -663,6 +695,91 @@ export default function SuperadminPage() {
 
                 <button className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}} type="submit">Save Settings</button>
                 {limitsMessage && <p style={{marginTop: '12px', textAlign: 'center', fontSize: '0.875rem', color: '#16a34a'}}>{limitsMessage}</p>}
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clinic Report Settings Modal */}
+      {clinicSettingsOpen && editingClinic && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2><Settings size={20}/> Report Settings - {editingClinic.name}</h2>
+              <button className={styles.closeBtn} onClick={() => setClinicSettingsOpen(false)}><X size={20} /></button>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <form onSubmit={saveClinicSettings}>
+                <h3 className={styles.sectionTitle}>Report Offering</h3>
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSettings.allowPremium} 
+                      onChange={(e) => setReportSettings({...reportSettings, allowPremium: e.target.checked})} 
+                    />
+                    Enable Premium Report Upsell
+                  </label>
+                  <span className={styles.helpText}>If disabled, the widget will only provide the free basic report.</span>
+                </div>
+                
+                {reportSettings.allowPremium && (
+                  <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                    <label className={styles.label}>Default Displayed Option</label>
+                    <select 
+                      className={styles.input} 
+                      value={reportSettings.forceReportType} 
+                      onChange={(e) => setReportSettings({...reportSettings, forceReportType: e.target.value})}
+                    >
+                      <option value="basic">Give User Choice (Basic Free / Premium Paid)</option>
+                      <option value="premium">Force Premium Checkout Only</option>
+                    </select>
+                  </div>
+                )}
+
+                <div className={styles.divider}></div>
+
+                <h3 className={styles.sectionTitle}>White Labeling (Clinic Branding)</h3>
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSettings.whiteLabel} 
+                      onChange={(e) => setReportSettings({...reportSettings, whiteLabel: e.target.checked})} 
+                    />
+                    Enable Clinic White Labeling
+                  </label>
+                  <span className={styles.helpText}>Removes SORA Fertility branding from the report headers and footers.</span>
+                </div>
+
+                {reportSettings.whiteLabel && (
+                  <>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Clinic Name for Report</label>
+                      <input 
+                        className={styles.input} 
+                        type="text" 
+                        value={reportSettings.clinicName} 
+                        onChange={(e) => setReportSettings({...reportSettings, clinicName: e.target.value})} 
+                        placeholder={editingClinic.name}
+                      />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                      <label className={styles.label}>Custom Logo URL</label>
+                      <input 
+                        className={styles.input} 
+                        type="url" 
+                        value={reportSettings.customLogoUrl} 
+                        onChange={(e) => setReportSettings({...reportSettings, customLogoUrl: e.target.value})} 
+                        placeholder="https://example.com/logo.png"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <button className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}} type="submit">Save Report Settings</button>
               </form>
             </div>
           </div>

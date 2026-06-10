@@ -45,7 +45,7 @@ export default function ClinicDashboardLayout({ children }) {
 
       <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.brand}>
-          <Image src="/sora-logo.png" alt="SORA Logo" width={210} height={68} style={{ objectFit: "contain" }} priority />
+          <Image src="/sora-logo.png" alt="SORA Logo" width={210} height={68} style={{ width: "auto", height: "auto", objectFit: "contain" }} priority />
         </div>
         <nav className={styles.nav}>
           {navLinks.map((link) => {
@@ -78,7 +78,7 @@ export default function ClinicDashboardLayout({ children }) {
         {/* Mobile Header */}
         <div className={styles.mobileHeader}>
           <div className={styles.mobileBrand}>
-            <Image src="/sora-logo.png" alt="SORA Logo" width={165} height={53} style={{ objectFit: "contain" }} priority />
+            <Image src="/sora-logo.png" alt="SORA Logo" width={165} height={53} style={{ width: "auto", height: "auto", objectFit: "contain" }} priority />
           </div>
           <button 
             className={styles.menuBtn}

@@ -517,42 +517,46 @@
   margin-bottom: 40px;
 }
 
-.testimonialBox {
+.featuresBox {
   margin-top: 80px;
-  background: #1e293b;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   padding: 40px;
-  position: relative;
+  text-align: left;
+}
+
+.featuresTitle {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 24px;
   text-align: center;
 }
 
-.quoteMark {
-  position: absolute;
-  top: -24px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #3b82f6;
-  font-family: serif;
-  font-size: 4rem;
-  line-height: 1;
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.testimonialQuote {
-  font-family: var(--font-sans, sans-serif);
-  font-size: 1.1rem;
-  font-style: italic;
+.featuresList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   color: #f8fafc;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  padding-top: 16px;
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
 
-.testimonialAuthor {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.featureIcon {
+  color: #fbcfe8;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .btnHighlight {

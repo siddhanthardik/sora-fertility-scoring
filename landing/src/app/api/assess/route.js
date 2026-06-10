@@ -96,11 +96,21 @@ export async function POST(request) {
       age: payload.age || "",
     };
 
+    const reportType = payload.reportType === "premium" ? "premium" : "basic";
+    const paymentStatus = payload.paymentStatus || (payload.razorpayOrderId ? "paid" : "free");
+    const razorpayOrderId = payload.razorpayOrderId || null;
+
     let pdfUrl = null;
 
     if (supabaseAdmin && access.clinic) {
       // 2. Generate PDF
-      const pdfBuffer = await generateAssessmentPDF(patientInfo, assessment);
+      const reportOptions = {
+        type: reportType,
+        whiteLabel: access.clinic.reportSettings?.whiteLabel || false,
+        clinicLogo: access.clinic.reportSettings?.customLogoUrl || null,
+        clinicName: access.clinic.name
+      };
+      const pdfBuffer = await generateAssessmentPDF(patientInfo, assessment, reportOptions);
       
       // 3. Upload to Supabase Storage
       const fileName = `${access.clinic.clinic_id}_${Date.now()}.pdf`;
@@ -132,7 +142,10 @@ export async function POST(request) {
         risk_band: assessment.category,
         flagged_factors: assessment.flaggedFactors || [],
         pdf_url: pdfUrl,
-        status: 'new'
+        status: 'new',
+        report_type: reportType,
+        payment_status: paymentStatus,
+        razorpay_order_id: razorpayOrderId
       }]);
 
       if (dbError) {
@@ -221,6 +234,10 @@ async function verifyClinicAccess(request) {
 
   if (!clinic) {
     return { ok: false, message: "Clinic was not found or invalid token." };
+  }
+
+  if (origin && !originMatchesClinic(origin, clinic)) {
+    return { ok: false, message: "Origin is not allowed for this clinic." };
   }
 
   if (!["active", "trial"].includes(clinic.status)) {

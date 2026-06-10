@@ -29,6 +29,8 @@
 }
 
 .logoImage {
+  width: auto;
+  height: auto;
   margin-bottom: 16px;
   object-fit: contain;
   filter: invert(30%) sepia(85%) saturate(3061%) hue-rotate(320deg) brightness(97%) contrast(106%);
