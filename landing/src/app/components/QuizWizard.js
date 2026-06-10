@@ -1010,11 +1010,8 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
                 return (
                   <div>
                     <div className={styles.stepHeader}>
-                      <span className={styles.stepSection}>
-                        {step.section} · {getStepIndicator()}
-                      </span>
                       <h3 className={styles.stepTitle}>{step.question}</h3>
-                      {step.hint && <p className={styles.stepHint}>{step.hint}</p>}
+                      {step.hint && step.id === "caffeine" && <p className={styles.stepHint}>{step.hint}</p>}
                     </div>
 
                     {/* RENDER RADIO CHOICE STEP */}
@@ -1037,28 +1034,20 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
 
                     {/* RENDER NUMBER INPUT STEP (AGE) */}
                     {step.type === "number" && (
-                      <div className={styles.sliderWrapper}>
-                        <div className={styles.sliderValue}>
-                          {formData.age}
-                          <span className={styles.sliderValueSuffix}>yrs</span>
-                        </div>
+                      <div className={styles.formGroup} style={{ margin: "25px 0" }}>
                         <input 
-                          type="range" 
+                          type="number" 
                           min={step.min} 
                           max={step.max} 
-                          value={formData.age} 
+                          placeholder="e.g. 30"
+                          value={formData.age || ""} 
                           onChange={(e) => {
-                            setFormData(prev => ({ ...prev, age: Number(e.target.value) }));
+                            setFormData(prev => ({ ...prev, age: e.target.value }));
                             setError("");
                           }}
-                          className={styles.customSlider}
+                          className={styles.formInput}
+                          style={{ paddingLeft: "16px" }}
                         />
-                        <div className={styles.sliderLabels}>
-                          <span>{step.min}</span>
-                          <span>30</span>
-                          <span>40</span>
-                          <span>{step.max}</span>
-                        </div>
                       </div>
                     )}
 
@@ -1118,7 +1107,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
                         </div>
 
                         <div className={styles.formGroup}>
-                          <label className={styles.formLabel}>Follicle-Stimulating Hormone (FSH, CD 2-4)</label>
+                          <label className={styles.formLabel}>Follicle-Stimulating Hormone (FSH)</label>
                           <input 
                             type="number"
                             placeholder="FSH Value (IU/L)"
@@ -1299,9 +1288,9 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
             )}
             {reportType === "basic" && (
               <button
-                className={styles.btnSecondary}
+                className={styles.btnPrimary}
                 onClick={() => initiatePremiumCheckout()}
-                style={{ marginTop: '16px' }}
+                style={{ marginTop: '16px', background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)', boxShadow: '0 4px 15px rgba(244, 63, 94, 0.4)', border: 'none', color: 'white' }}
               >
                 Unlock Premium Detailed Report (₹199)
               </button>

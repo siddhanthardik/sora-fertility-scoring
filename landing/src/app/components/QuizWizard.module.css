@@ -6,16 +6,15 @@
 }
 
 .quizCard {
-  background: var(--color-bg-pure);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: none;
   border-radius: 24px;
-  box-shadow: var(--shadow-premium);
-  padding: 24px; /* Reduced for compactness */
+  box-shadow: none;
+  padding: 32px;
   transition: var(--transition-smooth);
   position: relative;
   overflow-y: auto;
   max-height: 85vh;
-  backdrop-filter: blur(10px);
 }
 
 /* ... skipped unchanged ... */
