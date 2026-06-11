@@ -76,3 +76,55 @@ CREATE POLICY "Public can view blog images"
 CREATE POLICY "Authenticated can upload blog images"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
+
+-- 7. Leads Table for capturing high-risk patients from the Widget/Assessment
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clinic_id TEXT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  country_code TEXT,
+  age INTEGER,
+  height INTEGER,
+  weight INTEGER,
+  bmi NUMERIC,
+  source TEXT DEFAULT 'web_widget',
+  
+  -- Medical constraints matching the API mapping
+  prev_birth TEXT,
+  cycle_reg TEXT,
+  pcos TEXT,
+  endometriosis TEXT,
+  thyroid TEXT,
+  diabetes TEXT,
+  smoking TEXT,
+  alcohol TEXT,
+  try_duration TEXT,
+  
+  -- Labs
+  lab_amh NUMERIC,
+  lab_fsh NUMERIC,
+  lab_afc INTEGER,
+  
+  -- Computed Triage Results
+  triage_tier TEXT,
+  urgency TEXT,
+  flagged_markers JSONB,
+  
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for leads
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+
+-- Allow public insertion (for the web widget to capture leads)
+CREATE POLICY "Public can insert leads"
+  ON leads FOR INSERT
+  WITH CHECK (true);
+
+-- Allow superadmins full access to view and manage leads
+CREATE POLICY "Authenticated can manage leads"
+  ON leads FOR ALL
+  USING (auth.role() = 'authenticated');

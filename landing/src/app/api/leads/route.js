@@ -217,6 +217,9 @@ export async function POST(request) {
           cancer_treatment: rawPayload.cancerTreatment || null,
           
           // Reports
+          triage_tier: rawPayload.risk_category || null,
+          urgency: rawPayload.referral_urgency || null,
+          flagged_markers: rawPayload.flagged_factors ? JSON.stringify(rawPayload.flagged_factors) : null,
           risk_report: rawPayload.risk_category || null,
           basic_score: rawPayload.basic_score ? Number(rawPayload.basic_score) : null,
           enhanced_score: rawPayload.enhanced_score ? Number(rawPayload.enhanced_score) : null,

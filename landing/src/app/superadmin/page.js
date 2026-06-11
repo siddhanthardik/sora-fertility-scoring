@@ -24,8 +24,8 @@ import {
   Heading2,
   Heading3
 } from "lucide-react";
-import Image from "next/image";
 import RichTextEditor from "../components/RichTextEditor";
+import SuperadminLeads from "../components/SuperadminLeads";
 
 import styles from "./superadmin.module.css";
 
@@ -441,6 +441,13 @@ export default function SuperadminPage() {
             Registered Clinics
           </button>
           <button 
+            onClick={() => setActiveTab("leads")}
+            className={`${styles.navItem} ${activeTab === "leads" ? styles.active : ""}`}
+          >
+            <Users size={20} />
+            Leads Management
+          </button>
+          <button 
             onClick={() => setActiveTab("add")}
             className={`${styles.navItem} ${activeTab === "add" ? styles.active : ""}`}
           >
@@ -488,17 +495,22 @@ export default function SuperadminPage() {
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <div className={styles.headerTitle}>
-            <h1>{activeTab === "clinics" ? "Network Dashboard" : activeTab === "packages" ? "Package Manager" : "Register New Clinic"}</h1>
-            <p>Manage all SORA SaaS tenants across the network.</p>
+            <h1>{activeTab === "clinics" ? "Network Dashboard" : activeTab === "packages" ? "Package Manager" : activeTab === "leads" ? "Leads Dashboard" : "Register New Clinic"}</h1>
+            <p>Manage all SORA SaaS tenants and leads across the network.</p>
           </div>
-          <button onClick={() => { loadClinics(); loadPackages(); }} className={styles.btnSecondary}>
+          <button onClick={() => { loadClinics(); loadPackages(); if(activeTab === "leads") window.location.reload(); }} className={styles.btnSecondary}>
             <RefreshCw size={16} /> Refresh
           </button>
         </header>
 
         <div className={styles.scrollArea}>
           
-          {/* Dashboard Metrics */}
+          {activeTab === "leads" && (
+            <div style={{ background: "white", borderRadius: "8px", overflow: "hidden", minHeight: "80vh" }}>
+              <SuperadminLeads />
+            </div>
+          )}
+
           {activeTab === "clinics" && (
             <div className={styles.metricsGrid}>
               <div className={styles.metricCard}>

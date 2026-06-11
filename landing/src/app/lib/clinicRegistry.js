@@ -71,6 +71,8 @@ export async function getClinic(clinicId) {
 }
 
 export async function createClinic(input) {
+  const bcrypt = require("bcryptjs");
+  const defaultHash = await bcrypt.hash("sora123!", 10);
   const now = new Date().toISOString();
   const clinic = {
     clinicId: generateClinicId(input.name),
@@ -83,6 +85,7 @@ export async function createClinic(input) {
     verificationStatus: "pending",
     plan: cleanText(input.plan || "starter"),
     widgetToken: crypto.randomBytes(24).toString("hex"),
+    password_hash: defaultHash,
     reportSettings: {
       allowPremium: true,
       whiteLabel: false,

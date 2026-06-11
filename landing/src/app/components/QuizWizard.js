@@ -480,7 +480,21 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
   const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
   const [leadConsent, setLeadConsent] = useState(false);
+  const [pricing, setPricing] = useState({ currency: "INR", amount: 199, symbol: "₹" });
+
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.country_code && data.country_code !== 'IN') {
+          setPricing({ currency: 'USD', amount: 10, symbol: '$' });
+          setCountryCode(data.country_calling_code || "+1");
+        }
+      })
+      .catch(() => {});
+  }, []);
   const [showData, setShowData] = useState(false);
   const [consultOpen, setConsultOpen] = useState(false);
   const [consultSubmitting, setConsultSubmitting] = useState(false);
@@ -570,7 +584,20 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
 
     // Skip labs step if lab toggle is No
     if (step.id === "labToggle" && formData.includeLab === "no") {
-      setCurrentStep(leadStepIndex);
+      setLoading(true);
+      requestAssessment().then(res => {
+        setResults(res);
+        setCurrentStep(leadStepIndex);
+      }).catch(err => setError(err.message)).finally(() => setLoading(false));
+      return;
+    }
+
+    if (currentStep + 1 === leadStepIndex) {
+      setLoading(true);
+      requestAssessment().then(res => {
+        setResults(res);
+        setCurrentStep(prev => prev + 1);
+      }).catch(err => setError(err.message)).finally(() => setLoading(false));
       return;
     }
 
@@ -612,12 +639,12 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
   };
 
   const buildLeadPayload = (triageResults, extra = {}) => ({
-    source: "nextjs_full_27_questions",
-    clinicId: clinicId,
+    clinicId,
     name: leadName.trim(),
     email: leadEmail.trim(),
-    phone: leadPhone.trim(),
-    age: String(formData.age),
+    phone: `${countryCode} ${leadPhone.trim()}`,
+    source: "web_widget",
+    age: formData.age,
     height: String(formData.height),
     weight: String(formData.weight),
     bmi: String(formData.bmi),
@@ -721,7 +748,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       const orderRes = await fetch("/api/billing/razorpay/consumer-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clinicId, amount: 199 })
+        body: JSON.stringify({ clinicId, amount: pricing.amount, currency: pricing.currency })
       });
       const orderData = await orderRes.json();
       if (!orderRes.ok || !orderData.success) throw new Error("Could not create payment order.");
@@ -729,7 +756,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_placeholder",
         amount: orderData.order.amount,
-        currency: "INR",
+        currency: pricing.currency,
         name: "SORA Fertility",
         description: "Premium Detailed Assessment Report",
         order_id: orderData.order.id,
@@ -765,13 +792,15 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
     setReportType(selectedType);
     if (orderId) setRazorpayOrderId(orderId);
     
-    let triageResults;
-    try {
-      triageResults = await requestAssessment();
-    } catch (err) {
-      setError(err.message || "Assessment service failed. Please try again.");
-      setLoading(false);
-      return;
+    let triageResults = results;
+    if (!triageResults) {
+      try {
+        triageResults = await requestAssessment();
+      } catch (err) {
+        setError(err.message || "Assessment service failed. Please try again.");
+        setLoading(false);
+        return;
+      }
     }
 
     const payload = buildLeadPayload(triageResults);
@@ -786,10 +815,12 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
         console.warn("Lead failed to save on Render node. Using client-side fail-safe.");
       }
       setResults(triageResults);
+      if (triageResults.category !== "low") setConsultOpen(true);
       setCurrentStep(resultStepIndex);
     } catch (err) {
       console.warn("Network error during lead submission:", err);
       setResults(triageResults);
+      if (triageResults.category !== "low") setConsultOpen(true);
       setCurrentStep(resultStepIndex);
     } finally {
       setLoading(false);
@@ -973,7 +1004,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
               <div style={{ position: 'absolute', top: '-12px', right: '20px', backgroundColor: 'var(--color-primary)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>RECOMMENDED</div>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-text-main)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={20} color="var(--color-primary)" /> Premium Detailed Report</h3>
               <p style={{ color: 'var(--color-text-muted)', margin: '0 0 16px 0' }}>Comprehensive clinical analysis, beautiful visual graphs, factor breakdown, and a personalized 12-month action plan.</p>
-              <h4 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)', margin: '0 0 16px 0' }}>₹199</h4>
+              <h4 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)', margin: '0 0 16px 0' }}>{pricing.symbol}{pricing.amount}</h4>
               <button 
                 type="button" 
                 className={styles.btnPrimary} 
@@ -1151,10 +1182,18 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
           ) : (
             /* LEAD INTAKE GATE (STEP 29) */
             <div>
-              <div className={styles.stepHeader}>
-                <span className={styles.stepSection}>Confidential Delivery</span>
-                <h3 className={styles.stepTitle}>Your FertiSTAT™ Triage is Complete</h3>
-                <p className={styles.stepHint}>To safeguard clinical diagnostic privacy and prepare your risk metrics, please confirm your delivery information.</p>
+              <div className={styles.stepHeader} style={{ textAlign: "center", marginBottom: "30px" }}>
+                <Activity size={48} color="var(--color-primary)" style={{ margin: "0 auto", marginBottom: "16px", opacity: 0.8 }} />
+                <h3 className={styles.stepTitle} style={{ fontSize: "28px", color: "var(--color-primary)" }}>Analysis Complete</h3>
+                <p className={styles.stepHint} style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                  Our clinical engine has successfully processed your parameters.<br/>
+                  <br/>
+                  <span style={{ backgroundColor: "#fef3c7", padding: "4px 8px", borderRadius: "4px", color: "#b45309", fontWeight: "bold" }}>
+                    {results?.flaggedFactors?.length || 0} potential flags
+                  </span> identified in your profile.<br/>
+                  <br/>
+                  Enter your details below to instantly reveal your personalized Triage Tier.
+                </p>
               </div>
 
               <form onSubmit={handleLeadSubmit}>
@@ -1191,16 +1230,34 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
 
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Mobile Number (For Consultation Updates)</label>
-                  <div className={styles.inputWrapper}>
-                    <Phone className={styles.inputIcon} />
-                    <input 
-                      type="tel" 
-                      placeholder="+1 (555) 019-2834"
-                      value={leadPhone}
-                      onChange={(e) => setLeadPhone(e.target.value)}
-                      className={styles.formInput}
-                      required
-                    />
+                  <div className={styles.inputWrapper} style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ position: 'relative', width: '100px', flexShrink: 0 }}>
+                      <select
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className={styles.formInput}
+                        style={{ paddingLeft: '12px', paddingRight: '24px', cursor: 'pointer', appearance: 'none', background: 'transparent' }}
+                      >
+                        <option value="+91">IN (+91)</option>
+                        <option value="+1">US/CA (+1)</option>
+                        <option value="+44">UK (+44)</option>
+                        <option value="+61">AU (+61)</option>
+                        <option value="+971">UAE (+971)</option>
+                        <option value="+65">SG (+65)</option>
+                      </select>
+                      <div style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: 0.5 }}>▼</div>
+                    </div>
+                    <div style={{ position: 'relative', flexGrow: 1 }}>
+                      <Phone className={styles.inputIcon} />
+                      <input 
+                        type="tel" 
+                        placeholder="555-019-2834"
+                        value={leadPhone}
+                        onChange={(e) => setLeadPhone(e.target.value)}
+                        className={styles.formInput}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1293,7 +1350,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
                 onClick={() => initiatePremiumCheckout()}
                 style={{ marginTop: '16px', background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)', boxShadow: '0 4px 15px rgba(244, 63, 94, 0.4)', border: 'none', color: 'white' }}
               >
-                Unlock Premium Detailed Report (₹199)
+                Unlock Premium Detailed Report ({pricing.symbol}{pricing.amount})
               </button>
             )}
           </div>
@@ -1314,6 +1371,77 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
                 : "Your answers present a stable clinical baseline. Continue preconception health habits and monitor cycle regularity."}
             </p>
           </div>
+
+          {results.category !== "low" && (
+            <>
+              {/* Lead Generation Matched Consultation Call Box */}
+              <div className={styles.ctaBox}>
+              <h3 className={styles.ctaTitle}>Book Your Free IVF Consultation Matching</h3>
+              <p className={styles.ctaDesc}>
+                Review your complete 27-question FertiSTAT findings in detail with one of our specialized fertility advisors. We will help map your diagnosis to top-tier laboratories and clinics.
+              </p>
+              <button
+                type="button"
+                className={styles.btnCta}
+                onClick={() => {
+                  setConsultOpen(prev => !prev);
+                  setConsultMessage("");
+                }}
+              >
+                <FileCheck width={20} height={20} /> Secure My Priority Consult
+              </button>
+              {consultOpen && (
+                <form className={styles.consultForm} onSubmit={handleConsultSubmit}>
+                  <div className={styles.consultGrid}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Preferred Date</label>
+                      <input
+                        type="date"
+                        value={consultForm.preferredDate}
+                        onChange={(e) => setConsultForm(prev => ({ ...prev, preferredDate: e.target.value }))}
+                        className={styles.formInput}
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Preferred Time</label>
+                      <div className={styles.inputWrapper}>
+                        <Clock className={styles.inputIcon} />
+                        <select
+                          value={consultForm.preferredTime}
+                          onChange={(e) => setConsultForm(prev => ({ ...prev, preferredTime: e.target.value }))}
+                          className={styles.formInput}
+                          required
+                        >
+                          <option value="">Select a window</option>
+                          <option value="Morning">Morning</option>
+                          <option value="Afternoon">Afternoon</option>
+                          <option value="Evening">Evening</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Notes</label>
+                    <textarea
+                      value={consultForm.notes}
+                      onChange={(e) => setConsultForm(prev => ({ ...prev, notes: e.target.value }))}
+                      className={`${styles.formInput} ${styles.consultNotes}`}
+                      placeholder="Share anything you want the coordinator to know"
+                      maxLength={500}
+                    />
+                  </div>
+                  <button type="submit" className={styles.btnConsultSubmit} disabled={consultSubmitting}>
+                    {consultSubmitting ? "Sending Request..." : "Send Consultation Request"}
+                  </button>
+                </form>
+              )}
+              {consultMessage && (
+                <p className={styles.consultMessage}>{consultMessage}</p>
+              )}
+            </div>
+            </>
+          )}
 
           {/* OVARIAN RESERVE LAB CLUSTER PANEL */}
           {results.ovarianReserve && (
@@ -1353,292 +1481,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
             )}
           </div>
 
-          {/* Complete Assessment Data Accordion */}
-          <div className={styles.dataSection}>
-            <button 
-              type="button" 
-              className={`${styles.accordionBtn} ${showData ? styles.open : ""}`}
-              onClick={() => setShowData(!showData)}
-            >
-              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <BookOpen width={18} height={18} /> View Your Complete Entered Answers
-              </span>
-              <span>{showData ? "▲" : "▼"}</span>
-            </button>
-            <div className={`${styles.accordionContent} ${showData ? styles.open : ""}`}>
-              <table className={styles.dataTable}>
-                <thead>
-                  <tr style={{ background: "var(--color-primary)", color: "white" }}>
-                    <th style={{ padding: "10px 12px", textAlign: "left" }}>Metric Group</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left" }}>Clinical Question / Metric</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left" }}>Value Entered</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Personal Metrics */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Personal Parameters</td>
-                  </tr>
-                  <tr>
-                    <td>Personal</td>
-                    <td>Patient Age</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("age", formData.age)}</td>
-                  </tr>
-                  <tr>
-                    <td>Personal</td>
-                    <td>Height (cm)</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("height", formData.height)}</td>
-                  </tr>
-                  <tr>
-                    <td>Personal</td>
-                    <td>Weight (kg)</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("weight", formData.weight)}</td>
-                  </tr>
-                  <tr>
-                    <td>Personal</td>
-                    <td>Calculated BMI</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("bmi", formData.bmi)}</td>
-                  </tr>
 
-                  {/* Fertility Context */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Fertility Context</td>
-                  </tr>
-                  <tr>
-                    <td>Context</td>
-                    <td>Current Goal Focus</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("tryingStatus", formData.tryingStatus)}</td>
-                  </tr>
-                  <tr>
-                    <td>Context</td>
-                    <td>Active Try Duration</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("tryDuration", formData.tryDuration)}</td>
-                  </tr>
-                  <tr>
-                    <td>Context</td>
-                    <td>Previous Births</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("prevBirth", formData.prevBirth)}</td>
-                  </tr>
-                  <tr>
-                    <td>Context</td>
-                    <td>Intercourse Timing</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("intercourseTiming", formData.intercourseTiming)}</td>
-                  </tr>
-                  <tr>
-                    <td>Context</td>
-                    <td>Partner Sperm Factor</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("partnerSperm", formData.partnerSperm)}</td>
-                  </tr>
-
-                  {/* Menstrual & Endocrine */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Hormonal & Ovarian Status</td>
-                  </tr>
-                  <tr>
-                    <td>Hormonal</td>
-                    <td>Period Regularity</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("cycleReg", formData.cycleReg)}</td>
-                  </tr>
-                  <tr>
-                    <td>Hormonal</td>
-                    <td>Cycle Length</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("cycleLength", formData.cycleLength)}</td>
-                  </tr>
-                  <tr>
-                    <td>Hormonal</td>
-                    <td>PCOS Status</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("pcos", formData.pcos)}</td>
-                  </tr>
-                  <tr>
-                    <td>Hormonal</td>
-                    <td>Thyroid History</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("thyroid", formData.thyroid)}</td>
-                  </tr>
-                  <tr>
-                    <td>Hormonal</td>
-                    <td>Diabetes Condition</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("diabetes", formData.diabetes)}</td>
-                  </tr>
-
-                  {/* Pelvic & Medical */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Pelvic & Medical History</td>
-                  </tr>
-                  <tr>
-                    <td>Pelvic</td>
-                    <td>Endometriosis</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("endo", formData.endo)}</td>
-                  </tr>
-                  <tr>
-                    <td>Pelvic</td>
-                    <td>Severe Pelvic/Period Pain</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("pelvicPain", formData.pelvicPain)}</td>
-                  </tr>
-                  <tr>
-                    <td>Pelvic</td>
-                    <td>Uterine / Pelvic Surgery History</td>
-                    <td style={{ fontWeight: 600 }}>
-                      {getCombinedReadableValue([
-                        ["uterineHistory", "Uterine", formData.uterineHistory],
-                        ["pelvicSurgery", "Pelvic surgery", formData.pelvicSurgery]
-                      ])}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Pelvic</td>
-                    <td>Pregnancy Losses</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("pregnancyLosses", formData.pregnancyLosses)}</td>
-                  </tr>
-
-                  {/* Infections & Treatments */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Medical Background</td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>Prior Ectopic Pregnancy</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("ectopicPregnancy", formData.ectopicPregnancy)}</td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>STI History</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("stiHistory", formData.stiHistory)}</td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>TB History / Treatment</td>
-                    <td style={{ fontWeight: 600 }}>
-                      {getCombinedReadableValue([
-                        ["tbHistory", "TB history", formData.tbHistory],
-                        ["tbTreatment", "Treatment", formData.tbTreatment]
-                      ])}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>Chemotherapy / Radiation</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("cancerTreatment", formData.cancerTreatment)}</td>
-                  </tr>
-                  <tr>
-                    <td>Medical</td>
-                    <td>Family Early Menopause</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("familyEarlyMenopause", formData.familyEarlyMenopause)}</td>
-                  </tr>
-
-                  {/* Lifestyle & Labs */}
-                  <tr className={styles.dataGroupRow}>
-                    <td colSpan="3">Lifestyle & Labs</td>
-                  </tr>
-                  <tr>
-                    <td>Lifestyle</td>
-                    <td>Cigarettes / Tobacco</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("smoking", formData.smoking)}</td>
-                  </tr>
-                  <tr>
-                    <td>Lifestyle</td>
-                    <td>Caffeine Consumption</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("caffeine", formData.caffeine)}</td>
-                  </tr>
-                  <tr>
-                    <td>Lifestyle</td>
-                    <td>Alcohol Intake</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("alcohol", formData.alcohol)}</td>
-                  </tr>
-                  <tr>
-                    <td>Lifestyle</td>
-                    <td>Recreational Drug Use</td>
-                    <td style={{ fontWeight: 600 }}>{getReadableValue("recreationalDrugs", formData.recreationalDrugs)}</td>
-                  </tr>
-                  {formData.includeLab === "yes" && (
-                    <>
-                      <tr>
-                        <td>Labs</td>
-                        <td>AMH Value</td>
-                        <td style={{ fontWeight: 600 }}>{formData.amhValue ? `${formData.amhValue} ${formData.amhUnit}` : "Not entered"}</td>
-                      </tr>
-                      <tr>
-                        <td>Labs</td>
-                        <td>FSH Value</td>
-                        <td style={{ fontWeight: 600 }}>{formData.fsh ? `${formData.fsh} IU/L` : "Not entered"}</td>
-                      </tr>
-                      <tr>
-                        <td>Labs</td>
-                        <td>Antral Follicle Count</td>
-                        <td style={{ fontWeight: 600 }}>{formData.afc ? `${formData.afc} Follicles` : "Not entered"}</td>
-                      </tr>
-                    </>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Lead Generation Matched Consultation Call Box */}
-          <div className={styles.ctaBox}>
-            <h3 className={styles.ctaTitle}>Book Your Free IVF Consultation Matching</h3>
-            <p className={styles.ctaDesc}>
-              Review your complete 27-question FertiSTAT findings in detail with one of our specialized fertility advisors. We will help map your diagnosis to top-tier laboratories and clinics.
-            </p>
-            <button
-              type="button"
-              className={styles.btnCta}
-              onClick={() => {
-                setConsultOpen(prev => !prev);
-                setConsultMessage("");
-              }}
-            >
-              <FileCheck width={20} height={20} /> Secure My Priority Consult
-            </button>
-            {consultOpen && (
-              <form className={styles.consultForm} onSubmit={handleConsultSubmit}>
-                <div className={styles.consultGrid}>
-                  <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Preferred Date</label>
-                    <input
-                      type="date"
-                      value={consultForm.preferredDate}
-                      onChange={(e) => setConsultForm(prev => ({ ...prev, preferredDate: e.target.value }))}
-                      className={styles.formInput}
-                      required
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Preferred Time</label>
-                    <div className={styles.inputWrapper}>
-                      <Clock className={styles.inputIcon} />
-                      <select
-                        value={consultForm.preferredTime}
-                        onChange={(e) => setConsultForm(prev => ({ ...prev, preferredTime: e.target.value }))}
-                        className={styles.formInput}
-                        required
-                      >
-                        <option value="">Select a window</option>
-                        <option value="Morning">Morning</option>
-                        <option value="Afternoon">Afternoon</option>
-                        <option value="Evening">Evening</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Notes</label>
-                  <textarea
-                    value={consultForm.notes}
-                    onChange={(e) => setConsultForm(prev => ({ ...prev, notes: e.target.value }))}
-                    className={`${styles.formInput} ${styles.consultNotes}`}
-                    placeholder="Share anything you want the coordinator to know"
-                    maxLength={500}
-                  />
-                </div>
-                <button type="submit" className={styles.btnConsultSubmit} disabled={consultSubmitting}>
-                  {consultSubmitting ? "Sending Request..." : "Send Consultation Request"}
-                </button>
-              </form>
-            )}
-            {consultMessage && (
-              <p className={styles.consultMessage}>{consultMessage}</p>
-            )}
-          </div>
 
           <p className={styles.resultsDisclaimer}>
             * This triage evaluation is calibrated against FertiSTAT (Bunting & Boivin, Human Reproduction, 2010) criteria. It is designed to evaluate statistical clinical indicators and does not constitute medical advice or predict personal pregnancy likelihood. All medical pathways require professional diagnostic testing.
