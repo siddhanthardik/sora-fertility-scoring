@@ -14,6 +14,12 @@ export default function SampleReportPage() {
     const pages = document.querySelectorAll('.report-page');
     if (pages.length === 0) return;
 
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [794, 1123]
+    });
+
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
       const canvas = await html2canvas(page, {
