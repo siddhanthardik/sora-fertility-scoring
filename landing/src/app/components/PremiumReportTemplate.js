@@ -228,7 +228,7 @@ export default function PremiumReportTemplate({ results, formData, leadName, rep
           )}
 
           <div style={{ paddingLeft: '48px', paddingRight: '48px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#191c1e', borderBottom: '3px solid #ff2a5f', paddingBottom: '8px', marginBottom: '24px', marginTop: 0 }}>{chunkIndex === 0 ? 'Detailed Marker Breakdown' : 'Detailed Marker Breakdown (Cont.)'}</h3>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#191c1e', marginBottom: '24px', marginTop: 0 }}>{chunkIndex === 0 ? 'Detailed Marker Breakdown' : 'Detailed Marker Breakdown (Cont.)'}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {chunk.length > 0 ? chunk.map((factor, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', padding: '20px', background: 'linear-gradient(to bottom right, #ffffff, #f8fafc)', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>

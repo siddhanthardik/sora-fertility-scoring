@@ -721,7 +721,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       const orderRes = await fetch("/api/billing/razorpay/consumer-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clinicId, amount: 11 })
+        body: JSON.stringify({ clinicId, amount: 199 })
       });
       const orderData = await orderRes.json();
       if (!orderRes.ok || !orderData.success) throw new Error("Could not create payment order.");
@@ -1293,7 +1293,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
                 onClick={() => initiatePremiumCheckout()}
                 style={{ marginTop: '16px', background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)', boxShadow: '0 4px 15px rgba(244, 63, 94, 0.4)', border: 'none', color: 'white' }}
               >
-                Unlock Premium Detailed Report (₹11)
+                Unlock Premium Detailed Report (₹199)
               </button>
             )}
           </div>
