@@ -15,7 +15,8 @@ import {
   Users,
   PackageOpen,
   Check,
-  Trash2
+  Trash2,
+  FileText
 } from "lucide-react";
 import Image from "next/image";
 
@@ -62,6 +63,11 @@ export default function SuperadminPage() {
   const [seoSettings, setSeoSettings] = useState([]);
   const [editingSeo, setEditingSeo] = useState(null);
   const [seoMessage, setSeoMessage] = useState("");
+
+  const [blogs, setBlogs] = useState([]);
+  const [editingBlog, setEditingBlog] = useState(null);
+  const [blogMessage, setBlogMessage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,6 +131,14 @@ export default function SuperadminPage() {
     }
   }, []);
 
+  const loadBlogs = useCallback(async () => {
+    const response = await fetch("/api/superadmin/blogs");
+    if (response.ok) {
+      const result = await response.json();
+      setBlogs(result.blogs || []);
+    }
+  }, []);
+
   const checkSession = useCallback(async () => {
     const response = await fetch("/api/superadmin/session");
     if (response.ok) {
@@ -133,9 +147,10 @@ export default function SuperadminPage() {
       await loadSettings();
       await loadPackages();
       await loadSeoSettings();
+      await loadBlogs();
     }
     setLoading(false);
-  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings]);
+  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs]);
 
   useEffect(() => {
     checkSession();
@@ -160,6 +175,7 @@ export default function SuperadminPage() {
     await loadSettings();
     await loadPackages();
     await loadSeoSettings();
+    await loadBlogs();
   }
 
   async function logout() {
@@ -308,6 +324,49 @@ export default function SuperadminPage() {
     }
   }
 
+  async function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/superadmin/upload", {
+      method: "POST",
+      body: formData
+    });
+    
+    const result = await res.json();
+    setUploadingImage(false);
+
+    if (result.success) {
+      setEditingBlog(prev => ({
+        ...prev,
+        content: (prev.content || "") + `\n![image](${result.url})\n`
+      }));
+    } else {
+      alert("Image upload failed: " + result.message);
+    }
+  }
+
+  async function saveBlogSettings(e) {
+    e.preventDefault();
+    setBlogMessage("");
+    const response = await fetch("/api/superadmin/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editingBlog),
+    });
+    const result = await response.json();
+    if (response.ok) {
+      await loadBlogs();
+      setEditingBlog(null);
+    } else {
+      setBlogMessage(result.message || "Failed to save blog");
+    }
+  }
+
   if (loading) {
     return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>Loading SORA Superadmin...</div>;
   }
@@ -375,6 +434,13 @@ export default function SuperadminPage() {
           >
             <Search size={20} />
             SEO Management
+          </button>
+          <button 
+            onClick={() => setActiveTab("blogs")}
+            className={`${styles.navItem} ${activeTab === "blogs" ? styles.active : ""}`}
+          >
+            <FileText size={20} />
+            Blog Management
           </button>
           <button 
             onClick={() => setSettingsOpen(true)}
@@ -737,6 +803,62 @@ export default function SuperadminPage() {
             </div>
           )}
 
+          {activeTab === "blogs" && (
+            <div>
+              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h2 style={{ fontSize: "1.25rem", margin: 0 }}>Blog Management</h2>
+                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Write and publish articles for the public blog.</p>
+                </div>
+                <button className={styles.btnPrimary} onClick={() => {
+                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false });
+                  setBlogMessage("");
+                }}>
+                  <Plus size={16} style={{marginRight: "8px"}} /> New Post
+                </button>
+              </div>
+              
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Title / Slug</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th style={{textAlign: 'right'}}>Controls</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {blogs.map((blog) => (
+                    <tr key={blog.id}>
+                      <td>
+                        <div style={{fontWeight: 600, color: '#1e293b'}}>{blog.title}</div>
+                        <div style={{fontSize: '0.875rem', color: '#64748b'}}>{blog.slug}</div>
+                      </td>
+                      <td>
+                        {blog.published ? <span style={{color: '#16a34a', fontWeight: 'bold'}}>Published</span> : <span style={{color: '#f59e0b', fontWeight: 'bold'}}>Draft</span>}
+                      </td>
+                      <td style={{fontSize: '0.875rem', color: '#64748b'}}>
+                        {new Date(blog.created_at).toLocaleDateString()}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        <button onClick={() => { setEditingBlog(blog); setBlogMessage(""); }} className={styles.btnIcon}>
+                          <Settings size={16} /> Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {blogs.length === 0 && (
+                    <tr>
+                      <td colSpan="4" style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>
+                        No blog posts found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
         </div>
       </main>
 
@@ -899,6 +1021,77 @@ export default function SuperadminPage() {
                 </div>
                 {seoMessage && <p style={{color: 'red', marginBottom: '16px'}}>{seoMessage}</p>}
                 <button type="submit" className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}}>Save SEO Configuration</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blog Edit Modal */}
+      {editingBlog && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ maxWidth: "800px", width: "95%" }}>
+            <div className={styles.modalHeader}>
+              <h2><FileText size={20}/> {editingBlog.id ? "Edit Blog Post" : "Create Blog Post"}</h2>
+              <button className={styles.closeBtn} onClick={() => setEditingBlog(null)}><X size={20} /></button>
+            </div>
+            <div className={styles.modalBody} style={{ maxHeight: "75vh", overflowY: "auto" }}>
+              <form onSubmit={saveBlogSettings}>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>Title</label>
+                    <input className={styles.input} type="text" value={editingBlog.title} onChange={(e) => setEditingBlog({...editingBlog, title: e.target.value})} required />
+                  </div>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>URL Slug</label>
+                    <input className={styles.input} type="text" value={editingBlog.slug} onChange={(e) => setEditingBlog({...editingBlog, slug: e.target.value})} placeholder="e.g., my-first-post" required disabled={!!editingBlog.id} />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>Excerpt (Short summary)</label>
+                  <textarea className={styles.input} rows="2" value={editingBlog.excerpt || ""} onChange={(e) => setEditingBlog({...editingBlog, excerpt: e.target.value})}></textarea>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Content (Markdown format)</span>
+                    <label style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.875rem", color: "#2563eb", fontWeight: "600" }}>
+                      {uploadingImage ? "Uploading..." : "📎 Insert Local Image"}
+                      <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={uploadingImage} />
+                    </label>
+                  </label>
+                  <textarea 
+                    className={styles.input} 
+                    rows="15" 
+                    style={{ fontFamily: 'monospace', lineHeight: 1.5 }}
+                    placeholder="# Title&#10;&#10;Write your post in markdown here..."
+                    value={editingBlog.content || ""} 
+                    onChange={(e) => setEditingBlog({...editingBlog, content: e.target.value})}
+                    required
+                  ></textarea>
+                </div>
+
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>Author Name</label>
+                    <input className={styles.input} type="text" value={editingBlog.author_name || ""} onChange={(e) => setEditingBlog({...editingBlog, author_name: e.target.value})} />
+                  </div>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>Cover Image URL (Optional)</label>
+                    <input className={styles.input} type="text" value={editingBlog.cover_image || ""} onChange={(e) => setEditingBlog({...editingBlog, cover_image: e.target.value})} />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={editingBlog.published} onChange={(e) => setEditingBlog({...editingBlog, published: e.target.checked})} />
+                    Publish publicly
+                  </label>
+                </div>
+
+                {blogMessage && <p style={{color: 'red', marginBottom: '16px'}}>{blogMessage}</p>}
+                <button type="submit" className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}}>Save Blog Post</button>
               </form>
             </div>
           </div>

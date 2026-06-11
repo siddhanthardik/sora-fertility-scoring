@@ -37,3 +37,42 @@ CREATE POLICY "Public can view seo_settings"
 CREATE POLICY "Authenticated can manage seo_settings"
   ON seo_settings FOR ALL
   USING (auth.role() = 'authenticated');
+
+-- 5. Blog Posts Table
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  content TEXT,
+  author_name TEXT,
+  cover_image TEXT,
+  published BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for blog_posts
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to published blogs
+CREATE POLICY "Public can view published blogs"
+  ON blog_posts FOR SELECT
+  USING (published = true);
+
+-- Allow authenticated users (superadmin) full access to all blogs
+CREATE POLICY "Authenticated can manage blogs"
+  ON blog_posts FOR ALL
+  USING (auth.role() = 'authenticated');
+
+-- 6. Storage Bucket for Blog Images
+INSERT INTO storage.buckets (id, name, public) VALUES ('blog_images', 'blog_images', true) ON CONFLICT (id) DO NOTHING;
+
+-- Storage Policies for blog_images
+CREATE POLICY "Public can view blog images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'blog_images');
+
+CREATE POLICY "Authenticated can upload blog images"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'blog_images' AND auth.role() = 'authenticated');
