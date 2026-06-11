@@ -16,7 +16,13 @@ import {
   PackageOpen,
   Check,
   Trash2,
-  FileText
+  FileText,
+  Bold,
+  Italic,
+  Link2,
+  List,
+  Heading2,
+  Heading3
 } from "lucide-react";
 import Image from "next/image";
 
@@ -349,6 +355,25 @@ export default function SuperadminPage() {
       alert("Image upload failed: " + result.message);
     }
   }
+
+  const insertMarkdown = (prefix, suffix = "") => {
+    const textarea = document.getElementById("blog-content-textarea");
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = editingBlog.content || "";
+    
+    const selectedText = text.substring(start, end);
+    const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
+    
+    setEditingBlog({...editingBlog, content: newText});
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+    }, 0);
+  };
 
   async function saveBlogSettings(e) {
     e.preventDefault();
@@ -1061,10 +1086,20 @@ export default function SuperadminPage() {
                       <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={uploadingImage} />
                     </label>
                   </label>
+                  <div style={{ display: 'flex', gap: '8px', padding: '8px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderBottom: 'none', borderTopLeftRadius: '6px', borderTopRightRadius: '6px' }}>
+                    <button type="button" onClick={() => insertMarkdown("**", "**")} title="Bold" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Bold size={16} /></button>
+                    <button type="button" onClick={() => insertMarkdown("*", "*")} title="Italic" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Italic size={16} /></button>
+                    <button type="button" onClick={() => insertMarkdown("[", "](https://)")} title="Link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Link2 size={16} /></button>
+                    <div style={{ width: '1px', backgroundColor: '#cbd5e1', margin: '0 4px' }}></div>
+                    <button type="button" onClick={() => insertMarkdown("## ")} title="Heading 2" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Heading2 size={16} /></button>
+                    <button type="button" onClick={() => insertMarkdown("### ")} title="Heading 3" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Heading3 size={16} /></button>
+                    <button type="button" onClick={() => insertMarkdown("- ")} title="Bullet List" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><List size={16} /></button>
+                  </div>
                   <textarea 
+                    id="blog-content-textarea"
                     className={styles.input} 
                     rows="15" 
-                    style={{ fontFamily: 'monospace', lineHeight: 1.5 }}
+                    style={{ fontFamily: 'monospace', lineHeight: 1.5, borderTopLeftRadius: '0', borderTopRightRadius: '0' }}
                     placeholder="# Title&#10;&#10;Write your post in markdown here..."
                     value={editingBlog.content || ""} 
                     onChange={(e) => setEditingBlog({...editingBlog, content: e.target.value})}
