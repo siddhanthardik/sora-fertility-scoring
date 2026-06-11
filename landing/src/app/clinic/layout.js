@@ -29,7 +29,7 @@ export default function ClinicDashboardLayout({ children }) {
     { name: "Settings", href: "/clinic/settings", icon: Settings },
   ];
 
-  const isAuthPage = pathname === "/clinic/login" || pathname === "/clinic/register";
+  const isAuthPage = pathname === "/clinic/login" || pathname === "/clinic/register" || pathname === "/clinic/forgot-password" || pathname === "/clinic/reset-password";
 
   if (isAuthPage) {
     return <>{children}</>;

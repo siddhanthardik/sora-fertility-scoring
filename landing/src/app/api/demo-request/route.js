@@ -24,8 +24,10 @@ export async function POST(req) {
       },
     });
 
+    const smtpFrom = process.env.SMTP_FROM || `"SORA Website" <${process.env.SMTP_USER || 'no-reply@sorafertility.com'}>`;
+
     const mailOptions = {
-      from: `"SORA Website" <${process.env.SMTP_USER || 'no-reply@sorafertility.com'}>`,
+      from: smtpFrom,
       to: 'hardiksiddhant@gmail.com', // User requested email
       subject: `SORA CRM Demo request: ${clinicName}`,
       html: `

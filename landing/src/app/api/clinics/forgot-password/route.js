@@ -70,8 +70,10 @@ export async function POST(request) {
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     const resetLink = `${origin}/clinic/reset-password?token=${resetToken}`;
 
+    const smtpFrom = process.env.SMTP_FROM || `"SORA Fertility" <${process.env.SMTP_USER}>`;
+
     const mailOptions = {
-      from: `"SORA Fertility" <${process.env.SMTP_USER}>`,
+      from: smtpFrom,
       to: clinic.owner_email,
       subject: "Password Reset Request - SORA Clinic",
       html: `
