@@ -24,6 +24,7 @@ import {
   Heading2,
   Heading3
 } from "lucide-react";
+import Image from "next/image";
 import RichTextEditor from "../components/RichTextEditor";
 import SuperadminLeads from "../components/SuperadminLeads";
 
