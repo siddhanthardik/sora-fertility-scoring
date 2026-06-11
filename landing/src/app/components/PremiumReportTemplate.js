@@ -83,7 +83,7 @@ const PatientDemographics = ({ leadName, formData, results }) => {
   );
 };
 
-export default function PremiumReportTemplate({ results, formData, leadName }) {
+export default function PremiumReportTemplate({ results, formData, leadName, reportSettings }) {
   if (!results) return null;
 
   // --- CHART DATA PREP ---
