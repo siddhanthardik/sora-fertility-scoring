@@ -4,7 +4,7 @@ import Razorpay from "razorpay";
 export async function POST(request) {
   try {
     const origin = request.headers.get("origin") || "";
-    
+
     // Allow CORS for the widget
     const headers = {
       "Access-Control-Allow-Origin": origin,
@@ -18,7 +18,7 @@ export async function POST(request) {
     });
 
     const body = await request.json();
-    const { clinicId, amount = 11 } = body;
+    const { clinicId, amount = 1 } = body;
 
     // Create Razorpay Order
     const options = {
