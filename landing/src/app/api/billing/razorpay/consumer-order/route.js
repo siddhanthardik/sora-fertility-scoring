@@ -18,7 +18,7 @@ export async function POST(request) {
     });
 
     const body = await request.json();
-    const { clinicId, amount = 199 } = body;
+    const { clinicId, amount = 11 } = body;
 
     // Create Razorpay Order
     const options = {
