@@ -104,6 +104,7 @@ export default function RichTextEditor({ value, onChange }) {
       Link.configure({ openOnClick: false })
     ],
     content: value,
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
