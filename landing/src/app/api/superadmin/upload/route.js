@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 function checkAuth(request) {
   const cookieHeader = request.headers.get("cookie") || "";
   return cookieHeader.includes("sora_superadmin=authenticated");

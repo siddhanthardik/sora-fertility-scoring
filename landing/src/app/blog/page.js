@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styles from "./page.module.css";
 
+export const dynamic = "force-dynamic";
+
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export async function generateMetadata() {
