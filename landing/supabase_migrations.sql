@@ -14,3 +14,26 @@ ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT;
 ALTER TABLE clinic_registry
 ADD COLUMN IF NOT EXISTS reset_token TEXT,
 ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ;
+
+-- 4. SEO Settings table for dynamic meta tags
+CREATE TABLE IF NOT EXISTS seo_settings (
+  page_route TEXT PRIMARY KEY,
+  meta_title TEXT NOT NULL,
+  meta_description TEXT,
+  meta_keywords TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for seo_settings
+ALTER TABLE seo_settings ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to SEO settings
+CREATE POLICY "Public can view seo_settings"
+  ON seo_settings FOR SELECT
+  USING (true);
+
+-- Allow superadmin full access to SEO settings
+-- Assuming superadmins have a specific role or email, but typically we might just allow authenticated users for this MVP if superadmin logic isn't strictly defined by RLS
+CREATE POLICY "Authenticated can manage seo_settings"
+  ON seo_settings FOR ALL
+  USING (auth.role() = 'authenticated');

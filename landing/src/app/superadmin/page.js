@@ -59,6 +59,10 @@ export default function SuperadminPage() {
   const [packages, setPackages] = useState([]);
   const [newFeatureText, setNewFeatureText] = useState({});
 
+  const [seoSettings, setSeoSettings] = useState([]);
+  const [editingSeo, setEditingSeo] = useState(null);
+  const [seoMessage, setSeoMessage] = useState("");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -113,6 +117,14 @@ export default function SuperadminPage() {
     }
   }, []);
 
+  const loadSeoSettings = useCallback(async () => {
+    const response = await fetch("/api/superadmin/seo");
+    if (response.ok) {
+      const result = await response.json();
+      setSeoSettings(result.seoSettings || []);
+    }
+  }, []);
+
   const checkSession = useCallback(async () => {
     const response = await fetch("/api/superadmin/session");
     if (response.ok) {
@@ -120,9 +132,10 @@ export default function SuperadminPage() {
       await loadClinics();
       await loadSettings();
       await loadPackages();
+      await loadSeoSettings();
     }
     setLoading(false);
-  }, [loadClinics, loadSettings, loadPackages]);
+  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings]);
 
   useEffect(() => {
     checkSession();
@@ -146,6 +159,7 @@ export default function SuperadminPage() {
     await loadClinics();
     await loadSettings();
     await loadPackages();
+    await loadSeoSettings();
   }
 
   async function logout() {
@@ -277,6 +291,23 @@ export default function SuperadminPage() {
     setEditingClinic(null);
   }
 
+  async function saveSeoSettings(e) {
+    e.preventDefault();
+    setSeoMessage("");
+    const response = await fetch("/api/superadmin/seo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editingSeo),
+    });
+    const result = await response.json();
+    if (response.ok) {
+      await loadSeoSettings();
+      setEditingSeo(null);
+    } else {
+      setSeoMessage(result.message || "Failed to save SEO settings");
+    }
+  }
+
   if (loading) {
     return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>Loading SORA Superadmin...</div>;
   }
@@ -337,6 +368,13 @@ export default function SuperadminPage() {
           >
             <PackageOpen size={20} />
             Package Manager
+          </button>
+          <button 
+            onClick={() => setActiveTab("seo")}
+            className={`${styles.navItem} ${activeTab === "seo" ? styles.active : ""}`}
+          >
+            <Search size={20} />
+            SEO Management
           </button>
           <button 
             onClick={() => setSettingsOpen(true)}
@@ -652,6 +690,53 @@ export default function SuperadminPage() {
             </div>
           )}
 
+          {activeTab === "seo" && (
+            <div>
+              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h2 style={{ fontSize: "1.25rem", margin: 0 }}>SEO Management</h2>
+                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Manage Meta Titles, Descriptions, and Keywords for public pages.</p>
+                </div>
+                <button className={styles.btnPrimary} onClick={() => {
+                  setEditingSeo({ page_route: "/", meta_title: "", meta_description: "", meta_keywords: "" });
+                  setSeoMessage("");
+                }}>
+                  <Plus size={16} style={{marginRight: "8px"}} /> Add Page SEO
+                </button>
+              </div>
+              
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Page Route</th>
+                    <th>Meta Title</th>
+                    <th style={{textAlign: 'right'}}>Controls</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {seoSettings.map((seo) => (
+                    <tr key={seo.page_route}>
+                      <td style={{fontWeight: 600, color: '#1e293b'}}>{seo.page_route}</td>
+                      <td>{seo.meta_title}</td>
+                      <td style={{textAlign: 'right'}}>
+                        <button onClick={() => { setEditingSeo(seo); setSeoMessage(""); }} className={styles.btnIcon}>
+                          <Settings size={16} /> Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {seoSettings.length === 0 && (
+                    <tr>
+                      <td colSpan="3" style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>
+                        No custom SEO settings configured.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
         </div>
       </main>
 
@@ -785,6 +870,41 @@ export default function SuperadminPage() {
           </div>
         </div>
       )}
+
+      {/* SEO Edit Modal */}
+      {editingSeo && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2><Search size={20}/> {editingSeo.page_route === '/' || seoSettings.some(s => s.page_route === editingSeo.page_route) ? `Edit SEO: ${editingSeo.page_route}` : "New Page SEO"}</h2>
+              <button className={styles.closeBtn} onClick={() => setEditingSeo(null)}><X size={20} /></button>
+            </div>
+            <div className={styles.modalBody}>
+              <form onSubmit={saveSeoSettings}>
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>Page Route (e.g., / or /fertility-assessment)</label>
+                  <input className={styles.input} type="text" value={editingSeo.page_route} onChange={(e) => setEditingSeo({...editingSeo, page_route: e.target.value})} required />
+                </div>
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>Meta Title</label>
+                  <input className={styles.input} type="text" value={editingSeo.meta_title} onChange={(e) => setEditingSeo({...editingSeo, meta_title: e.target.value})} required />
+                </div>
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>Meta Description</label>
+                  <textarea className={styles.input} rows="3" value={editingSeo.meta_description || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_description: e.target.value})}></textarea>
+                </div>
+                <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                  <label className={styles.label}>Meta Keywords</label>
+                  <input className={styles.input} type="text" placeholder="fertility, IVF, testing" value={editingSeo.meta_keywords || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_keywords: e.target.value})} />
+                </div>
+                {seoMessage && <p style={{color: 'red', marginBottom: '16px'}}>{seoMessage}</p>}
+                <button type="submit" className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}}>Save SEO Configuration</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
