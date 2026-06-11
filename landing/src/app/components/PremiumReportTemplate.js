@@ -43,7 +43,6 @@ const Header = ({ pageNum, title, reportSettings, totalPages = 5 }) => {
         ) : (
           <h1 style={{ fontSize: '30px', fontFamily: 'Georgia, serif', color: '#191c1e', fontWeight: 'bold', margin: 0 }}>{clinicName}</h1>
         )}
-        <p style={{ color: '#ff2a5f', fontSize: '12px', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase', margin: '4px 0 0 0' }}>Premium Clinical Report</p>
       </div>
       <div style={{ textAlign: 'right' }}>
         <h2 style={{ color: '#191c1e', fontSize: '20px', fontWeight: '600', margin: 0 }}>{title}</h2>
