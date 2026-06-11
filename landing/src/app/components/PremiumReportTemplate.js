@@ -39,7 +39,7 @@ const Header = ({ pageNum, title, reportSettings, totalPages = 5 }) => {
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '3px solid #ff2a5f', paddingBottom: '16px', marginBottom: '32px', paddingTop: '32px', paddingLeft: '48px', paddingRight: '48px', background: 'linear-gradient(to right, #fff1f2, #ffffff)' }}>
       <div>
         {logoUrl ? (
-          <img src={logoUrl} alt={clinicName} style={{ height: '40px', objectFit: 'contain' }} crossOrigin="anonymous" />
+          <img src={logoUrl} alt={clinicName} style={{ height: '80px', objectFit: 'contain' }} crossOrigin="anonymous" />
         ) : (
           <h1 style={{ fontSize: '30px', fontFamily: 'Georgia, serif', color: '#191c1e', fontWeight: 'bold', margin: 0 }}>{clinicName}</h1>
         )}
