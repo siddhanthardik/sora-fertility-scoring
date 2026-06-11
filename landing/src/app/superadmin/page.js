@@ -25,6 +25,7 @@ import {
   Heading3
 } from "lucide-react";
 import Image from "next/image";
+import RichTextEditor from "../components/RichTextEditor";
 
 import styles from "./superadmin.module.css";
 
@@ -1079,32 +1080,11 @@ export default function SuperadminPage() {
                 </div>
 
                 <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                  <label className={styles.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span>Content (Markdown format)</span>
-                    <label style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.875rem", color: "#2563eb", fontWeight: "600" }}>
-                      {uploadingImage ? "Uploading..." : "📎 Insert Local Image"}
-                      <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={uploadingImage} />
-                    </label>
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px', padding: '8px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderBottom: 'none', borderTopLeftRadius: '6px', borderTopRightRadius: '6px' }}>
-                    <button type="button" onClick={() => insertMarkdown("**", "**")} title="Bold" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Bold size={16} /></button>
-                    <button type="button" onClick={() => insertMarkdown("*", "*")} title="Italic" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Italic size={16} /></button>
-                    <button type="button" onClick={() => insertMarkdown("[", "](https://)")} title="Link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Link2 size={16} /></button>
-                    <div style={{ width: '1px', backgroundColor: '#cbd5e1', margin: '0 4px' }}></div>
-                    <button type="button" onClick={() => insertMarkdown("## ")} title="Heading 2" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Heading2 size={16} /></button>
-                    <button type="button" onClick={() => insertMarkdown("### ")} title="Heading 3" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><Heading3 size={16} /></button>
-                    <button type="button" onClick={() => insertMarkdown("- ")} title="Bullet List" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}><List size={16} /></button>
-                  </div>
-                  <textarea 
-                    id="blog-content-textarea"
-                    className={styles.input} 
-                    rows="15" 
-                    style={{ fontFamily: 'monospace', lineHeight: 1.5, borderTopLeftRadius: '0', borderTopRightRadius: '0' }}
-                    placeholder="# Title&#10;&#10;Write your post in markdown here..."
+                  <label className={styles.label}>Content</label>
+                  <RichTextEditor 
                     value={editingBlog.content || ""} 
-                    onChange={(e) => setEditingBlog({...editingBlog, content: e.target.value})}
-                    required
-                  ></textarea>
+                    onChange={(content) => setEditingBlog({...editingBlog, content})} 
+                  />
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>

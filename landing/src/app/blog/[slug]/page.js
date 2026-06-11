@@ -2,8 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import styles from "../page.module.css";
@@ -81,11 +79,7 @@ export default async function BlogPost({ params }) {
             <img src={blog.cover_image} alt={blog.title} className={styles.postCover} />
           )}
 
-          <div className={styles.postContent}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {blog.content}
-            </ReactMarkdown>
-          </div>
+          <div className={styles.postContent} dangerouslySetInnerHTML={{ __html: blog.content }} />
         </article>
       </main>
 
