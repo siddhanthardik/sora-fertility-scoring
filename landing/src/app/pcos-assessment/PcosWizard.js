@@ -219,6 +219,8 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
     acanthosis: "",
     familyPcos: "",
     familyDiabetes: "",
+  });
+
   const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
