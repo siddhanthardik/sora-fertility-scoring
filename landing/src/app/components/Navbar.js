@@ -30,6 +30,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
               <Link href="/tools/due-date-calculator" className={styles.dropdownItem}>Due Date Calculator</Link>
               <Link href="/tools/ovulation-calculator" className={styles.dropdownItem}>Ovulation Calculator</Link>
               <Link href="/tools/bmi-calculator" className={styles.dropdownItem}>BMI Fertility Calculator</Link>
+              {/* New Premium Tool */}
               <Link href="/tools/egg-freezing-planner" className={styles.dropdownItem}>Egg Freezing Planner</Link>
             </div>
           </div>
