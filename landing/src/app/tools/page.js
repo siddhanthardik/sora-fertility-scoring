@@ -52,7 +52,6 @@ export default function ToolsHub() {
             href="/tools/cycle-tracker"
           />
         </div>
-        </div>
       </div>
       <Footer />
     </div>
