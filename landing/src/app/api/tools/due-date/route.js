@@ -4,14 +4,14 @@ import nodemailer from "nodemailer";
 
 export async function POST(req) {
   try {
-    const { results, email } = await req.json();
+    const { results, email, insights } = await req.json();
 
     if (!results) {
       return NextResponse.json({ error: "Missing calculation results" }, { status: 400 });
     }
 
     // Generate PDF buffer
-    const pdfBuffer = await generatePregnancyTimelinePDF(results);
+    const pdfBuffer = await generatePregnancyTimelinePDF(results, insights);
 
     // If an email is provided, send it
     if (email) {

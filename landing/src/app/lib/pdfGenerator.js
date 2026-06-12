@@ -189,7 +189,7 @@ export async function generateAssessmentPDF(patientInfo, assessment, options = {
   });
 }
 
-export async function generatePregnancyTimelinePDF(results, options = {}) {
+export async function generatePregnancyTimelinePDF(results, insights = {}, options = {}) {
   const { clinicName = "SORA Fertility Network" } = options;
 
   return new Promise(async (resolve, reject) => {
@@ -205,64 +205,172 @@ export async function generatePregnancyTimelinePDF(results, options = {}) {
         secondary: '#6F42C1',
         background: '#FFF0F5',
         textDark: '#333333',
-        textLight: '#666666'
+        textLight: '#666666',
+        cardBg: '#f8fafc',
+        highlight: '#fff1f2'
       };
 
-      // Header
-      doc.rect(0, 0, doc.page.width, 100).fill(colors.background);
-      doc.fillColor(colors.primary).fontSize(24).text(clinicName, 50, 30, { align: 'center' });
-      doc.fontSize(12).fillColor(colors.secondary).text('Pregnancy Timeline & Due Date Report', { align: 'center' });
-      doc.moveDown(3);
+      const renderFooter = (pageNumber) => {
+        const bottom = doc.page.margins.bottom;
+        doc.page.margins.bottom = 0;
+        doc.fontSize(10).fillColor(colors.textLight).text(
+          `Page ${pageNumber} • ${clinicName}`,
+          50,
+          doc.page.height - 40,
+          { align: 'center' }
+        );
+        doc.page.margins.bottom = bottom;
+      };
 
-      // Snapshot
-      doc.fontSize(16).fillColor(colors.primary).text('Pregnancy Snapshot');
+      // -------------------------------------------------------------
+      // PAGE 1: Pregnancy Snapshot
+      // -------------------------------------------------------------
+      doc.rect(0, 0, doc.page.width, 140).fill(colors.background);
+      doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center' });
+      doc.fontSize(14).fillColor(colors.secondary).text('Pregnancy Snapshot & Due Date Report', { align: 'center' });
+      doc.moveDown(4);
+
+      doc.fontSize(14).fillColor(colors.textDark).text('Estimated Due Date', { align: 'center' });
+      doc.moveDown(0.5);
+      doc.fontSize(42).fillColor(colors.primary).text(results.dueDateShort || results.dueDate, { align: 'center' });
+      doc.moveDown(2);
+
+      // Info Cards
+      doc.roundedRect(50, doc.y, (doc.page.width - 120) / 2, 80, 10).fillOpacity(0.05).fill(colors.textLight);
+      doc.fillOpacity(1);
+      doc.fontSize(12).fillColor(colors.textLight).text('You Are Currently', 70, doc.y + 15);
+      doc.fontSize(16).fillColor(colors.primary).text(results.gestationalAge, 70, doc.y + 5);
+
+      const x2 = 50 + ((doc.page.width - 120) / 2) + 20;
+      doc.roundedRect(x2, doc.y - 35, (doc.page.width - 120) / 2, 80, 10).fillOpacity(0.05).fill(colors.textLight);
+      doc.fillOpacity(1);
+      doc.fontSize(12).fillColor(colors.textLight).text('Conception Method', x2 + 20, doc.y - 20);
+      doc.fontSize(16).fillColor(colors.textDark).text(results.method, x2 + 20, doc.y + 5, { width: 180 });
+
+      doc.y += 65;
+      doc.x = 50;
+
+      // Baby Size & Arrival
+      doc.roundedRect(50, doc.y, (doc.page.width - 120) / 2, 80, 10).fillOpacity(0.05).fill(colors.textLight);
+      doc.fillOpacity(1);
+      doc.fontSize(12).fillColor(colors.textLight).text('Baby Size', 70, doc.y + 15);
+      doc.fontSize(16).fillColor(colors.textDark).text(`${insights.emoji || '🌱'} ${insights.size || 'Growing quickly!'}`, 70, doc.y + 5);
+
+      doc.roundedRect(x2, doc.y - 35, (doc.page.width - 120) / 2, 80, 10).fillOpacity(0.05).fill(colors.textLight);
+      doc.fillOpacity(1);
+      doc.fontSize(12).fillColor(colors.textLight).text('Days Remaining', x2 + 20, doc.y - 20);
+      doc.fontSize(16).fillColor(colors.textDark).text(`${results.daysUntilDue} days`, x2 + 20, doc.y + 5);
+
+      doc.y += 65;
+      doc.x = 50;
+      
+      renderFooter(1);
+
+      // -------------------------------------------------------------
+      // PAGE 2: Milestones
+      // -------------------------------------------------------------
+      doc.addPage();
+      doc.fontSize(24).fillColor(colors.secondary).text('Pregnancy Journey & Milestones', { align: 'center' });
+      doc.moveDown(2);
+
+      const milestones = [
+        { w: 4, label: '4 Weeks', date: results.timeline?.w4 },
+        { w: 12, label: '12 Weeks', date: results.timeline?.w12 },
+        { w: 20, label: '20 Weeks', date: results.timeline?.w20 },
+        { w: 28, label: '28 Weeks', date: results.timeline?.w28 },
+        { w: 40, label: '40 Weeks', date: results.timeline?.w40 }
+      ];
+
+      // Horizontal line visual
+      doc.rect(80, doc.y + 15, doc.page.width - 160, 2).fill(colors.textLight);
+      let dotX = 80;
+      const spacing = (doc.page.width - 160) / 4;
+
+      milestones.forEach((m) => {
+        const isPast = results.currentWeeks >= m.w;
+        doc.circle(dotX, doc.y + 16, 6).fill(isPast ? colors.primary : '#FFFFFF');
+        doc.circle(dotX, doc.y + 16, 6).lineWidth(2).stroke(isPast ? colors.primary : '#CCCCCC');
+        
+        doc.fontSize(10).fillColor(colors.textDark).text(m.label, dotX - 20, doc.y + 30, { width: 40, align: 'center' });
+        doc.fontSize(8).fillColor(colors.textLight).text(m.date || '', dotX - 25, doc.y + 45, { width: 50, align: 'center' });
+        
+        dotX += spacing;
+      });
+
+      doc.moveDown(5);
+
+      // Upcoming Tests
+      doc.fontSize(16).fillColor(colors.primary).text('Recommended Clinical Scans & Tests');
+      doc.moveDown(1);
+
+      const tests = [
+        { weeks: '11–14 weeks', name: 'NT Scan & NIPT' },
+        { weeks: '18–22 weeks', name: 'Anomaly Scan (Anatomy ultrasound)' },
+        { weeks: '24–28 weeks', name: 'Gestational diabetes screening' },
+        { weeks: '32 weeks', name: 'Growth Scan (If indicated)' },
+        { weeks: '35–37 weeks', name: 'Group B Strep test' }
+      ];
+
+      let tY = doc.y;
+      tests.forEach(test => {
+        doc.roundedRect(50, tY, doc.page.width - 100, 40, 5).fillOpacity(0.05).fill(colors.textDark);
+        doc.fillOpacity(1);
+        doc.fontSize(12).fillColor(colors.textDark).text(test.weeks, 70, tY + 14);
+        doc.fillColor(colors.textLight).text(test.name, 180, tY + 14);
+        tY += 45;
+      });
+
+      renderFooter(2);
+
+      // -------------------------------------------------------------
+      // PAGE 3: This Week's Insights
+      // -------------------------------------------------------------
+      doc.addPage();
+      doc.fontSize(24).fillColor(colors.secondary).text(`Insights for Week ${results.currentWeeks}`, { align: 'center' });
+      doc.moveDown(2);
+
+      // Tagline
+      doc.fontSize(18).fillColor(colors.primary).text(insights.tagline || 'Growing quickly!');
+      doc.moveDown(1);
+
+      // What's Happening
+      doc.fontSize(14).fillColor(colors.textDark).text("What's happening right now:");
       doc.moveDown(0.5);
       
-      doc.roundedRect(50, doc.y, doc.page.width - 100, 100, 10).fillOpacity(0.05).fill(colors.primary);
+      if (insights.what && Array.isArray(insights.what)) {
+        insights.what.forEach(item => {
+          doc.fontSize(12).fillColor(colors.textLight).text(`• ${item}`, { indent: 10 });
+          doc.moveDown(0.3);
+        });
+      }
+
+      doc.moveDown(1.5);
+
+      // Did You Know
+      doc.roundedRect(50, doc.y, doc.page.width - 100, 60, 10).fillOpacity(0.05).fill(colors.primary);
       doc.fillOpacity(1);
-      
-      doc.fontSize(14).fillColor(colors.textDark).text('Estimated Due Date:', 70, doc.y + 20);
-      doc.fontSize(20).fillColor(colors.primary).text(results.dueDate, 70, doc.y + 5);
-      
-      doc.fontSize(12).fillColor(colors.textLight).text(`Gestational Age: ${results.gestationalAge}`, 70, doc.y + 15);
-      doc.text(`Method: ${results.method}`, 70, doc.y + 5);
-      doc.text(`Trimester: ${results.trimester}`, 70, doc.y + 5);
-      
+      doc.fontSize(12).fillColor(colors.primary).text('Did you know?', 70, doc.y + 10);
+      doc.fontSize(11).fillColor(colors.textDark).text(insights.didYouKnow || 'Every pregnancy is unique.', 70, doc.y + 5);
+
       doc.y += 40;
       doc.x = 50;
 
-      // Timeline
-      doc.fontSize(16).fillColor(colors.primary).text('Milestones & Timeline');
-      doc.moveDown(1);
+      // This Week's Tip
+      doc.roundedRect(50, doc.y, doc.page.width - 100, 60, 10).fillOpacity(0.05).fill(colors.secondary);
+      doc.fillOpacity(1);
+      doc.fontSize(12).fillColor(colors.secondary).text("This Week's Tip", 70, doc.y + 10);
+      doc.fontSize(11).fillColor(colors.textDark).text(insights.tip || 'Rest as much as possible and trust your body.', 70, doc.y + 5);
 
-      const milestones = [
-        { title: 'Today', date: results.gestationalAge, highlight: true },
-        { title: 'End of 1st Trimester', date: results.trimester1 },
-        { title: 'End of 2nd Trimester', date: results.trimester2 },
-        { title: 'Estimated Due Date', date: results.dueDate, highlight: true }
-      ];
-
-      let currentY = doc.y;
-      milestones.forEach((m, i) => {
-        doc.circle(60, currentY + 5, 8).fill(m.highlight ? colors.primary : '#CCCCCC');
-        if (i < milestones.length - 1) {
-          doc.rect(59, currentY + 13, 2, 32).fill('#EEEEEE');
-        }
-        
-        doc.fontSize(12).fillColor(m.highlight ? colors.primary : colors.textDark).text(m.title, 85, currentY);
-        doc.fontSize(10).fillColor(colors.textLight).text(m.date, 85, currentY + 15);
-        
-        currentY += 45;
-      });
-
-      doc.y = currentY + 20;
-
-      // Disclaimer
-      doc.moveDown(2);
+      // Disclaimer Footer
+      const dY = doc.page.height - 100;
+      doc.rect(0, dY, doc.page.width, 100).fill(colors.background);
+      doc.fontSize(12).fillColor(colors.textDark).text('Medical Note', 50, dY + 20, { align: 'center' });
       doc.fontSize(10).fillColor(colors.textLight).text(
-        '* This is an estimate based on medical averages. Only 4% of babies are actually born on their exact due date. Always consult your healthcare provider for clinical dating.',
-        { align: 'center' }
+        'Only around 4–5% of babies arrive on their exact due date. Healthcare providers may adjust your due date based on ultrasound findings.',
+        70, dY + 40, { align: 'center', width: doc.page.width - 140 }
       );
+
+      renderFooter(3);
 
       doc.end();
     } catch (error) {
