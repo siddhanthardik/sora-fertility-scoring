@@ -301,6 +301,15 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
                 </div>
               ))}
             </div>
+
+            <div style={{ marginTop: '32px', padding: '20px', background: '#e0f2fe', borderRadius: '12px', border: '1px solid #bae6fd', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ background: '#38bdf8', color: 'white', padding: '8px 12px', borderRadius: '8px', fontWeight: 'bold' }}>Next Step</div>
+              <div>
+                <h4 style={{ margin: '0 0 4px 0', color: '#0369a1', fontSize: '18px' }}>Follow-up Assessment</h4>
+                <p style={{ margin: 0, color: '#0c4a6e', fontSize: '15px' }}>We recommend taking this assessment again in <strong>3 to 6 months</strong> to track changes in your symptoms and measure progress.</p>
+              </div>
+            </div>
+
           </div>
           <Footer />
         </div>
