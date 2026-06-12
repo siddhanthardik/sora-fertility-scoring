@@ -188,3 +188,85 @@ export async function generateAssessmentPDF(patientInfo, assessment, options = {
     }
   });
 }
+
+export async function generatePregnancyTimelinePDF(results, options = {}) {
+  const { clinicName = "SORA Fertility Network" } = options;
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ margin: 50, size: 'A4' });
+      const buffers = [];
+
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+      const colors = {
+        primary: '#E83E8C',
+        secondary: '#6F42C1',
+        background: '#FFF0F5',
+        textDark: '#333333',
+        textLight: '#666666'
+      };
+
+      // Header
+      doc.rect(0, 0, doc.page.width, 100).fill(colors.background);
+      doc.fillColor(colors.primary).fontSize(24).text(clinicName, 50, 30, { align: 'center' });
+      doc.fontSize(12).fillColor(colors.secondary).text('Pregnancy Timeline & Due Date Report', { align: 'center' });
+      doc.moveDown(3);
+
+      // Snapshot
+      doc.fontSize(16).fillColor(colors.primary).text('Pregnancy Snapshot');
+      doc.moveDown(0.5);
+      
+      doc.roundedRect(50, doc.y, doc.page.width - 100, 100, 10).fillOpacity(0.05).fill(colors.primary);
+      doc.fillOpacity(1);
+      
+      doc.fontSize(14).fillColor(colors.textDark).text('Estimated Due Date:', 70, doc.y + 20);
+      doc.fontSize(20).fillColor(colors.primary).text(results.dueDate, 70, doc.y + 5);
+      
+      doc.fontSize(12).fillColor(colors.textLight).text(`Gestational Age: ${results.gestationalAge}`, 70, doc.y + 15);
+      doc.text(`Method: ${results.method}`, 70, doc.y + 5);
+      doc.text(`Trimester: ${results.trimester}`, 70, doc.y + 5);
+      
+      doc.y += 40;
+      doc.x = 50;
+
+      // Timeline
+      doc.fontSize(16).fillColor(colors.primary).text('Milestones & Timeline');
+      doc.moveDown(1);
+
+      const milestones = [
+        { title: 'Today', date: results.gestationalAge, highlight: true },
+        { title: 'End of 1st Trimester', date: results.trimester1 },
+        { title: 'End of 2nd Trimester', date: results.trimester2 },
+        { title: 'Estimated Due Date', date: results.dueDate, highlight: true }
+      ];
+
+      let currentY = doc.y;
+      milestones.forEach((m, i) => {
+        doc.circle(60, currentY + 5, 8).fill(m.highlight ? colors.primary : '#CCCCCC');
+        if (i < milestones.length - 1) {
+          doc.rect(59, currentY + 13, 2, 32).fill('#EEEEEE');
+        }
+        
+        doc.fontSize(12).fillColor(m.highlight ? colors.primary : colors.textDark).text(m.title, 85, currentY);
+        doc.fontSize(10).fillColor(colors.textLight).text(m.date, 85, currentY + 15);
+        
+        currentY += 45;
+      });
+
+      doc.y = currentY + 20;
+
+      // Disclaimer
+      doc.moveDown(2);
+      doc.fontSize(10).fillColor(colors.textLight).text(
+        '* This is an estimate based on medical averages. Only 4% of babies are actually born on their exact due date. Always consult your healthcare provider for clinical dating.',
+        { align: 'center' }
+      );
+
+      doc.end();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
