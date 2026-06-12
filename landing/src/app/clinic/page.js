@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Download, Search, Activity, Users, Clock } from "lucide-react";
 import styles from "./clinic.module.css";
+import LeadDetailsModal from "../components/LeadDetailsModal";
 
 export default function ClinicDashboardPage() {
   const [leads, setLeads] = useState([]);
@@ -10,6 +11,7 @@ export default function ClinicDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [firstName, setFirstName] = useState("");
+  const [selectedLead, setSelectedLead] = useState(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -71,8 +73,8 @@ export default function ClinicDashboardPage() {
   };
 
   const filteredLeads = leads.filter(lead => 
-    lead.patient_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    lead.patient_email?.toLowerCase().includes(searchQuery.toLowerCase())
+    (lead.name && lead.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const totalPages = Math.ceil(filteredLeads.length / itemsPerPage) || 1;
@@ -107,7 +109,7 @@ export default function ClinicDashboardPage() {
             <Activity size={24} />
           </div>
           <p className={styles.kpiLabel}>High Risk Patients</p>
-          <h3 className={styles.kpiValue}>{leads.filter(l => l.risk_band === 'high').length}</h3>
+          <h3 className={styles.kpiValue}>{leads.filter(l => l.triage_tier === 'high').length}</h3>
         </div>
       </div>
 
@@ -147,27 +149,27 @@ export default function ClinicDashboardPage() {
                 </tr>
               ) : (
                 paginatedLeads.map((lead) => (
-                  <tr key={lead.id}>
+                  <tr key={lead.id} onClick={() => setSelectedLead(lead)} style={{ cursor: "pointer" }}>
                     <td>
                       {new Date(lead.created_at).toLocaleDateString()}
                     </td>
                     <td>
-                      <div className={styles.patientName}>{lead.patient_name}</div>
-                      <div className={styles.patientContact}>{lead.patient_email}</div>
-                      <div className={styles.patientContact}>{lead.patient_phone}</div>
+                      <div className={styles.patientName}>{lead.name}</div>
+                      <div className={styles.patientContact}>{lead.email}</div>
+                      <div className={styles.patientContact}>{lead.phone}</div>
                     </td>
                     <td>
                       <span className={`${styles.badge} ${
-                        lead.risk_band === 'high' ? styles.badgeHigh : 
-                        lead.risk_band === 'medium' ? styles.badgeMedium : 
+                        lead.triage_tier === 'high' ? styles.badgeHigh : 
+                        lead.triage_tier === 'medium' ? styles.badgeMedium : 
                         styles.badgeLow
                       }`}>
-                        {lead.risk_band}
+                        {lead.triage_tier || "pending"}
                       </span>
                     </td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <select 
-                        value={lead.status} 
+                        value={lead.status || "new"} 
                         onChange={(e) => updateStatus(lead.id, e.target.value)}
                         className={styles.statusSelect}
                       >
@@ -177,7 +179,7 @@ export default function ClinicDashboardPage() {
                         <option value="archived">Archived</option>
                       </select>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                       {lead.pdf_url ? (
                         <a 
                           href={lead.pdf_url} 
@@ -188,7 +190,7 @@ export default function ClinicDashboardPage() {
                           <Download size={16} /> PDF Report
                         </a>
                       ) : (
-                        <span className={styles.noPdf}>No PDF</span>
+                        <span className={styles.noPdf}>View Details</span>
                       )}
                     </td>
                   </tr>
@@ -251,6 +253,10 @@ export default function ClinicDashboardPage() {
           </div>
         )}
       </div>
+
+      {selectedLead && (
+        <LeadDetailsModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
+      )}
     </div>
   );
 }

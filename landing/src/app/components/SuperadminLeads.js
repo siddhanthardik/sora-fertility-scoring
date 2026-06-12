@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Users, Search, RefreshCcw, Activity } from "lucide-react";
+import LeadDetailsModal from "./LeadDetailsModal";
 
 export default function SuperadminLeads() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedLead, setSelectedLead] = useState(null);
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -63,53 +65,60 @@ export default function SuperadminLeads() {
         </div>
 
         <div style={{ background: "white", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead style={{ backgroundColor: "#f3f4f6", borderBottom: "1px solid #e5e7eb" }}>
-              <tr>
-                <th style={{ padding: "16px", fontWeight: "600", color: "#374151" }}>Name</th>
-                <th style={{ padding: "16px", fontWeight: "600", color: "#374151" }}>Contact</th>
-                <th style={{ padding: "16px", fontWeight: "600", color: "#374151" }}>Triage Tier</th>
-                <th style={{ padding: "16px", fontWeight: "600", color: "#374151" }}>Captured Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={4} style={{ padding: "24px", textAlign: "center", color: "#6b7280" }}>Loading leads...</td></tr>
-              ) : filteredLeads.length === 0 ? (
-                <tr><td colSpan={4} style={{ padding: "24px", textAlign: "center", color: "#6b7280" }}>No leads found.</td></tr>
-              ) : (
-                filteredLeads.map(lead => (
-                  <tr key={lead.id} style={{ borderBottom: "1px solid #e5e7eb" }}>
-                    <td style={{ padding: "16px", color: "#111827", fontWeight: "500" }}>{lead.name}</td>
-                    <td style={{ padding: "16px", color: "#4b5563" }}>
-                      <div>{lead.email}</div>
-                      <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>{lead.phone}</div>
-                    </td>
-                    <td style={{ padding: "16px" }}>
-                      {lead.triage_tier ? (
-                        <span style={{ 
-                          padding: "4px 8px", 
-                          borderRadius: "999px", 
-                          fontSize: "12px", 
-                          fontWeight: "bold",
-                          textTransform: "uppercase",
-                          backgroundColor: lead.triage_tier === 'high' ? '#fee2e2' : lead.triage_tier === 'medium' ? '#fef3c7' : '#dcfce3',
-                          color: lead.triage_tier === 'high' ? '#b91c1c' : lead.triage_tier === 'medium' ? '#b45309' : '#15803d'
-                        }}>
-                          {lead.triage_tier}
-                        </span>
-                      ) : <span style={{ color: "#9ca3af" }}>Pending</span>}
-                    </td>
-                    <td style={{ padding: "16px", color: "#4b5563" }}>
-                      {new Date(lead.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          {/* Table Header */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr", backgroundColor: "#f3f4f6", borderBottom: "1px solid #e5e7eb", padding: "16px", fontWeight: "600", color: "#374151" }}>
+            <div>Name</div>
+            <div>Contact</div>
+            <div>Triage Tier</div>
+            <div>Captured Date</div>
+          </div>
+          {/* Table Body */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {loading ? (
+              <div style={{ padding: "24px", textAlign: "center", color: "#6b7280" }}>Loading leads...</div>
+            ) : filteredLeads.length === 0 ? (
+              <div style={{ padding: "24px", textAlign: "center", color: "#6b7280" }}>No leads found.</div>
+            ) : (
+              filteredLeads.map(lead => (
+                <div 
+                  key={lead.id} 
+                  onClick={() => setSelectedLead(lead)}
+                  style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr", borderBottom: "1px solid #e5e7eb", padding: "16px", alignItems: "center", cursor: "pointer", transition: "background-color 0.2s" }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <div style={{ color: "#111827", fontWeight: "500", wordBreak: "break-word" }}>{lead.name}</div>
+                  <div style={{ color: "#4b5563", wordBreak: "break-word", paddingRight: "10px" }}>
+                    <div>{lead.email}</div>
+                    <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>{lead.phone}</div>
+                  </div>
+                  <div>
+                    {lead.triage_tier ? (
+                      <span style={{ 
+                        padding: "4px 8px", 
+                        borderRadius: "999px", 
+                        fontSize: "12px", 
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        backgroundColor: lead.triage_tier === 'high' ? '#fee2e2' : lead.triage_tier === 'medium' ? '#fef3c7' : '#dcfce3',
+                        color: lead.triage_tier === 'high' ? '#b91c1c' : lead.triage_tier === 'medium' ? '#b45309' : '#15803d'
+                      }}>
+                        {lead.triage_tier}
+                      </span>
+                    ) : <span style={{ color: "#9ca3af" }}>Pending</span>}
+                  </div>
+                  <div style={{ color: "#4b5563" }}>
+                    {new Date(lead.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
+      {selectedLead && (
+        <LeadDetailsModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
+      )}
     </div>
   );
 }

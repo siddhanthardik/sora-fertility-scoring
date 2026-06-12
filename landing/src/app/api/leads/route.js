@@ -320,6 +320,7 @@ export async function POST(request) {
         let htmlBody = `
           <div style="font-family: Arial, sans-serif; color: #1F2B22; background: #FAF9F6; padding: 30px; line-height: 1.6; max-width: 680px; margin: 0 auto; border-radius: 16px;">
             <div style="text-align: center; border-bottom: 2px solid #5F7D67; padding-bottom: 20px; margin-bottom: 25px;">
+              <img src="https://sora-fertility-scoring.vercel.app/sora-logo.png" alt="Sora Fertility Logo" style="height: 60px; margin-bottom: 15px;" />
               <h1 style="color: #1F2B22; margin: 0; font-size: 26px;">Sora Fertility Clinic</h1>
               <p style="color: #5F7D67; margin: 4px 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold;">Confidential Triage & FertiSTAT Report</p>
             </div>
@@ -557,7 +558,7 @@ export async function POST(request) {
         await transporter.sendMail({
           from: smtpFrom,
           to: deliveryEmail,
-          subject: `${safeHeaderText(name || "Your")} - Your Sora Fertility FertiSTAT Report`,
+          subject: "Your Sora Fertility Readiness Report",
           html: htmlBody
         });
 

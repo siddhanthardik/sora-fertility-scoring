@@ -16,7 +16,7 @@ export async function GET(request) {
     }
 
     const { data: leads, error } = await supabaseAdmin
-      .from("assessments")
+      .from("leads")
       .select("*")
       .eq("clinic_id", clinicId)
       .order("created_at", { ascending: false });
@@ -41,7 +41,7 @@ export async function PATCH(request) {
     const { assessmentId, status } = body;
 
     const { error } = await supabaseAdmin
-      .from("assessments")
+      .from("leads")
       .update({ status })
       .match({ id: assessmentId, clinic_id: clinicId });
 
