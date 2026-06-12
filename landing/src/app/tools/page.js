@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Activity, CalendarHeart, Scale, ChevronRight, Baby } from 'lucide-react';
+import { Activity, CalendarHeart, Scale, ChevronRight, Baby, Snowflake } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -56,6 +56,12 @@ export default function ToolsHub() {
             description="Calculate your estimated due date based on your last period."
             icon={<Baby size={32} color="#ff2a5f" />}
             href="/tools/due-date-calculator"
+          />
+          <ToolCard 
+            title="Egg Freezing Planner™"
+            description="Understand how age influences fertility preservation and explore your options."
+            icon={<Snowflake size={32} color="#ff2a5f" />}
+            href="/tools/egg-freezing-planner"
           />
         </div>
       </div>
