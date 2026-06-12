@@ -60,6 +60,59 @@ const RiskGauge = ({ score }) => {
   );
 };
 
+const DomainBreakdownChart = ({ domainScores }) => {
+  const domains = [
+    { label: "Menstrual Dysfunction", score: domainScores?.menstrual || 0, max: 35, color: "#e11d48" },
+    { label: "Hyperandrogenism", score: domainScores?.androgen || 0, max: 30, color: "#f59e0b" },
+    { label: "Metabolic Risk", score: domainScores?.metabolic || 0, max: 20, color: "#2563eb" },
+    { label: "Family & Fertility", score: domainScores?.familyFertility || 0, max: 15, color: "#8b5cf6" },
+  ];
+
+  return (
+    <div style={{ marginTop: '24px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px' }}>
+      <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', color: '#1e293b' }}>Risk Domain Breakdown</h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {domains.map((d, i) => (
+          <div key={i}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '6px', fontWeight: '600', color: '#475569' }}>
+              <span>{d.label}</span>
+              <span>{d.score} / {d.max}</span>
+            </div>
+            <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '5px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${(d.score / d.max) * 100}%`, backgroundColor: d.color, borderRadius: '5px' }}></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BmiScale = ({ bmi }) => {
+  const numericBmi = Number(bmi) || 0;
+  // Position bounded between 15 and 35 for the visual scale
+  const pos = Math.max(15, Math.min(35, numericBmi));
+  const percent = ((pos - 15) / 20) * 100;
+
+  return (
+    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px' }}>
+      <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', color: '#1e293b' }}>BMI Clinical Scale (Asian Cut-offs)</h4>
+      <div style={{ position: 'relative', width: '100%', height: '16px', borderRadius: '8px', background: 'linear-gradient(to right, #60a5fa 20%, #34d399 20% 40%, #fbbf24 40% 50%, #f87171 50%)' }}>
+        <div style={{ position: 'absolute', left: `${percent}%`, top: '-8px', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ width: '4px', height: '32px', backgroundColor: '#1e293b', borderRadius: '2px', boxShadow: '0 0 4px rgba(0,0,0,0.3)' }}></div>
+          <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#1e293b', marginTop: '4px' }}>{numericBmi}</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '11px', marginTop: '20px', fontWeight: '600' }}>
+        <span style={{width: '20%'}}>Underweight<br/>&lt;18.5</span>
+        <span style={{width: '20%'}}>Normal<br/>18.5-22.9</span>
+        <span style={{width: '10%'}}>Overweight<br/>23-24.9</span>
+        <span style={{width: '50%', textAlign: 'right'}}>Obese<br/>&ge;25</span>
+      </div>
+    </div>
+  );
+};
+
 export default function PcosReportTemplate({ assessment, patientData, onClose }) {
   const [downloading, setDownloading] = useState(false);
 
@@ -130,6 +183,7 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
               </div>
 
               <RiskGauge score={assessment.score} />
+              <DomainBreakdownChart domainScores={assessment.domainScores} />
               
             </div>
           </div>
@@ -205,6 +259,10 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
                 {assessment.fertilityImpact}
               </p>
             </div>
+          </div>
+
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
+            <BmiScale bmi={patientData.bmi} />
           </div>
 
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>

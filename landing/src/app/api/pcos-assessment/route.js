@@ -7,7 +7,6 @@ export async function POST(req) {
     // 1. Initialize scoring
     let score = 0;
     const contributingFactors = [];
-    const patternInsights = [];
 
     // Step 2: Menstrual Dysfunction (Max 35 points)
     let menstrualScore = 0;
@@ -79,6 +78,7 @@ export async function POST(req) {
     }
     if (data.familyDiabetes === 'yes') {
       familyScore += 4;
+      contributingFactors.push("Family history of Diabetes");
     }
     score += Math.min(familyScore, 10);
 
@@ -92,45 +92,96 @@ export async function POST(req) {
     }
     score += Math.min(fertilityScore, 5);
 
-    // Score Categories
-    let category = "Low likelihood";
-    let explanation = "Your responses do not indicate a high risk for PCOS. However, if you have concerns about your menstrual cycle or fertility, a routine check-up is always a good idea.";
-    let nextSteps = "Maintain a healthy lifestyle. If you are actively trying to conceive and face issues, consult your doctor.";
-
+    // Score Categories & Percentile
+    let category = "Low Pattern Match";
+    
     if (score >= 75) {
-      category = "Very high likelihood";
-      explanation = "Your responses strongly align with the clinical criteria for Polycystic Ovary Syndrome (PCOS). You exhibit multiple key symptoms such as irregular cycles, androgenic signs, or metabolic indicators.";
-      nextSteps = "We highly recommend scheduling a consultation with a reproductive endocrinologist or gynecologist for a formal evaluation, ultrasound, and hormone panel.";
+      category = "Very High Pattern Match";
     } else if (score >= 50) {
-      category = "High likelihood";
-      explanation = "Your responses indicate a significant number of PCOS-related symptoms. A clinical evaluation is recommended to confirm a diagnosis.";
-      nextSteps = "Schedule a visit with your doctor. They can perform blood tests (like testosterone, AMH, and metabolic markers) and a pelvic ultrasound to provide clarity.";
+      category = "High Pattern Match";
     } else if (score >= 25) {
-      category = "Moderate likelihood";
-      explanation = "You have some symptoms that could be associated with PCOS, but they may also be related to other hormonal or lifestyle factors.";
-      nextSteps = "Discuss these symptoms at your next routine gynecological visit. Tracking your cycle lengths and symptoms will be helpful for your doctor.";
+      category = "Moderate Pattern Match";
     }
 
-    // Pattern Insights
-    if (metabolicScore >= 15 && menstrualScore > 0) {
-      patternInsights.push("Insulin Resistance Pattern: Your symptoms suggest that metabolic factors and insulin resistance may be strongly driving your hormonal imbalances. Focus on blood sugar management and discuss Metformin or Inositol with your doctor.");
+    // Deterministic percentile for emotional context
+    const percentile = Math.min(99, Math.round(score * 1.3 + 15));
+
+    // Specific Boolean Patterns
+    const patterns = {
+      ovulatory: menstrualScore > 0,
+      metabolic: metabolicScore >= 8 || bmi >= 25,
+      androgen: androgenScore >= 10,
+      leanPcos: score >= 40 && bmi < 23 && data.waist === 'normal',
+      lowSymptom: score < 25
+    };
+
+    let dominantPatternText = "Your responses span multiple domains without a strongly dominant symptom cluster.";
+    if (patterns.leanPcos) {
+      dominantPatternText = "Lean PCOS Pattern: You have a high risk profile despite having a normal BMI. Lean PCOS can still involve hidden insulin resistance or high adrenal androgens.";
+    } else if (patterns.metabolic && !patterns.androgen) {
+      dominantPatternText = "Predominantly Metabolic Pattern: Your symptoms suggest that metabolic factors and insulin resistance may be strongly driving your hormonal imbalances.";
+    } else if (patterns.androgen && !patterns.metabolic) {
+      dominantPatternText = "Predominantly Androgen Excess Pattern: High levels of androgen (male hormones) appear to be a primary factor for you, leading to physical symptoms.";
+    } else if (patterns.ovulatory && patterns.metabolic && patterns.androgen) {
+      dominantPatternText = "Classic Polycystic Ovary Syndrome Pattern: Your symptoms align across all three major diagnostic criteria domains (ovulatory, metabolic, and androgenic).";
+    } else if (patterns.lowSymptom) {
+      dominantPatternText = "Low Symptom Burden Pattern: You do not exhibit a strong cluster of PCOS-related symptoms based on your responses.";
     }
-    if (androgenScore >= 20) {
-      patternInsights.push("Hyperandrogenic Pattern: High levels of androgen (male hormones) appear to be a primary factor for you, leading to physical symptoms like acne or hair growth. Specific anti-androgen treatments may be beneficial.");
+
+    // What This Means
+    const whatThisMeans = [
+      "Irregular ovulation",
+      "Difficulty conceiving",
+      "Weight management challenges",
+      "Insulin resistance",
+      "Long-term metabolic health"
+    ];
+
+    // Fertility Impact
+    let fertilityImpact = "Some symptoms reported can be associated with irregular ovulation. This does NOT mean infertility. Many women with similar patterns conceive naturally or with targeted treatment.";
+    if (data.tryingDuration === 'notTrying') {
+      fertilityImpact = "While you are not currently trying to conceive, some of the reported symptoms can be associated with irregular ovulation. Understanding your body now is beneficial for future family planning.";
     }
-    if (score >= 50 && bmi < 23 && data.waist === 'normal') {
-      patternInsights.push("Lean PCOS Pattern: You have a high risk profile despite having a normal BMI. Lean PCOS can still involve hidden insulin resistance or high adrenal androgens, and requires careful management.");
-    }
+
+    // 30-Day Action Plan
+    const actionPlan = [
+      { week: "Week 1", task: "Start tracking cycle dates and symptoms." },
+      { week: "Week 2", task: "Schedule a gynecologist or endocrinologist consultation." },
+      { week: "Week 3", task: "Discuss whether hormone and metabolic testing may be appropriate." },
+      { week: "Week 4", task: "Review lifestyle modifications and reassess personal health goals." }
+    ];
+
+    // Suggested Investigations
+    const suggestedTests = [
+      "Pelvic Ultrasound",
+      "Total & Free Testosterone",
+      "TSH (Thyroid)",
+      "Prolactin",
+      "HbA1c & Fasting Insulin",
+      "Lipid Profile"
+    ];
+
+    const domainScores = {
+      menstrual: Math.min(menstrualScore, 35),
+      androgen: Math.min(androgenScore, 30),
+      metabolic: Math.min(metabolicScore, 20),
+      familyFertility: Math.min(familyScore + fertilityScore, 15)
+    };
 
     return NextResponse.json({
       success: true,
       assessment: {
         score,
+        percentile,
         category,
-        explanation,
-        nextSteps,
+        patterns,
+        domainScores,
+        dominantPatternText,
         contributingFactors,
-        patternInsights
+        whatThisMeans,
+        fertilityImpact,
+        actionPlan,
+        suggestedTests
       }
     });
   } catch (error) {
