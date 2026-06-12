@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, RefreshCw, Star, Shield, ArrowUpRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, HeartPulse, BookOpen, ShieldCheck, Activity, CalendarHeart, Scale, Baby, Snowflake, ChevronRight } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import DemoModal from "./components/DemoModal";
@@ -17,176 +17,185 @@ export default function Home() {
       <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
       <Navbar hideCta={true} />
 
-      {/* HERO SECTION */}
+      {/* SECTION 1: HERO */}
       <section className={styles.heroSection}>
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
             <div className={styles.badge}>ADVANCED FERTILITY PLATFORM</div>
-            <h1 className={styles.heroTitle}>Elevating Fertility Care Through Intelligent Software</h1>
+            <h1 className={styles.heroTitle}>Understand Your Fertility.<br />Make Confident Decisions.</h1>
             <p className={styles.heroDesc}>
-              SORA brings enterprise-grade CRM software and patient-facing fertility risk tools into one unified platform. Designed exclusively to optimize fertility clinic workflows and acquire high-intent patients.
+              Private fertility tools and evidence-based assessments designed to help you navigate every stage of your reproductive journey.
             </p>
             <div className={styles.heroActions}>
-              <Link href="/crm" className={styles.btnPrimary}>Explore IVF CRM</Link>
-              <Link href="/fertility-assessment" className={styles.btnSecondary}>View Patient Tools</Link>
+              <Link href="/tools" className={styles.btnPrimaryLg}>Explore Free Tools</Link>
+              <a href="#clinics" className={styles.btnSecondaryLg}>For Fertility Clinics</a>
             </div>
-          </div>
-          
-          <div className={styles.heroVisual}>
-            <div className={styles.dashboardWrapper}>
-              <Image src="/doctors.jpg" alt="SORA Dashboard" width={600} height={400} className={styles.dashboardImg} priority />
-              <div className={styles.glassCard}>
-                <div className={styles.glassIcon}><ArrowUpRight size={16} /></div>
-                <div>
-                  <div className={styles.glassLabel}>CONVERSION RATE</div>
-                  <div className={styles.glassValue}>52.0%</div>
-                </div>
-              </div>
+            <div className={styles.trustBanner}>
+              Trusted by women trying to conceive, planning ahead, and seeking clarity.
             </div>
           </div>
         </div>
       </section>
 
-      {/* TWO SUITES SECTION */}
-      <section className={styles.suitesSection}>
-        <div className={styles.suitesInner}>
-          <h2 className={styles.sectionTitle}>Two Powerful Suites. One Unified Platform.</h2>
+      {/* SECTION 2: FREE FERTILITY TOOLS */}
+      <section className={styles.toolsShowcaseSection}>
+        <div className={styles.toolsShowcaseInner}>
+          <div className={styles.sectionHeaderCenter}>
+            <h2 className={styles.sectionTitle}>Free Fertility Tools</h2>
+            <div className={styles.accentLine}></div>
+            <p className={styles.sectionSubtitle}>Discover insights into your cycle, timeline, and hormonal health.</p>
+          </div>
+
+          <div className={styles.toolsShowcaseGrid}>
+            <Link href="/fertility-assessment" className={styles.toolShowcaseCard}>
+              <div className={styles.toolShowcaseIcon}><HeartPulse size={24} /></div>
+              <h3 className={styles.toolShowcaseTitle}>Fertility Assessment</h3>
+              <p className={styles.toolShowcaseDesc}>Comprehensive analysis of your reproductive timeline and risk factors.</p>
+              <div className={styles.toolShowcaseLink}>Explore <ArrowRight size={14} /></div>
+            </Link>
+            
+            <Link href="/tools/egg-freezing-planner" className={styles.toolShowcaseCard}>
+              <div className={styles.toolShowcaseIcon}><Snowflake size={24} /></div>
+              <h3 className={styles.toolShowcaseTitle}>Egg Freezing Planner</h3>
+              <p className={styles.toolShowcaseDesc}>Understand how age influences fertility preservation and explore options.</p>
+              <div className={styles.toolShowcaseLink}>Explore <ArrowRight size={14} /></div>
+            </Link>
+
+            <Link href="/tools/due-date-calculator" className={styles.toolShowcaseCard}>
+              <div className={styles.toolShowcaseIcon}><Baby size={24} /></div>
+              <h3 className={styles.toolShowcaseTitle}>Due Date Calculator</h3>
+              <p className={styles.toolShowcaseDesc}>Calculate your estimated due date for natural pregnancy, IUI, and IVF.</p>
+              <div className={styles.toolShowcaseLink}>Explore <ArrowRight size={14} /></div>
+            </Link>
+
+            <Link href="/pcos-assessment" className={styles.toolShowcaseCard}>
+              <div className={styles.toolShowcaseIcon}><Activity size={24} /></div>
+              <h3 className={styles.toolShowcaseTitle}>PCOS Assessment</h3>
+              <p className={styles.toolShowcaseDesc}>Evaluate your symptoms against clinical criteria for Polycystic Ovary Syndrome.</p>
+              <div className={styles.toolShowcaseLink}>Explore <ArrowRight size={14} /></div>
+            </Link>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '48px' }}>
+            <Link href="/tools" className={styles.btnOutlineDark} style={{ color: '#e11d48', borderColor: '#fce7f3', background: 'white' }}>Explore All Tools</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: VALUE PROP */}
+      <section className={styles.valuePropSection}>
+        <div className={styles.valuePropInner}>
+          <h2 className={styles.sectionTitleCenter}>Take the Guesswork Out of Fertility</h2>
           <div className={styles.accentLine}></div>
 
-          <div className={styles.suitesGrid}>
-            {/* IVF CRM Card */}
-            <div className={styles.suiteCardWhite}>
-              <div className={styles.suiteIconPrimary}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
-              </div>
-              <h3 className={styles.suiteTitle}>IVF CRM</h3>
-              <p className={styles.suiteDesc}>
-                A robust, specialized CRM designed to manage fertility leads, track clinical cycles, automate patient engagement, and provide a secure patient portal for your clinic.
-              </p>
-              <ul className={styles.suiteList}>
-                <li><CheckCircle2 size={16} className={styles.checkIcon} /> Advanced Cycle Phase Tracking</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon} /> HIPAA-Compliant Patient Portal</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon} /> Automated Lead Nurturing</li>
-              </ul>
-              <Link href="/crm" className={styles.suiteLink}>Learn more about CRM <ArrowRight size={16} /></Link>
+          <div className={styles.valueGrid}>
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}><Activity size={28} /></div>
+              <h3 className={styles.valueTitle}>Assess</h3>
+              <p className={styles.valueDesc}>Understand your reproductive health through personalized risk assessments.</p>
             </div>
-
-            {/* Fertility Assessment Card */}
-            <div className={styles.suiteCardGrey}>
-              <div className={styles.suiteIconSecondary}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><circle cx="10" cy="13" r="2"></circle><path d="M10 17v-2"></path></svg>
-              </div>
-              <h3 className={styles.suiteTitle}>Fertility Assessment</h3>
-              <p className={styles.suiteDesc}>
-                A beautiful, embeddable white-label risk assessment tool. Engage website visitors, deliver instant personalized fertility reports, and capture high-intent leads.
-              </p>
-              
-              <div className={styles.nestedCard}>
-                <div className={styles.nestedLabel}>TRY THE EXPERIENCE</div>
-                <div className={styles.nestedText}>Experience how patients feel when engaging with your brand through our risk tools.</div>
-              </div>
-
-              <Link href="/fertility-assessment" className={styles.suiteLink}>Try the Assessment Tool <ArrowRight size={16} /></Link>
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}><BookOpen size={28} /></div>
+              <h3 className={styles.valueTitle}>Learn</h3>
+              <p className={styles.valueDesc}>Get evidence-based insights without the confusing medical jargon.</p>
+            </div>
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}><ShieldCheck size={28} /></div>
+              <h3 className={styles.valueTitle}>Act</h3>
+              <p className={styles.valueDesc}>Know exactly when it is time to seek support from a fertility specialist.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* UNIFIED ECOSYSTEM SECTION (Benefits) */}
-      <section id="benefits" className={styles.ecoSection}>
-        <div className={styles.ecoInner}>
-          <div className={styles.ecoHeader}>
-            <div className={styles.ecoHeaderLeft}>
-              <h2 className={styles.sectionTitleEco}>A Unified Ecosystem for Superior Care</h2>
-              <p className={styles.ecoDesc}>Our platform eliminates the fragmentation between marketing, intake, and clinical management.</p>
-            </div>
-            <div className={styles.ecoHeaderRight}>
-              <button className={styles.btnBlack} onClick={() => setIsDemoModalOpen(true)}>Platform Overview</button>
-            </div>
-          </div>
-
-          <div className={styles.ecoGrid}>
-            <div className={styles.ecoCard}>
-              <div className={styles.ecoIcon}><RefreshCw size={20} /></div>
-              <h4 className={styles.ecoCardTitle}>Accelerate Intake</h4>
-              <p className={styles.ecoCardDesc}>Reduce friction in the patient journey with instant risk assessments that qualify leads before they reach your front desk.</p>
-            </div>
-            <div className={styles.ecoCard}>
-              <div className={styles.ecoIcon}><Star size={20} /></div>
-              <h4 className={styles.ecoCardTitle}>Unified Visibility</h4>
-              <p className={styles.ecoCardDesc}>See every touchpoint from initial inquiry to cycle completion in a single, high-fidelity clinical dashboard.</p>
-            </div>
-            <div className={styles.ecoCard}>
-              <div className={styles.ecoIcon}><Shield size={20} /></div>
-              <h4 className={styles.ecoCardTitle}>Enterprise Security</h4>
-              <p className={styles.ecoCardDesc}>Rest easy with HIPAA compliance, SOC2 adherence, and end-to-end encryption for all sensitive patient data.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS SECTION */}
-      <section id="how-it-works" className={styles.howItWorksSection}>
-        <div className={styles.howItWorksInner}>
-          <h2 className={styles.sectionTitleCenter}>How SORA Works</h2>
-          <div className={styles.accentLine}></div>
-          <div className={styles.stepsGrid}>
-            <div className={styles.stepCard}>
-              <div className={styles.stepNumber}>1</div>
-              <h3 className={styles.stepTitle}>Integrate & Customize</h3>
-              <p className={styles.stepDesc}>Deploy our white-label tools on your site and integrate the CRM with your existing clinic systems in minutes.</p>
-            </div>
-            <div className={styles.stepCard}>
-              <div className={styles.stepNumber}>2</div>
-              <h3 className={styles.stepTitle}>Capture & Qualify</h3>
-              <p className={styles.stepDesc}>Engage prospective patients with instant fertility reports, capturing high-intent leads automatically.</p>
-            </div>
-            <div className={styles.stepCard}>
-              <div className={styles.stepNumber}>3</div>
-              <h3 className={styles.stepTitle}>Manage & Convert</h3>
-              <p className={styles.stepDesc}>Track cycle progress, nurture leads securely, and turn prospects into loyal patients through our unified portal.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIAL SECTION */}
-      <section className={styles.testimonialSection}>
-        <div className={styles.testimonialInner}>
-          <div className={styles.testiVisual}>
-            <Image src="/doctors.png" alt="Doctors reviewing SORA on a laptop" width={500} height={500} className={styles.testiImg} />
-            <div className={styles.testiBadge}>
-              <div className={styles.badgeVal}>98%</div>
-              <div className={styles.badgeLabel}>CLINIC SPECIALIST<br/>SATISFACTION</div>
-            </div>
-          </div>
-          
-          <div className={styles.testiContent}>
-            <h2 className={styles.sectionTitle}>Designed by Specialists, for Specialists.</h2>
-            <p className={styles.testiDesc}>
-              We understand the complexity of reproductive medicine. SORA's platform is built to handle the unique nuances of IVF cycles, egg freezing, and donor management with clinical precision.
+      {/* SECTION 4: FEATURED TOOL */}
+      <section className={styles.featuredSection}>
+        <div className={styles.featuredInner}>
+          <div className={styles.featuredContent}>
+            <div className={styles.badge} style={{ background: '#e0e7ff', color: '#4338ca' }}>FEATURED TOOL OF THE MONTH</div>
+            <h2 className={styles.featuredTitle}>Egg Freezing Planner™</h2>
+            <p className={styles.featuredDesc}>
+              A comprehensive guide to understanding your timeline, estimated costs, and clinical considerations for fertility preservation. Designed by experts, completely private.
             </p>
-            <div className={styles.quoteBlock}>
-              <p className={styles.quoteText}>
-                "SORA has transformed how we interact with prospective patients. The data density is incredible, yet the interface remains intuitive for our busy nursing staff."
-              </p>
-              <p className={styles.quoteAuthor}>— CLINICAL DIRECTOR, REPRODUCTIVE PARTNERS</p>
+            <ul className={styles.featuredList}>
+              <li><CheckCircle2 size={16} color="#4338ca" /> Age-based timeline forecasting</li>
+              <li><CheckCircle2 size={16} color="#4338ca" /> Clinical risk factor breakdown</li>
+              <li><CheckCircle2 size={16} color="#4338ca" /> Downloadable PDF report</li>
+            </ul>
+            <Link href="/tools/egg-freezing-planner" className={styles.btnPrimaryLg} style={{ background: '#4338ca', boxShadow: '0 4px 15px rgba(67, 56, 202, 0.4)' }}>Try Planner Free</Link>
+          </div>
+          <div className={styles.featuredVisual}>
+            <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '32px', border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
+               <Snowflake size={64} color="#4338ca" style={{ marginBottom: '24px' }} />
+               <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>Your Preservation Journey</h3>
+               <p style={{ color: '#64748b', lineHeight: '1.6' }}>Based on your inputs, freezing before age 32 yields the highest probability of future success...</p>
+               <div style={{ marginTop: '24px', background: '#e0e7ff', color: '#4338ca', padding: '12px', borderRadius: '8px', fontWeight: '600', textAlign: 'center' }}>
+                 Generate Report
+               </div>
             </div>
-            <button className={styles.btnPrimary} onClick={() => setIsDemoModalOpen(true)}>Schedule a Demo</button>
           </div>
         </div>
       </section>
 
-      {/* DARK CTA SECTION */}
-      <section className={styles.ctaDarkSection}>
-        <div className={styles.ctaDarkInner}>
-          <h2 className={styles.ctaDarkTitle}>Supercharge Your Clinic's Performance</h2>
-          <p className={styles.ctaDarkDesc}>
-            Join the growing network of clinics optimizing their patient outcomes with SORA's intelligent fertility software.
-          </p>
-          <div className={styles.ctaDarkActions}>
-            <button className={styles.btnPrimaryLg} onClick={() => setIsDemoModalOpen(true)}>Request a Personalized Demo</button>
-            <button className={styles.btnOutlineDark} onClick={() => setIsDemoModalOpen(true)}>Contact Sales</button>
+      {/* SECTION 5: FOR CLINICS */}
+      <section id="clinics" className={styles.clinicsSection}>
+        <div className={styles.clinicsInner}>
+          <div className={styles.clinicsContent}>
+            <h2 className={styles.clinicsTitle}>For Fertility Clinics</h2>
+            <p className={styles.clinicsDesc}>
+              Already helping patients? SORA Clinic powers lead management, cycle tracking, patient engagement, and fertility workflows. 
+              Turn high-intent website visitors into booked consultations.
+            </p>
+            <button className={styles.btnBlack} onClick={() => setIsDemoModalOpen(true)}>Book CRM Demo</button>
+          </div>
+          <div className={styles.clinicsGrid}>
+            <div className={styles.clinicsFeature}>
+              <div className={styles.clinicsIcon}><CheckCircle2 size={16} /></div>
+              <span>Automated Lead Nurturing</span>
+            </div>
+            <div className={styles.clinicsFeature}>
+              <div className={styles.clinicsIcon}><CheckCircle2 size={16} /></div>
+              <span>Clinical Cycle Tracking</span>
+            </div>
+            <div className={styles.clinicsFeature}>
+              <div className={styles.clinicsIcon}><CheckCircle2 size={16} /></div>
+              <span>Secure Patient Portal</span>
+            </div>
+            <div className={styles.clinicsFeature}>
+              <div className={styles.clinicsIcon}><CheckCircle2 size={16} /></div>
+              <span>HIPAA Compliant</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 6: WHY SORA IS DIFFERENT */}
+      <section className={styles.whyDifferentSection}>
+        <div className={styles.whyDifferentInner}>
+          <h2 className={styles.sectionTitleCenter}>Why SORA Is Different</h2>
+          <div className={styles.accentLine}></div>
+          
+          <div className={styles.differentGrid}>
+            <div className={styles.differentCard}>
+              <div className={styles.differentNumber}>01</div>
+              <h3 className={styles.differentTitle}>Private & No Signup</h3>
+              <p className={styles.differentDesc}>We believe your health data is yours. Use our calculators entirely anonymously without ever creating an account.</p>
+            </div>
+            <div className={styles.differentCard}>
+              <div className={styles.differentNumber}>02</div>
+              <h3 className={styles.differentTitle}>Evidence-Based</h3>
+              <p className={styles.differentDesc}>Our logic is built upon leading medical society guidelines, ensuring you get clinical-grade insights.</p>
+            </div>
+            <div className={styles.differentCard}>
+              <div className={styles.differentNumber}>03</div>
+              <h3 className={styles.differentTitle}>Exclusively Fertility</h3>
+              <p className={styles.differentDesc}>Unlike generic health trackers, SORA is designed specifically for complex reproductive health journeys.</p>
+            </div>
+            <div className={styles.differentCard}>
+              <div className={styles.differentNumber}>04</div>
+              <h3 className={styles.differentTitle}>Trusted by Clinics</h3>
+              <p className={styles.differentDesc}>Top fertility specialists rely on SORA's enterprise software to manage their own patients.</p>
+            </div>
           </div>
         </div>
       </section>
