@@ -118,7 +118,7 @@ export async function POST(request) {
         actualClinicId = clinic.clinicId;
       } else {
         // Fallback: Check if it's a widget token
-        const { supabaseAdmin } = await import("../../../lib/supabaseClient");
+        const { supabaseAdmin } = await import("../../lib/supabaseClient");
         if (supabaseAdmin) {
           const { data } = await supabaseAdmin.from("clinic_registry").select("clinic_id, owner_email, name").eq("widget_token", incomingClinicId).single();
           if (data) {
@@ -231,6 +231,13 @@ export async function POST(request) {
           recreational_drugs: rawPayload.recreationalDrugs || null,
           caffeine: rawPayload.caffeine || null,
           cancer_treatment: rawPayload.cancerTreatment || null,
+          
+          // PCOS fields
+          pcos_assessment_score: rawPayload.pcos_assessment_score ? Number(rawPayload.pcos_assessment_score) : null,
+          pcos_risk_level: rawPayload.pcos_risk_level || null,
+          pcos_pattern: rawPayload.pcos_pattern || null,
+          pcos_responses: rawPayload.pcos_responses ? JSON.stringify(rawPayload.pcos_responses) : null,
+          lead_priority: rawPayload.lead_priority || null,
           
           // Reports
           triage_tier: rawPayload.risk_category || null,

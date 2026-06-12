@@ -81,14 +81,27 @@ export default function LeadDetailsModal({ lead, onClose }) {
               <DataRow label="Source" value={lead.source} />
             </div>
 
-            {/* Assessment Scores */}
-            <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
-              <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", color: "#374151" }}>FertiSTAT Assessment</h3>
-              <DataRow label="Triage Tier" value={(lead.triage_tier || "Pending").toUpperCase()} />
-              <DataRow label="Referral Urgency" value={lead.urgency || "Pending"} />
-              <DataRow label="Basic Score" value={lead.basic_score} />
-              <DataRow label="Enhanced Score" value={lead.enhanced_score} />
-            </div>
+            {/* FertiSTAT Assessment Scores */}
+            {lead.triage_tier && (
+              <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+                <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", color: "#374151" }}>FertiSTAT Assessment</h3>
+                <DataRow label="Triage Tier" value={(lead.triage_tier || "Pending").toUpperCase()} />
+                <DataRow label="Referral Urgency" value={lead.urgency || "Pending"} />
+                <DataRow label="Basic Score" value={lead.basic_score} />
+                <DataRow label="Enhanced Score" value={lead.enhanced_score} />
+              </div>
+            )}
+
+            {/* PCOS Assessment Scores */}
+            {(lead.pcos_risk_level || lead.pcos_assessment_score !== null) && (
+              <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+                <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", color: "#374151" }}>PCOS Assessment</h3>
+                <DataRow label="Risk Level" value={(lead.pcos_risk_level || "Pending").toUpperCase()} />
+                <DataRow label="Score" value={lead.pcos_assessment_score} />
+                <DataRow label="Pattern Insights" value={lead.pcos_pattern || "None"} />
+                <DataRow label="Lead Priority" value={lead.lead_priority || "NORMAL"} />
+              </div>
+            )}
             
             {/* Biometrics & Goal */}
             <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>

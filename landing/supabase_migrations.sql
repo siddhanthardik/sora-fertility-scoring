@@ -128,3 +128,12 @@ CREATE POLICY "Public can insert leads"
 CREATE POLICY "Authenticated can manage leads"
   ON leads FOR ALL
   USING (auth.role() = 'authenticated');
+
+-- 8. Add PCOS Assessment specific fields to leads table
+ALTER TABLE leads
+ADD COLUMN IF NOT EXISTS pcos_assessment_score INTEGER,
+ADD COLUMN IF NOT EXISTS pcos_risk_level TEXT,
+ADD COLUMN IF NOT EXISTS pcos_pattern TEXT,
+ADD COLUMN IF NOT EXISTS pcos_responses JSONB,
+ADD COLUMN IF NOT EXISTS pcos_report_version TEXT,
+ADD COLUMN IF NOT EXISTS lead_priority TEXT;

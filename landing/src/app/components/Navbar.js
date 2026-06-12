@@ -25,6 +25,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
             </span>
             <div className={styles.dropdownMenu}>
               <Link href="/fertility-assessment" className={styles.dropdownItem}>Fertility Assessment</Link>
+              <Link href="/pcos-assessment" className={styles.dropdownItem}>PCOS Risk Assessment</Link>
             </div>
           </div>
 
@@ -59,6 +60,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
         <div className={styles.mobileNav}>
           <Link href="/crm" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>IVF CRM</Link>
           <Link href="/fertility-assessment" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Fertility Assessment</Link>
+          <Link href="/pcos-assessment" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>PCOS Assessment</Link>
           <Link href="/#benefits" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Benefits</Link>
           <Link href="/#how-it-works" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>How It Works</Link>
           <Link href="/contact" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>

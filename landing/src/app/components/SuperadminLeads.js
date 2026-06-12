@@ -109,6 +109,18 @@ export default function SuperadminLeads() {
                       }}>
                         {lead.triage_tier}
                       </span>
+                    ) : lead.pcos_risk_level ? (
+                      <span style={{ 
+                        padding: "4px 8px", 
+                        borderRadius: "999px", 
+                        fontSize: "12px", 
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        backgroundColor: lead.pcos_risk_level.includes('High') || lead.pcos_risk_level.includes('Very high') ? '#fee2e2' : lead.pcos_risk_level.includes('Moderate') ? '#fef3c7' : '#dcfce3',
+                        color: lead.pcos_risk_level.includes('High') || lead.pcos_risk_level.includes('Very high') ? '#b91c1c' : lead.pcos_risk_level.includes('Moderate') ? '#b45309' : '#15803d'
+                      }}>
+                        {lead.pcos_risk_level}
+                      </span>
                     ) : <span style={{ color: "#9ca3af" }}>Pending</span>}
                   </div>
                   <div style={{ color: "#4b5563" }}>
