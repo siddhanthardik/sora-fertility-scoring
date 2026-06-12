@@ -66,9 +66,10 @@ export default function SuperadminLeads() {
 
         <div style={{ background: "white", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", overflow: "hidden" }}>
           {/* Table Header */}
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr", backgroundColor: "#f3f4f6", borderBottom: "1px solid #e5e7eb", padding: "16px", fontWeight: "600", color: "#374151" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr 1fr", backgroundColor: "#f3f4f6", borderBottom: "1px solid #e5e7eb", padding: "16px", fontWeight: "600", color: "#374151" }}>
             <div>Name</div>
             <div>Contact</div>
+            <div>Clinic</div>
             <div>Triage Tier</div>
             <div>Captured Date</div>
           </div>
@@ -83,7 +84,7 @@ export default function SuperadminLeads() {
                 <div 
                   key={lead.id} 
                   onClick={() => setSelectedLead(lead)}
-                  style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr", borderBottom: "1px solid #e5e7eb", padding: "16px", alignItems: "center", cursor: "pointer", transition: "background-color 0.2s" }}
+                  style={{ display: "grid", gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr 1fr", borderBottom: "1px solid #e5e7eb", padding: "16px", alignItems: "center", cursor: "pointer", transition: "background-color 0.2s" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
@@ -91,6 +92,9 @@ export default function SuperadminLeads() {
                   <div style={{ color: "#4b5563", wordBreak: "break-word", paddingRight: "10px" }}>
                     <div>{lead.email}</div>
                     <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>{lead.phone}</div>
+                  </div>
+                  <div style={{ color: "#6b7280", fontSize: "13px", wordBreak: "break-word", paddingRight: "10px" }}>
+                    {lead.clinic_id ? (lead.clinic_id.startsWith("clinic_") ? lead.clinic_id.split("_")[1] : "Linked") : "Unassigned"}
                   </div>
                   <div>
                     {lead.triage_tier ? (

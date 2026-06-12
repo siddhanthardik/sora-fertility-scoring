@@ -107,11 +107,27 @@ export async function POST(request) {
     }
 
     const payload = escapePayload(rawPayload);
-    const clinicId = String(rawPayload?.clinicId || rawPayload?.clinic_id || "").trim();
-    const clinic = clinicId ? await getClinic(clinicId).catch((error) => {
-      console.error("Clinic lookup for lead notification failed:", error);
-      return null;
-    }) : null;
+    const incomingClinicId = String(rawPayload?.clinicId || rawPayload?.clinic_id || "").trim();
+    
+    // Attempt to lookup clinic by ID first, and if not found, lookup by widget token
+    let clinic = null;
+    let actualClinicId = null;
+    if (incomingClinicId) {
+      clinic = await getClinic(incomingClinicId).catch(() => null);
+      if (clinic) {
+        actualClinicId = clinic.clinicId;
+      } else {
+        // Fallback: Check if it's a widget token
+        const { supabaseAdmin } = await import("../../../lib/supabaseClient");
+        if (supabaseAdmin) {
+          const { data } = await supabaseAdmin.from("clinic_registry").select("clinic_id, owner_email, name").eq("widget_token", incomingClinicId).single();
+          if (data) {
+            actualClinicId = data.clinic_id;
+            clinic = { name: data.name, notificationEmail: data.owner_email, ownerEmail: data.owner_email };
+          }
+        }
+      }
+    }
     const clinicNotificationEmail = String(clinic?.notificationEmail || clinic?.ownerEmail || "").trim();
     const shouldNotifyClinic = rawPayload?.consent_marketing === true
       || rawPayload?.contactConsent === true
@@ -175,7 +191,7 @@ export async function POST(request) {
         };
 
         const dbPayload = {
-          clinic_id: clinicId || null,
+          clinic_id: actualClinicId || null,
           name: String(rawPayload.name || ""),
           email: String(rawPayload.email || ""),
           phone: String(rawPayload.phone || ""),
@@ -569,7 +585,7 @@ export async function POST(request) {
             const clinicHtmlBody = `
               <div style="font-family: Arial, sans-serif; color: #1F2B22; background: #FAF9F6; padding: 24px; line-height: 1.6; max-width: 680px; margin: 0 auto;">
                 <h2 style="margin: 0 0 8px;">New SORA Fertility Lead</h2>
-                <p style="margin: 0 0 16px; color: #5F7D67;"><strong>Mapped clinic:</strong> ${clinic?.name || clinicId || "Clinic not found"}</p>
+                <p style="margin: 0 0 16px; color: #5F7D67;"><strong>Mapped clinic:</strong> ${clinic?.name || actualClinicId || "Clinic not found"}</p>
                 <div style="background: #ffffff; border: 1px solid #e3e7e2; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                   <p><strong>Name:</strong> ${name}</p>
                   <p><strong>Email:</strong> ${email}</p>
@@ -597,9 +613,9 @@ export async function POST(request) {
             clinicNotificationError = clinicMailErr.message;
           }
         } else if (shouldNotifyClinic) {
-          clinicNotificationError = clinicId
+          clinicNotificationError = actualClinicId
             ? "Mapped clinic notification email is missing or invalid."
-            : "Clinic ID was not provided with the lead payload.";
+            : "Clinic ID/Token was not mapped properly with the lead payload.";
         }
       } catch (mailErr) {
         console.error("Nodemailer SMTP email send failure:", mailErr);
