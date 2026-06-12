@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Download, CheckCircle2, AlertTriangle, AlertCircle, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, CheckCircle2, AlertTriangle, CheckSquare, Square, Activity, ArrowRight, Lightbulb, HeartPulse } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -16,7 +16,7 @@ const PAGE_STYLE = {
   boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
 };
 
-const Header = ({ pageNum, title, totalPages = 2 }) => (
+const Header = ({ pageNum, title, totalPages = 3 }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '3px solid #ff2a5f', paddingBottom: '16px', marginBottom: '32px', paddingTop: '32px', paddingLeft: '48px', paddingRight: '48px', background: 'linear-gradient(to right, #fff1f2, #ffffff)' }}>
     <div>
       <h1 style={{ fontSize: '30px', fontFamily: 'Georgia, serif', color: '#191c1e', fontWeight: 'bold', margin: 0 }}>SORA PCOS Assessment</h1>
@@ -35,14 +35,39 @@ const Footer = () => (
   </div>
 );
 
+const RiskGauge = ({ score }) => {
+  return (
+    <div style={{ width: '100%', marginTop: '32px', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
+        <span>Low</span>
+        <span>Moderate</span>
+        <span>High</span>
+      </div>
+      <div style={{ position: 'relative', width: '100%', height: '16px', background: 'linear-gradient(to right, #10b981 0%, #f59e0b 50%, #ff2a5f 100%)', borderRadius: '8px' }}>
+        <div style={{ position: 'absolute', left: `${score}%`, top: '-10px', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ width: '4px', height: '36px', backgroundColor: '#1e293b', borderRadius: '2px', boxShadow: '0 0 4px rgba(0,0,0,0.3)' }}></div>
+          <span style={{ fontSize: '14px', fontWeight: '900', color: '#1e293b', marginTop: '6px', background: 'white', padding: '2px 8px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>YOU</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9ca3af', fontSize: '12px', marginTop: '28px', padding: '0 4px', fontWeight: '600' }}>
+        <span>0</span>
+        <span>25</span>
+        <span>50</span>
+        <span>75</span>
+        <span>100</span>
+      </div>
+    </div>
+  );
+};
+
 export default function PcosReportTemplate({ assessment, patientData, onClose }) {
   const [downloading, setDownloading] = useState(false);
 
   if (!assessment) return null;
 
-  const riskColor = assessment.category === "Very high likelihood" ? "#ff2a5f" : 
-                    assessment.category === "High likelihood" ? "#f97316" : 
-                    assessment.category === "Moderate likelihood" ? "#f59e0b" : "#10b981";
+  const riskColor = assessment.score >= 75 ? "#ff2a5f" : 
+                    assessment.score >= 50 ? "#f97316" : 
+                    assessment.score >= 25 ? "#f59e0b" : "#10b981";
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -75,9 +100,10 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
       </div>
 
       <div id="pcos-report-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* PAGE 1: Summary */}
+        
+        {/* PAGE 1: Overview & Driving Factors */}
         <div className="report-page" style={PAGE_STYLE}>
-          <Header pageNum={1} title="Executive Summary" totalPages={2} />
+          <Header pageNum={1} title="Executive Summary" totalPages={4} />
           
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
             <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
@@ -88,61 +114,158 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
           </div>
 
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '32px', background: '#fff', border: `2px solid ${riskColor}`, padding: '32px', borderRadius: '16px' }}>
-              <div>
-                <div style={{ fontSize: '48px', fontWeight: 'bold', color: riskColor }}>{assessment.score} <span style={{fontSize: '16px', color: '#64748B'}}>/ 100</span></div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', textTransform: 'uppercase', color: riskColor, marginTop: '8px' }}>{assessment.category}</div>
+            <div style={{ background: '#fff', border: `2px solid ${riskColor}`, padding: '32px', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ fontSize: '16px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>SORA PCOS Score™</div>
+                  <div style={{ fontSize: '56px', fontWeight: '900', color: riskColor, lineHeight: '1' }}>{assessment.score} <span style={{fontSize: '20px', color: '#9ca3af', fontWeight: '600'}}>/ 100</span></div>
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', marginTop: '12px' }}>Risk Category: <span style={{ color: riskColor }}>{assessment.category}</span></div>
+                </div>
+                
+                <div style={{ background: '#f8fafc', padding: '16px 24px', borderRadius: '12px', border: '1px solid #e2e8f0', maxWidth: '300px' }}>
+                  <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', marginBottom: '8px' }}>Compared to women taking this assessment:</div>
+                  <div style={{ fontSize: '16px', color: '#1e293b', fontWeight: 'bold' }}>You scored higher than <span style={{ color: '#2563eb', fontSize: '20px', fontWeight: '900' }}>{assessment.percentile}%</span> of respondents.</div>
+                </div>
               </div>
-              <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '32px' }}>
-                <h2 style={{ margin: '0 0 12px 0', fontSize: '22px' }}>Clinical Explanation</h2>
-                <p style={{ margin: 0, color: '#475569', lineHeight: '1.6' }}>{assessment.explanation}</p>
-              </div>
+
+              <RiskGauge score={assessment.score} />
+              
             </div>
           </div>
 
-          <div style={{ paddingLeft: '48px', paddingRight: '48px' }}>
-            <h3 style={{ fontSize: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Major Contributing Factors</h3>
-            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {assessment.contributingFactors?.map((factor, i) => (
-                <li key={i} style={{ padding: '16px', background: '#fff1f2', borderRadius: '8px', color: '#ff2a5f', fontWeight: '600' }}>
-                  <AlertTriangle size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }}/>
-                  {factor}
-                </li>
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px', display: 'flex', gap: '24px' }}>
+            {/* Pattern Recognition */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', color: '#1e293b' }}>Pattern Insights</h3>
+              <p style={{ color: '#475569', fontSize: '15px', marginBottom: '16px' }}>Based on your responses, your symptoms appear to align most closely with:</p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: assessment.patterns?.ovulatory ? '#1e293b' : '#9ca3af', fontWeight: assessment.patterns?.ovulatory ? 'bold' : 'normal' }}>
+                  {assessment.patterns?.ovulatory ? <CheckSquare size={20} color="#2563eb" /> : <Square size={20} />} Ovulatory dysfunction pattern
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: assessment.patterns?.metabolic ? '#1e293b' : '#9ca3af', fontWeight: assessment.patterns?.metabolic ? 'bold' : 'normal' }}>
+                  {assessment.patterns?.metabolic ? <CheckSquare size={20} color="#2563eb" /> : <Square size={20} />} Predominantly metabolic pattern
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: assessment.patterns?.androgen ? '#1e293b' : '#9ca3af', fontWeight: assessment.patterns?.androgen ? 'bold' : 'normal' }}>
+                  {assessment.patterns?.androgen ? <CheckSquare size={20} color="#2563eb" /> : <Square size={20} />} Predominantly androgen excess pattern
+                </div>
+              </div>
+              
+              <div style={{ padding: '16px', background: '#eef2ff', borderRadius: '8px', borderLeft: '4px solid #4f46e5', color: '#312e81', fontSize: '15px', fontWeight: '500', lineHeight: '1.5' }}>
+                {assessment.dominantPatternText}
+              </div>
+            </div>
+
+            {/* Why this happened */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', color: '#1e293b' }}>What is driving my risk?</h3>
+              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {assessment.contributingFactors?.map((factor, i) => (
+                  <li key={i} style={{ padding: '16px', background: '#fff1f2', borderRadius: '8px', color: '#ff2a5f', fontWeight: '600', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <AlertTriangle size={20} style={{ flexShrink: 0, marginTop: '2px' }}/>
+                    <span style={{ lineHeight: '1.4' }}>{factor}</span>
+                  </li>
+                ))}
+                {assessment.contributingFactors?.length === 0 && (
+                  <li style={{ padding: '16px', background: '#d1fae5', borderRadius: '8px', color: '#047857', fontWeight: '600' }}>
+                    No major driving factors identified.
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+
+          <Footer />
+        </div>
+
+        {/* PAGE 2: Clinical Context & Education */}
+        <div className="report-page" style={PAGE_STYLE}>
+          <Header pageNum={2} title="Clinical Context & Education" totalPages={4} />
+          
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '22px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '24px', color: '#1e293b' }}>What This May Mean</h3>
+            <p style={{ fontSize: '16px', color: '#475569', marginBottom: '20px' }}>Women with similar symptom patterns often discuss these concerns with their doctors:</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {assessment.whatThisMeans?.map((meaning, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '15px', fontWeight: '600', color: '#334155' }}>
+                  <Activity size={20} color="#2563eb" /> {meaning}
+                </div>
               ))}
-              {assessment.contributingFactors?.length === 0 && (
-                <li style={{ padding: '16px', background: '#d1fae5', borderRadius: '8px', color: '#047857', fontWeight: '600' }}>
-                  No major contributing factors identified.
-                </li>
-              )}
-            </ul>
+            </div>
+          </div>
+
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
+            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '16px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <HeartPulse size={28} color="#d97706" />
+                <h3 style={{ fontSize: '22px', margin: 0, color: '#92400e' }}>Fertility Considerations</h3>
+              </div>
+              <p style={{ fontSize: '16px', color: '#92400e', lineHeight: '1.6', margin: 0 }}>
+                {assessment.fertilityImpact}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
+            <div style={{ background: '#f0fdfa', border: '1px solid #ccfbf1', borderRadius: '16px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Lightbulb size={28} color="#0d9488" />
+                <h3 style={{ fontSize: '22px', margin: 0, color: '#0f766e' }}>Did you know?</h3>
+              </div>
+              <ul style={{ paddingLeft: '24px', margin: 0, color: '#115e59', fontSize: '16px', lineHeight: '1.8', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <li>PCOS affects approximately 1 in 10 women globally.</li>
+                <li>Symptoms vary significantly from person to person.</li>
+                <li>Many women with PCOS have a regular BMI (Lean PCOS).</li>
+                <li>Early management and lifestyle adjustments can dramatically improve quality of life.</li>
+              </ul>
+            </div>
+          </div>
+
+          <Footer />
+        </div>
+
+        {/* PAGE 3: Action Plan */}
+        <div className="report-page" style={PAGE_STYLE}>
+          <Header pageNum={3} title="Roadmap & Action Plan" totalPages={4} />
+          
+          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '40px' }}>
+            <h3 style={{ fontSize: '22px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '24px', color: '#1e293b' }}>Your 30-Day Action Plan</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {assessment.actionPlan?.map((plan, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '24px', padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                  <div style={{ width: '48px', height: '48px', background: '#f1f5f9', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <CheckCircle2 size={28} color="#9ca3af" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>{plan.week}</div>
+                    <div style={{ fontSize: '18px', fontWeight: '600', color: '#1e293b' }}>{plan.task}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <Footer />
         </div>
 
-        {/* PAGE 2: Insights and Plan */}
+        {/* PAGE 4: Diagnostics & Next Steps */}
         <div className="report-page" style={PAGE_STYLE}>
-          <Header pageNum={2} title="Insights & Next Steps" totalPages={2} />
-          
-          <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Pattern Insights</h3>
-            {assessment.patternInsights?.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {assessment.patternInsights.map((pattern, i) => (
-                  <div key={i} style={{ padding: '20px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '12px', display: 'flex', gap: '16px' }}>
-                    <Sparkles style={{ color: '#2563eb', width: '24px', height: '24px' }} />
-                    <span style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b' }}>{pattern}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p style={{ color: '#475569' }}>No specific sub-patterns identified based on your responses.</p>
-            )}
-          </div>
+          <Header pageNum={4} title="Diagnostics & Next Steps" totalPages={4} />
 
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Recommended Next Steps</h3>
-            <div style={{ padding: '24px', background: '#e0f2fe', borderRadius: '12px', border: '1px solid #bae6fd' }}>
-              <p style={{ margin: 0, fontSize: '16px', color: '#0369a1', lineHeight: '1.6', fontWeight: '500' }}>{assessment.nextSteps}</p>
+            <h3 style={{ fontSize: '22px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '24px', color: '#1e293b' }}>Tests your doctor may consider</h3>
+            <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '20px' }}>These are NOT mandatory, but may provide clarity. Discuss these with your healthcare provider.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {assessment.suggestedTests?.map((test, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '16px', fontWeight: '600', color: '#334155' }}>
+                  <div style={{ width: '20px', height: '20px', border: '2px solid #cbd5e1', borderRadius: '4px' }}></div> {test}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '24px', padding: '16px', background: '#eff6ff', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#1d4ed8', fontWeight: '600', cursor: 'pointer' }}>
+              Learn more about these tests <ArrowRight size={18} />
             </div>
           </div>
 
@@ -152,6 +275,7 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
           </div>
           <Footer />
         </div>
+
       </div>
     </div>
   );
