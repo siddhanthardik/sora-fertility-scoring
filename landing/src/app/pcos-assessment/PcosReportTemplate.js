@@ -76,7 +76,6 @@ const DomainBreakdownChart = ({ domainScores }) => {
           <div key={i}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '6px', fontWeight: '600', color: '#475569' }}>
               <span>{d.label}</span>
-              <span>{d.score} / {d.max}</span>
             </div>
             <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '5px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${(d.score / d.max) * 100}%`, backgroundColor: d.color, borderRadius: '5px' }}></div>
@@ -265,6 +264,13 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
             <BmiScale bmi={patientData.bmi} />
           </div>
 
+          <Footer />
+        </div>
+
+        {/* PAGE 3: Action Plan */}
+        <div className="report-page" style={PAGE_STYLE}>
+          <Header pageNum={3} title="Roadmap & Action Plan" totalPages={4} />
+
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
             <div style={{ background: '#f0fdfa', border: '1px solid #ccfbf1', borderRadius: '16px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -279,13 +285,6 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
               </ul>
             </div>
           </div>
-
-          <Footer />
-        </div>
-
-        {/* PAGE 3: Action Plan */}
-        <div className="report-page" style={PAGE_STYLE}>
-          <Header pageNum={3} title="Roadmap & Action Plan" totalPages={4} />
           
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '40px' }}>
             <h3 style={{ fontSize: '22px', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '24px', color: '#1e293b' }}>Your 30-Day Action Plan</h3>
