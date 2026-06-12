@@ -219,20 +219,11 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
     acanthosis: "",
     familyPcos: "",
     familyDiabetes: "",
-    tryingDuration: ""
-  });
-
+  const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
-  const [soraId, setSoraId] = useState("");
-
-  useEffect(() => {
-    let savedId = localStorage.getItem("soraId");
-    if (!savedId) {
-      savedId = "SRA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
-      localStorage.setItem("soraId", savedId);
-    }
-    setSoraId(savedId);
-  }, []);
+  const [leadPhone, setLeadPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+  const [leadConsent, setLeadConsent] = useState(false);
 
   useEffect(() => {
     const cardElement = document.getElementById("pcosWizardCard");
@@ -311,6 +302,10 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
 
   const handleLeadSubmit = async (e) => {
     e.preventDefault();
+    if (!leadName.trim() || !leadEmail.trim() || !leadPhone.trim() || !leadConsent) {
+      setError("Please fill in all details and accept the consent.");
+      return;
+    }
 
     setError("");
     setLoading(true);
@@ -320,28 +315,26 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
       const assessmentData = await requestAssessment();
       setResults(assessmentData);
       
-      // 2. Submit Lead optionally
-      if (leadEmail.trim()) {
-        const payload = {
-          clinicId,
-          name: "Anonymous User",
-          email: leadEmail,
-          phone: soraId, // Using SORA ID as a placeholder for phone requirement if any
-          source: "pcos_assessment",
-          age: formData.age,
-          pcos_assessment_score: assessmentData.score,
-          pcos_risk_level: assessmentData.category,
-          pcos_pattern: assessmentData.patternInsights?.join(", "),
-          pcos_responses: formData,
-          lead_priority: assessmentData.score >= 50 ? "HIGH" : "NORMAL"
-        };
+      // 2. Submit Lead
+      const payload = {
+        clinicId,
+        name: leadName,
+        email: leadEmail,
+        phone: `${countryCode} ${leadPhone}`,
+        source: "pcos_assessment",
+        age: formData.age,
+        pcos_assessment_score: assessmentData.score,
+        pcos_risk_level: assessmentData.category,
+        pcos_pattern: assessmentData.patternInsights?.join(", "),
+        pcos_responses: formData,
+        lead_priority: assessmentData.score >= 50 ? "HIGH" : "NORMAL"
+      };
 
-        fetch("/api/leads", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).catch(err => console.log("Lead capture error:", err)); // Don't block
-      }
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
       setCurrentStep(resultStepIndex);
     } catch (err) {
@@ -352,7 +345,7 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
   };
 
   if (currentStep === resultStepIndex && results) {
-    return <PcosReportTemplate assessment={results} patientData={{ name: soraId, age: formData.age, bmi: formData.bmi }} onClose={onComplete} />;
+    return <PcosReportTemplate assessment={results} patientData={{ name: leadName, age: formData.age, bmi: formData.bmi }} onClose={onComplete} />;
   }
 
   const progressPct = Math.min(((currentStep) / pcosSteps.length) * 100, 100);
@@ -430,25 +423,42 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
             <div className={styles.leadHeader}>
               <div className={styles.leadIcon}><FileCheck size={32} color="var(--color-primary)"/></div>
               <h2>Your assessment is ready.</h2>
-              <p>Want a copy of your report? Enter your email to receive it, or continue to download it instantly.</p>
+              <p>Where should we send your secure risk report?</p>
             </div>
             
             <form onSubmit={handleLeadSubmit} className={styles.leadForm}>
               <div className={styles.inputGroup}>
-                <label>Email Address (Optional)</label>
+                <label>Full Name</label>
+                <div className={styles.inputWrapper}>
+                  <User size={18} className={styles.inputIcon}/>
+                  <input type="text" placeholder="Jane Doe" value={leadName} onChange={e => setLeadName(e.target.value)} required />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Email Address</label>
                 <div className={styles.inputWrapper}>
                   <Mail size={18} className={styles.inputIcon}/>
-                  <input type="email" placeholder="jane@example.com" value={leadEmail} onChange={e => setLeadEmail(e.target.value)} />
+                  <input type="email" placeholder="jane@example.com" value={leadEmail} onChange={e => setLeadEmail(e.target.value)} required />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Mobile Number</label>
+                <div className={styles.phoneWrapper}>
+                  <input type="text" className={styles.countryCodeInput} value={countryCode} onChange={e => setCountryCode(e.target.value)} required style={{width: "60px"}}/>
+                  <div className={styles.inputWrapper} style={{flex: 1}}>
+                    <Phone size={18} className={styles.inputIcon}/>
+                    <input type="tel" placeholder="9876543210" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} required />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ marginTop: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px', fontSize: '13px', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span>Your anonymous session ID:</span>
-                <strong style={{ color: '#1e293b' }}>{soraId}</strong>
+              <div className={styles.consentCheckbox}>
+                <input type="checkbox" id="consentBox" checked={leadConsent} onChange={e => setLeadConsent(e.target.checked)}/>
+                <label htmlFor="consentBox">I consent to SORA processing my health inputs to generate a report, in accordance with the Privacy Policy.</label>
               </div>
 
-              <button type="submit" disabled={loading} className={`${styles.btnPrimary} ${styles.btnSubmit}`} style={{ marginTop: '24px' }}>
-                {loading ? "Generating Report..." : "View My Report Instantly"} <Sparkles size={18}/>
+              <button type="submit" disabled={loading} className={`${styles.btnPrimary} ${styles.btnSubmit}`}>
+                {loading ? "Generating Report..." : "View My Report"} <Sparkles size={18}/>
               </button>
             </form>
           </div>

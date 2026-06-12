@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, CheckCircle2, AlertTriangle, CheckSquare, Square, Activity, ArrowRight, Lightbulb, HeartPulse } from 'lucide-react';
+import { Download, CheckCircle2, AlertTriangle, CheckSquare, Square, Activity, ArrowRight, Lightbulb, HeartPulse, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -142,12 +142,35 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: 'SORA PCOS Assessment',
+      text: 'I just took the SORA PCOS Risk Assessment. Check it out and see where you stand!',
+      url: window.location.origin + '/pcos-assessment'
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback for desktop
+      navigator.clipboard.writeText(shareData.url);
+      alert('Link copied to clipboard! Share it with your friends.');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#f1f5f9', padding: '20px', gap: '20px', width: '100%', overflowY: 'auto' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '20px', marginTop: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', width: '100%', marginBottom: '20px', marginTop: '40px' }}>
         <button onClick={handleDownload} disabled={downloading} style={{ padding: '12px 24px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}>
           <Download size={20} /> {downloading ? "Generating PDF..." : "Download PDF Report"}
+        </button>
+        <button onClick={handleShare} style={{ padding: '12px 24px', background: '#fff', color: '#ff2a5f', border: '2px solid #ff2a5f', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(255,42,95,0.1)' }}>
+          <Share2 size={20} /> Share Assessment
         </button>
       </div>
 
