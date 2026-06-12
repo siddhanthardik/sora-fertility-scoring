@@ -1,121 +1,227 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Scale, Info, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { ChevronRight, ArrowRight, Activity, Scale } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
 export default function BmiCalculator() {
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const [unit, setUnit] = useState('metric'); // 'metric' or 'imperial'
+  const [heightCm, setHeightCm] = useState('');
+  const [weightKg, setWeightKg] = useState('');
+  const [heightFt, setHeightFt] = useState('');
+  const [heightIn, setHeightIn] = useState('');
+  const [weightLbs, setWeightLbs] = useState('');
   const [results, setResults] = useState(null);
 
   const calculateBMI = (e) => {
     e.preventDefault();
-    const h = parseFloat(height);
-    const w = parseFloat(weight);
-    
-    if (!h || !w || h <= 0 || w <= 0) return;
+    let bmi = 0;
 
-    const bmiValue = w / Math.pow(h / 100, 2);
-    const bmi = parseFloat(bmiValue.toFixed(1));
-
-    let category = "";
-    let implications = "";
-    let color = "";
-
-    if (bmi < 18.5) {
-      category = "Underweight";
-      color = "#3b82f6"; // blue
-      implications = "Being underweight can cause irregular or absent periods (amenorrhea). This happens because your body may reduce estrogen production and stop ovulating to conserve energy. Gaining a small amount of weight can often restore regular ovulation.";
-    } else if (bmi >= 18.5 && bmi <= 22.9) {
-      category = "Normal (Asian Cut-offs)";
-      color = "#10b981"; // green
-      implications = "Your BMI is within the optimal range for reproductive health. Maintaining this weight supports regular ovulation and healthy hormone balance.";
-    } else if (bmi >= 23 && bmi <= 24.9) {
-      category = "Overweight (Asian Cut-offs)";
-      color = "#f59e0b"; // yellow
-      implications = "Based on Asian clinical cut-offs, this falls into the overweight category. Slight increases in weight can begin to increase insulin resistance, which may subtly impact ovulation or exacerbate underlying conditions like PCOS.";
+    if (unit === 'metric') {
+      if (!heightCm || !weightKg) return;
+      const heightM = parseFloat(heightCm) / 100;
+      bmi = parseFloat(weightKg) / (heightM * heightM);
     } else {
-      category = "Obese (Asian Cut-offs)";
-      color = "#ef4444"; // red
-      implications = "Higher BMI is closely linked with increased insulin resistance and excess androgen production. This can disrupt regular ovulation and make conception more difficult. Losing just 5-10% of body weight can significantly improve ovulation rates.";
+      if (!heightFt || !weightLbs) return;
+      const ft = parseFloat(heightFt);
+      const inches = parseFloat(heightIn) || 0;
+      const totalInches = (ft * 12) + inches;
+      const lbs = parseFloat(weightLbs);
+      bmi = (lbs / (totalInches * totalInches)) * 703;
     }
 
-    setResults({ bmi, category, implications, color });
+    if (isNaN(bmi) || bmi <= 0) return;
+
+    let category = '';
+    let fertilityImpact = '';
+    let color = '';
+
+    if (bmi < 18.5) {
+      category = 'Underweight';
+      fertilityImpact = 'Being underweight can cause irregular cycles or stop ovulation entirely (amenorrhea). This can make it difficult to conceive. It is highly recommended to speak with a fertility specialist or nutritionist.';
+      color = '#eab308'; // yellow
+    } else if (bmi >= 18.5 && bmi < 24.9) {
+      category = 'Healthy Weight';
+      fertilityImpact = 'Your BMI is in the optimal range for conception. This supports healthy ovulation and is associated with the highest rates of natural conception and IVF success.';
+      color = '#10b981'; // green
+    } else if (bmi >= 25 && bmi < 29.9) {
+      category = 'Overweight';
+      fertilityImpact = 'Being slightly overweight can disrupt hormones and affect ovulation, especially if you have conditions like PCOS. Even a 5% reduction in weight can significantly improve your chances of conception.';
+      color = '#f97316'; // orange
+    } else {
+      category = 'Obesity';
+      fertilityImpact = 'A high BMI is linked to irregular ovulation, hormone imbalances, and lower success rates with fertility treatments like IVF. Medical guidelines recommend weight management to improve both maternal and fetal health during pregnancy.';
+      color = '#ef4444'; // red
+    }
+
+    setResults({
+      bmi: bmi.toFixed(1),
+      category,
+      fertilityImpact,
+      color
+    });
   };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
-          <span style={{ color: '#ff2a5f' }}>BMI & Fertility</span>
+          <span style={{ color: '#ff2a5f' }}>BMI Fertility Calculator</span>
         </div>
-        
-        <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-            <div style={{ width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Scale size={28} color="#ff2a5f" />
-            </div>
-            <h1 style={{ fontSize: '28px', color: '#0f172a', margin: 0, fontWeight: '800' }}>BMI & Fertility</h1>
+
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', background: '#fff1f2', borderRadius: '16px', marginBottom: '24px' }}>
+            <Scale size={32} color="#ff2a5f" />
+          </div>
+          <h1 style={{ fontSize: '36px', color: '#0f172a', fontWeight: '800', marginBottom: '16px' }}>BMI Fertility Calculator</h1>
+          <p style={{ fontSize: '18px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '32px' }}>
+            <button 
+              onClick={() => { setUnit('metric'); setResults(null); }}
+              style={{ padding: '8px 24px', borderRadius: '100px', fontWeight: 'bold', fontSize: '15px', border: 'none', background: unit === 'metric' ? '#0f172a' : '#f1f5f9', color: unit === 'metric' ? '#fff' : '#64748b', cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              Metric (kg/cm)
+            </button>
+            <button 
+              onClick={() => { setUnit('imperial'); setResults(null); }}
+              style={{ padding: '8px 24px', borderRadius: '100px', fontWeight: 'bold', fontSize: '15px', border: 'none', background: unit === 'imperial' ? '#0f172a' : '#f1f5f9', color: unit === 'imperial' ? '#fff' : '#64748b', cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              Imperial (lbs/ft)
+            </button>
           </div>
 
-          <form onSubmit={calculateBMI} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>Height (cm)</label>
-                <input 
-                  type="number" 
-                  placeholder="e.g. 165"
-                  value={height}
-                  onChange={e => setHeight(e.target.value)}
-                  required
-                  style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
-                />
+          <form onSubmit={calculateBMI}>
+            {unit === 'metric' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Height (cm)</label>
+                  <input 
+                    type="number" required min="50" max="250" value={heightCm} onChange={(e) => setHeightCm(e.target.value)}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Weight (kg)</label>
+                  <input 
+                    type="number" required min="20" max="300" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
+                  />
+                </div>
               </div>
-              
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>Weight (kg)</label>
-                <input 
-                  type="number" 
-                  placeholder="e.g. 60"
-                  value={weight}
-                  onChange={e => setWeight(e.target.value)}
-                  required
-                  style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
-                />
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Height (ft)</label>
+                  <input 
+                    type="number" required min="2" max="8" value={heightFt} onChange={(e) => setHeightFt(e.target.value)}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Height (in)</label>
+                  <input 
+                    type="number" min="0" max="11" value={heightIn} onChange={(e) => setHeightIn(e.target.value)}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Weight (lbs)</label>
+                  <input 
+                    type="number" required min="40" max="700" step="0.1" value={weightLbs} onChange={(e) => setWeightLbs(e.target.value)}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '16px', outline: 'none' }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            <button type="submit" style={{ background: '#ff2a5f', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '12px' }}>
-              Calculate BMI
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#ff2a5f', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <Scale size={20} />
+              Calculate My BMI
             </button>
           </form>
+        </div>
 
-          {results && (
-            <div style={{ marginTop: '40px', borderTop: '2px dashed #ffe4e6', paddingTop: '40px' }}>
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <div style={{ fontSize: '48px', fontWeight: '900', color: results.color, lineHeight: '1' }}>{results.bmi}</div>
-                <div style={{ fontSize: '18px', fontWeight: '700', color: '#475569', marginTop: '8px' }}>{results.category}</div>
-              </div>
-
-              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <Info size={20} color="#0f172a" />
-                  <h3 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>Fertility Implications</h3>
-                </div>
-                <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>
-                  {results.implications}
-                </p>
-              </div>
+        {results && (
+          <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', marginBottom: '32px', textAlign: 'center', borderTop: `8px solid ${results.color}` }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#64748b', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Results</h2>
+            <div style={{ fontSize: '64px', fontWeight: '900', color: '#0f172a', lineHeight: 1, marginBottom: '8px' }}>{results.bmi}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: results.color, marginBottom: '24px' }}>{results.category}</div>
+            
+            <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', textAlign: 'left' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1e293b', marginBottom: '12px' }}>What this means for your fertility:</h3>
+              <p style={{ color: '#475569', fontSize: '16px', lineHeight: 1.6, margin: 0 }}>
+                {results.fertilityImpact}
+              </p>
             </div>
-          )}
+          </div>
+        )}
+
+      </div>
+
+      {/* SEO & Educational Content Section */}
+      <div style={{ background: '#fff', borderTop: '1px solid #e2e8f0', padding: '80px 20px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', color: '#334155', lineHeight: 1.8, fontSize: '18px' }}>
+          
+          <h2 style={{ fontSize: '32px', color: '#0f172a', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '-0.5px' }}>
+            How Does BMI Affect Fertility?
+          </h2>
+          <p style={{ marginBottom: '32px' }}>
+            Body Mass Index (BMI) is a clinical measurement that uses your height and weight to estimate body fat. When it comes to fertility, weight plays a crucial role in hormonal balance. Both being underweight and overweight can significantly disrupt the hormones required for regular ovulation and conception.
+          </p>
+
+          <h3 style={{ fontSize: '24px', color: '#0f172a', fontWeight: 'bold', marginBottom: '16px', marginTop: '48px' }}>
+            The Ideal BMI for Conception
+          </h3>
+          <p style={{ marginBottom: '24px' }}>
+            Medical research indicates that the optimal BMI for natural conception and IVF success falls within the "Healthy Weight" category (<strong>18.5 to 24.9</strong>). Within this range, women are most likely to experience regular menstrual cycles and predictable ovulation.
+          </p>
+          <ul style={{ paddingLeft: '20px', marginBottom: '32px' }}>
+            <li style={{ marginBottom: '12px' }}><strong>Underweight (BMI &lt; 18.5):</strong> Can lead to hypothalamic amenorrhea, where the brain stops sending signals to the ovaries to release an egg.</li>
+            <li style={{ marginBottom: '12px' }}><strong>Overweight/Obese (BMI &ge; 25):</strong> Excess fat tissue produces excess estrogen and is linked to insulin resistance. This can prevent ovulation and is closely tied to Polycystic Ovary Syndrome (PCOS).</li>
+          </ul>
+
+          <div style={{ background: '#f8fafc', padding: '32px', borderRadius: '16px', borderLeft: '4px solid #ff2a5f', marginTop: '48px', marginBottom: '48px' }}>
+            <h4 style={{ fontSize: '20px', color: '#0f172a', fontWeight: 'bold', marginBottom: '12px' }}>
+              Frequently Asked Questions
+            </h4>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>Can losing weight improve my chances of getting pregnant?</strong>
+              <span>Yes. For women with a high BMI, losing just 5% to 10% of total body weight can dramatically improve ovulation rates and boost the success of fertility treatments.</span>
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>Does BMI affect male fertility?</strong>
+              <span>Absolutely. High BMI in men is associated with lower testosterone levels, decreased sperm concentration, and reduced sperm motility. A healthy weight improves fertility for both partners.</span>
+            </div>
+
+            <div>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>What if my BMI is high due to muscle mass?</strong>
+              <span>BMI doesn't distinguish between fat and muscle. If you are highly athletic or muscular, your BMI might fall into the "overweight" category despite having a low body fat percentage. Your doctor will look at your overall clinical picture.</span>
+            </div>
+          </div>
+
+          <div style={{ background: '#fff1f2', borderRadius: '24px', padding: '32px', textAlign: 'center', border: '1px solid #ffe4e6' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#e11d48', marginBottom: '12px' }}>Wondering about your fertility health?</h3>
+            <p style={{ color: '#be123c', marginBottom: '20px', fontSize: '15px' }}>Take our clinical assessment to understand your reproductive timeline and receive personalized guidance.</p>
+            <Link href="/fertility-assessment" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fff', color: '#e11d48', textDecoration: 'none', padding: '12px 24px', borderRadius: '100px', fontWeight: 'bold', fontSize: '15px', border: '1px solid #fecdd3', transition: 'background 0.2s' }}>
+              Take SORA Fertility Assessment
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+
         </div>
       </div>
+
       <Footer />
     </div>
   );

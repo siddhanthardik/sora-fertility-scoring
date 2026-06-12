@@ -560,6 +560,61 @@ export default function DueDateCalculator() {
         )}
 
       </div>
+
+      {/* SEO & Educational Content Section */}
+      <div style={{ background: '#fff', borderTop: '1px solid #e2e8f0', padding: '80px 20px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', color: '#334155', lineHeight: 1.8, fontSize: '18px' }}>
+          
+          <h2 style={{ fontSize: '32px', color: '#0f172a', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '-0.5px' }}>
+            How is Your Estimated Due Date (EDD) Calculated?
+          </h2>
+          <p style={{ marginBottom: '32px' }}>
+            Predicting when your baby will arrive is a mix of biology and clinical averages. While a full-term pregnancy is often described as lasting 9 months, clinical calculations track pregnancy by <strong>40 weeks (or 280 days)</strong> starting from the first day of your last menstrual period (LMP).
+          </p>
+
+          <h3 style={{ fontSize: '24px', color: '#0f172a', fontWeight: 'bold', marginBottom: '16px', marginTop: '48px' }}>
+            Natural Pregnancy vs. IUI vs. IVF
+          </h3>
+          <p style={{ marginBottom: '24px' }}>
+            Depending on how conception occurred, the math changes significantly to provide the most accurate medical estimation:
+          </p>
+          <ul style={{ paddingLeft: '20px', marginBottom: '32px' }}>
+            <li style={{ marginBottom: '12px' }}><strong>Natural Pregnancy:</strong> Most often calculated by adding 280 days to the first day of your LMP. If you know your exact ovulation or conception date, we add 266 days to that date.</li>
+            <li style={{ marginBottom: '12px' }}><strong>IUI (Intrauterine Insemination):</strong> The date of the IUI procedure acts as the ovulation date. We add 266 days to the IUI date to find your due date.</li>
+            <li style={{ marginBottom: '12px' }}><strong>IVF (In Vitro Fertilization):</strong> Because the embryos are already developing outside the womb before transfer, IVF due dates are incredibly precise. We subtract the embryo's age (e.g., 3 days or 5 days) from the 266-day gestation timeline.</li>
+          </ul>
+
+          <h3 style={{ fontSize: '24px', color: '#0f172a', fontWeight: 'bold', marginBottom: '16px', marginTop: '48px' }}>
+            Why Do Due Dates Change?
+          </h3>
+          <p style={{ marginBottom: '24px' }}>
+            It is very common for your healthcare provider to adjust your due date after an early ultrasound (usually between 7–12 weeks). The ultrasound measures the baby's <strong>Crown-Rump Length (CRL)</strong>, which is the most highly accurate predictor of gestational age. If the ultrasound measurement differs from your LMP calculation by more than a few days, your doctor will assign you a new, official ultrasound due date.
+          </p>
+
+          <div style={{ background: '#f8fafc', padding: '32px', borderRadius: '16px', borderLeft: '4px solid #ff2a5f', marginTop: '48px', marginBottom: '48px' }}>
+            <h4 style={{ fontSize: '20px', color: '#0f172a', fontWeight: 'bold', marginBottom: '12px' }}>
+              Frequently Asked Questions
+            </h4>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>Will my baby arrive exactly on my due date?</strong>
+              <span>Statistically, only about 4–5% of babies are born on their exact due date. It's best to think of your due date as the center of a "due month"—any time between 37 weeks and 42 weeks is considered a normal arrival window.</span>
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>What is gestational age?</strong>
+              <span>Gestational age is how far along the pregnancy is. Surprisingly, it starts counting from the first day of your last period, meaning you are considered "two weeks pregnant" on the day you actually conceive.</span>
+            </div>
+
+            <div>
+              <strong style={{ display: 'block', color: '#1e293b', marginBottom: '4px' }}>How do I track my milestones?</strong>
+              <span>Our Due Date Calculator provides a custom timeline of important milestones and recommended clinical scans. You can even download a beautiful PDF report to save and share!</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <Footer />
     </div>
   );

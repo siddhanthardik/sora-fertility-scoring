@@ -1,3 +1,4 @@
+// Force Next.js hot-reload
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getClinic } from "../../lib/clinicRegistry";
