@@ -93,9 +93,9 @@ export default function LeadDetailsModal({ lead, onClose }) {
             {/* Biometrics & Goal */}
             <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
               <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", color: "#374151" }}>Personal & Goal</h3>
-              <DataRow label="Age" value={lead.age ? \`\${lead.age} Years\` : "Not entered"} />
-              <DataRow label="Height" value={lead.height ? \`\${lead.height} cm\` : "Not entered"} />
-              <DataRow label="Weight" value={lead.weight ? \`\${lead.weight} kg\` : "Not entered"} />
+              <DataRow label="Age" value={lead.age ? `${lead.age} Years` : "Not entered"} />
+              <DataRow label="Height" value={lead.height ? `${lead.height} cm` : "Not entered"} />
+              <DataRow label="Weight" value={lead.weight ? `${lead.weight} kg` : "Not entered"} />
               <DataRow label="BMI" value={lead.bmi} />
               <DataRow label="Goal Focus" value={getReadableValue("tryingStatus", raw.tryingStatus)} />
               <DataRow label="Try Duration" value={getReadableValue("tryDuration", raw.tryDuration)} />
@@ -124,7 +124,7 @@ export default function LeadDetailsModal({ lead, onClose }) {
                 try {
                   const flags = JSON.parse(lead.flagged_markers);
                   return flags.map((f, i) => (
-                    <div key={i} style={{ borderLeft: \`3px solid \${f.level === "red" ? "#b91c1c" : "#b45309"}\`, paddingLeft: "12px", marginBottom: "12px" }}>
+                    <div key={i} style={{ borderLeft: `3px solid ${f.level === "red" ? "#b91c1c" : "#b45309"}`, paddingLeft: "12px", marginBottom: "12px" }}>
                       <div style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}>{f.title}</div>
                       <div style={{ fontSize: "13px", color: "#6b7280" }}>{f.label}</div>
                     </div>
