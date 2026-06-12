@@ -26,7 +26,8 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
             <div className={styles.dropdownMenu}>
               <Link href="/fertility-assessment" className={styles.dropdownItem}>Fertility Assessment</Link>
               <Link href="/pcos-assessment" className={styles.dropdownItem}>PCOS Risk Assessment</Link>
-              <Link href="/tools/cycle-tracker" className={styles.dropdownItem}>Cycle Tracker</Link>
+              <Link href="/tools/period-calculator" className={styles.dropdownItem}>Period Calculator</Link>
+              <Link href="/tools/due-date-calculator" className={styles.dropdownItem}>Due Date Calculator</Link>
               <Link href="/tools/ovulation-calculator" className={styles.dropdownItem}>Ovulation Calculator</Link>
               <Link href="/tools/bmi-calculator" className={styles.dropdownItem}>BMI Fertility Calculator</Link>
             </div>
@@ -63,7 +64,8 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
           <Link href="/crm" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>IVF CRM</Link>
           <Link href="/fertility-assessment" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Fertility Assessment</Link>
           <Link href="/pcos-assessment" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>PCOS Assessment</Link>
-          <Link href="/tools/cycle-tracker" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Cycle Tracker</Link>
+          <Link href="/tools/period-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Period Calculator</Link>
+          <Link href="/tools/due-date-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Due Date Calculator</Link>
           <Link href="/tools/ovulation-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Ovulation Calculator</Link>
           <Link href="/tools/bmi-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>BMI Calculator</Link>
           <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>

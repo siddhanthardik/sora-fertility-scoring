@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Activity, CalendarHeart, Scale, ChevronRight } from 'lucide-react';
+import { Activity, CalendarHeart, Scale, ChevronRight, Baby } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -46,10 +46,16 @@ export default function ToolsHub() {
             href="/tools/bmi-calculator"
           />
           <ToolCard 
-            title="Cycle Tracker"
-            description="Log your periods, symptoms, and flow to find patterns in your menstrual health."
+            title="Period Calculator"
+            description="Calculate your next period, ovulation estimate, and fertile window."
             icon={<Activity size={32} color="#ff2a5f" />}
-            href="/tools/cycle-tracker"
+            href="/tools/period-calculator"
+          />
+          <ToolCard 
+            title="Due Date Calculator"
+            description="Calculate your estimated due date based on your last period."
+            icon={<Baby size={32} color="#ff2a5f" />}
+            href="/tools/due-date-calculator"
           />
         </div>
       </div>
