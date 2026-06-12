@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Plus, Save, Trash2 } from 'lucide-react';
+import { Activity, Plus, Save, Trash2, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 export default function CycleTracker() {
   const [logs, setLogs] = useState([]);
@@ -80,19 +82,25 @@ export default function CycleTracker() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f3ff', padding: '60px 20px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <Link href="/tools" style={{ color: '#8b5cf6', textDecoration: 'none', fontWeight: 'bold', marginBottom: '24px', display: 'inline-block' }}>&larr; Back to Tools</Link>
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <Navbar />
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+          <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
+          <ChevronRight size={14} color="#94a3b8" />
+          <span style={{ color: '#ff2a5f' }}>Cycle Tracker</span>
+        </div>
         
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '56px', height: '56px', background: '#ede9fe', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Activity size={28} color="#8b5cf6" />
+            <div style={{ width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Activity size={28} color="#ff2a5f" />
             </div>
             <h1 style={{ fontSize: '28px', color: '#0f172a', margin: 0, fontWeight: '800' }}>Cycle Tracker</h1>
           </div>
           {!showForm && (
-            <button onClick={() => setShowForm(true)} style={{ background: '#8b5cf6', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <button onClick={() => setShowForm(true)} style={{ background: '#ff2a5f', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
               <Plus size={18} /> Add Log
             </button>
           )}
@@ -118,7 +126,7 @@ export default function CycleTracker() {
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>Flow Intensity</label>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   {['Light', 'Medium', 'Heavy'].map(f => (
-                    <button type="button" key={f} onClick={() => setFlow(f)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `2px solid ${flow === f ? '#8b5cf6' : '#e2e8f0'}`, background: flow === f ? '#f5f3ff' : '#fff', color: flow === f ? '#7c3aed' : '#64748b', fontWeight: 'bold', cursor: 'pointer' }}>{f}</button>
+                    <button type="button" key={f} onClick={() => setFlow(f)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `2px solid ${flow === f ? '#ff2a5f' : '#e2e8f0'}`, background: flow === f ? '#fff1f2' : '#fff', color: flow === f ? '#e11d48' : '#64748b', fontWeight: 'bold', cursor: 'pointer' }}>{f}</button>
                   ))}
                 </div>
               </div>
@@ -127,7 +135,7 @@ export default function CycleTracker() {
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>Symptoms</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {symptomOptions.map(sym => (
-                    <button type="button" key={sym} onClick={() => toggleSymptom(sym)} style={{ padding: '8px 16px', borderRadius: '20px', border: `1px solid ${symptoms.includes(sym) ? '#8b5cf6' : '#cbd5e1'}`, background: symptoms.includes(sym) ? '#8b5cf6' : '#fff', color: symptoms.includes(sym) ? '#fff' : '#475569', fontSize: '14px', cursor: 'pointer', transition: '0.2s' }}>
+                    <button type="button" key={sym} onClick={() => toggleSymptom(sym)} style={{ padding: '8px 16px', borderRadius: '20px', border: `1px solid ${symptoms.includes(sym) ? '#ff2a5f' : '#cbd5e1'}`, background: symptoms.includes(sym) ? '#ff2a5f' : '#fff', color: symptoms.includes(sym) ? '#fff' : '#475569', fontSize: '14px', cursor: 'pointer', transition: '0.2s' }}>
                       {sym}
                     </button>
                   ))}
@@ -141,7 +149,7 @@ export default function CycleTracker() {
 
               <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                 <button type="button" onClick={() => setShowForm(false)} style={{ flex: 1, background: '#f1f5f9', color: '#475569', padding: '16px', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ flex: 2, background: '#8b5cf6', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Save size={20} /> Save Log</button>
+                <button type="submit" style={{ flex: 2, background: '#ff2a5f', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Save size={20} /> Save Log</button>
               </div>
             </form>
           </div>
@@ -163,7 +171,7 @@ export default function CycleTracker() {
                     {log.endDate && ` – ${new Date(log.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
                   </div>
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                    <span style={{ background: '#ede9fe', color: '#6d28d9', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold' }}>{log.flow} Flow</span>
+                    <span style={{ background: '#fff1f2', color: '#be123c', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold' }}>{log.flow} Flow</span>
                     {log.cycleLength && (
                       <span style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold' }}>{log.cycleLength} Day Cycle</span>
                     )}
@@ -189,6 +197,7 @@ export default function CycleTracker() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

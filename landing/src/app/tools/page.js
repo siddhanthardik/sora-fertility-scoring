@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Activity, CalendarHeart, Scale, ChevronRight } from 'lucide-react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function ToolsHub() {
   const [soraId, setSoraId] = useState("");
@@ -17,8 +19,9 @@ export default function ToolsHub() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '60px 20px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <Navbar />
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
         <header style={{ textAlign: 'center', marginBottom: '48px' }}>
           <h1 style={{ fontSize: '36px', color: '#0f172a', fontWeight: '800', marginBottom: '16px' }}>Free Fertility Tools</h1>
           <p style={{ fontSize: '18px', color: '#64748b' }}>Track your cycle, calculate ovulation, and understand your fertility better.</p>
@@ -33,23 +36,25 @@ export default function ToolsHub() {
           <ToolCard 
             title="Ovulation Calculator"
             description="Estimate your fertile window and ovulation date to optimize your chances of conceiving."
-            icon={<CalendarHeart size={32} color="#ec4899" />}
+            icon={<CalendarHeart size={32} color="#ff2a5f" />}
             href="/tools/ovulation-calculator"
           />
           <ToolCard 
             title="BMI Fertility Calculator"
             description="Check your Body Mass Index and understand its specific implications on your hormonal health."
-            icon={<Scale size={32} color="#0ea5e9" />}
+            icon={<Scale size={32} color="#ff2a5f" />}
             href="/tools/bmi-calculator"
           />
           <ToolCard 
             title="Cycle Tracker"
             description="Log your periods, symptoms, and flow to find patterns in your menstrual health."
-            icon={<Activity size={32} color="#8b5cf6" />}
+            icon={<Activity size={32} color="#ff2a5f" />}
             href="/tools/cycle-tracker"
           />
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }
@@ -78,7 +83,7 @@ function ToolCard({ title, description, icon, href }) {
         e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
       }}
       >
-        <div style={{ width: '64px', height: '64px', background: '#f8fafc', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: '64px', height: '64px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           {icon}
         </div>
         <div style={{ flex: 1 }}>

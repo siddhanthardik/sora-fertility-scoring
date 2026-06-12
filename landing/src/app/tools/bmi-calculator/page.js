@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Scale, Info } from 'lucide-react';
+import { Scale, Info, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 export default function BmiCalculator() {
   const [height, setHeight] = useState("");
@@ -45,14 +47,19 @@ export default function BmiCalculator() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f9ff', padding: '60px 20px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <Link href="/tools" style={{ color: '#0ea5e9', textDecoration: 'none', fontWeight: 'bold', marginBottom: '24px', display: 'inline-block' }}>&larr; Back to Tools</Link>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <Navbar />
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+          <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
+          <ChevronRight size={14} color="#94a3b8" />
+          <span style={{ color: '#ff2a5f' }}>BMI & Fertility</span>
+        </div>
         
         <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-            <div style={{ width: '56px', height: '56px', background: '#e0f2fe', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Scale size={28} color="#0ea5e9" />
+            <div style={{ width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Scale size={28} color="#ff2a5f" />
             </div>
             <h1 style={{ fontSize: '28px', color: '#0f172a', margin: 0, fontWeight: '800' }}>BMI & Fertility</h1>
           </div>
@@ -84,13 +91,13 @@ export default function BmiCalculator() {
               </div>
             </div>
 
-            <button type="submit" style={{ background: '#0ea5e9', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '12px' }}>
+            <button type="submit" style={{ background: '#ff2a5f', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '12px' }}>
               Calculate BMI
             </button>
           </form>
 
           {results && (
-            <div style={{ marginTop: '40px', borderTop: '2px dashed #e0f2fe', paddingTop: '40px' }}>
+            <div style={{ marginTop: '40px', borderTop: '2px dashed #ffe4e6', paddingTop: '40px' }}>
               <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <div style={{ fontSize: '48px', fontWeight: '900', color: results.color, lineHeight: '1' }}>{results.bmi}</div>
                 <div style={{ fontSize: '18px', fontWeight: '700', color: '#475569', marginTop: '8px' }}>{results.category}</div>
@@ -109,6 +116,7 @@ export default function BmiCalculator() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
