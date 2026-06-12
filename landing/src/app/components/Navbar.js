@@ -30,6 +30,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
               <Link href="/tools/due-date-calculator" className={styles.dropdownItem}>Due Date Calculator</Link>
               <Link href="/tools/ovulation-calculator" className={styles.dropdownItem}>Ovulation Calculator</Link>
               <Link href="/tools/bmi-calculator" className={styles.dropdownItem}>BMI Fertility Calculator</Link>
+              <Link href="/tools/egg-freezing-planner" className={styles.dropdownItem}>Egg Freezing Planner</Link>
             </div>
           </div>
 
@@ -68,6 +69,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
           <Link href="/tools/due-date-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Due Date Calculator</Link>
           <Link href="/tools/ovulation-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Ovulation Calculator</Link>
           <Link href="/tools/bmi-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>BMI Calculator</Link>
+          <Link href="/tools/egg-freezing-planner" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Egg Freezing Planner</Link>
           <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
           <Link href="/contact" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
           {!hideCta && (
