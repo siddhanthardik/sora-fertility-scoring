@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-
-function checkAuth(request) {
-  const cookieHeader = request.headers.get("cookie") || "";
-  return cookieHeader.includes("sora_superadmin=authenticated");
-}
+import { requireSuperadmin } from "../../../lib/superadminAuth";
 
 export async function POST(request) {
-  if (!checkAuth(request)) {
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  const auth = await requireSuperadmin();
+  if (auth.error) {
+    return NextResponse.json({ success: false, message: auth.error }, { status: 401 });
   }
 
   try {
