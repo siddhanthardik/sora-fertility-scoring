@@ -9,18 +9,24 @@ export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
 export async function generateMetadata() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { data } = await supabase.from("seo_settings").select("*").eq("page_route", "/blog").single();
 
-  const { data } = await supabase.from("seo_settings").select("*").eq("page_route", "/blog").single();
-
-  if (data) {
-    return {
-      title: data.meta_title,
-      description: data.meta_description,
-      keywords: data.meta_keywords,
-    };
+      if (data) {
+        return {
+          title: data.meta_title,
+          description: data.meta_description,
+          keywords: data.meta_keywords,
+        };
+      }
+    }
+  } catch (error) {
+    console.error("Metadata error:", error);
   }
 
   return {
@@ -30,24 +36,37 @@ export async function generateMetadata() {
 }
 
 export default async function BlogIndex({ searchParams }) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return <div style={{ padding: '100px', textAlign: 'center' }}>Error: Supabase environment variables are missing.</div>;
+    }
 
-  let query = supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("published", true)
-    .order("created_at", { ascending: false });
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const params = await searchParams;
-  const selectedCategory = params.category || "All";
-  if (selectedCategory !== "All") {
-    query = query.eq("category", selectedCategory);
-  }
+    let query = supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false });
 
-  const { data: blogs } = await query;
-  const hasBlogs = blogs && blogs.length > 0;
+    // Handle searchParams safely
+    const params = (await searchParams) || {};
+    const selectedCategory = params.category || "All";
+    
+    if (selectedCategory !== "All") {
+      query = query.eq("category", selectedCategory);
+    }
+
+    const { data: blogs, error } = await query;
+    
+    if (error) {
+      return <div style={{ padding: '100px', textAlign: 'center' }}>Database Error: {error.message}</div>;
+    }
+    
+    const hasBlogs = blogs && blogs.length > 0;
 
   const categories = ["All", "Fertility", "PCOS", "Pregnancy", "Egg Freezing"];
 
@@ -150,4 +169,12 @@ export default async function BlogIndex({ searchParams }) {
       <Footer />
     </div>
   );
+  } catch (err) {
+    return (
+      <div style={{ padding: '100px', textAlign: 'center' }}>
+        <h2>Unexpected Server Error</h2>
+        <p>{err.message || String(err)}</p>
+      </div>
+    );
+  }
 }

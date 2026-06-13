@@ -9,37 +9,45 @@ import styles from "../page.module.css";
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-// Dynamically generate metadata for SEO
 export async function generateMetadata({ params }) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey) {
+      const resolvedParams = await params;
+      const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const { data: blog } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", params.slug)
-    .single();
+      const { data: blog } = await supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("slug", resolvedParams.slug)
+        .single();
 
-  if (!blog) {
-    return { title: "Post Not Found | SORA Fertility" };
-  }
-
-  // Use the new SEO fields if available, otherwise fallback to existing logic
-  return {
-    title: blog.meta_title || `${blog.title} | SORA Fertility Blog`,
-    description: blog.meta_description || blog.excerpt || `Read ${blog.title} on the SORA Fertility Blog.`,
-    keywords: blog.meta_keywords || "",
-    openGraph: {
-      title: blog.meta_title || blog.title,
-      description: blog.meta_description || blog.excerpt,
-      images: blog.cover_image ? [{ url: blog.cover_image }] : [],
-      type: "article",
-      publishedTime: blog.created_at,
-      authors: blog.author_name ? [blog.author_name] : []
+      if (blog) {
+        return {
+          title: blog.meta_title || `${blog.title} | SORA Fertility Blog`,
+          description: blog.meta_description || blog.excerpt || `Read ${blog.title} on the SORA Fertility Blog.`,
+          keywords: blog.meta_keywords || "",
+          openGraph: {
+            title: blog.meta_title || blog.title,
+            description: blog.meta_description || blog.excerpt,
+            images: blog.cover_image ? [{ url: blog.cover_image }] : [],
+            type: "article",
+            publishedTime: blog.created_at,
+            authors: blog.author_name ? [blog.author_name] : []
+          }
+        };
+      }
     }
-  };
+  } catch (error) {
+    console.error("Metadata error:", error);
+  }
+  
+  return { title: "Post Not Found | SORA Fertility" };
 }
+
+
 
 // Map related_tool to friendly titles and paths
 const TOOL_MAP = {
@@ -76,19 +84,26 @@ const TOOL_MAP = {
 };
 
 export default async function BlogPost({ params }) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return <div style={{ padding: '100px', textAlign: 'center' }}>Error: Supabase environment variables are missing.</div>;
+    }
 
-  const { data: blog, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", params.slug)
-    .single();
+    const resolvedParams = await params;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  if (error || !blog) {
-    notFound();
-  }
+    const { data: blog, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", resolvedParams.slug)
+      .single();
+
+    if (error || !blog) {
+      notFound();
+    }
 
   // JSON-LD Structured Data for AI Search Engines
   const jsonLd = {
@@ -182,4 +197,12 @@ export default async function BlogPost({ params }) {
       <Footer />
     </div>
   );
+  } catch (err) {
+    return (
+      <div style={{ padding: '100px', textAlign: 'center' }}>
+        <h2>Unexpected Server Error</h2>
+        <p>{err.message || String(err)}</p>
+      </div>
+    );
+  }
 }
