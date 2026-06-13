@@ -850,7 +850,7 @@ export default function SuperadminPage() {
                   <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Write and publish articles for the public blog.</p>
                 </div>
                 <button className={styles.btnPrimary} onClick={() => {
-                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false });
+                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "" });
                   setBlogMessage("");
                 }}>
                   <Plus size={16} style={{marginRight: "8px"}} /> New Post
@@ -1109,6 +1109,47 @@ export default function SuperadminPage() {
                     <label className={styles.label}>Cover Image URL (Optional)</label>
                     <input className={styles.input} type="text" value={editingBlog.cover_image || ""} onChange={(e) => setEditingBlog({...editingBlog, cover_image: e.target.value})} />
                   </div>
+                </div>
+
+                <div className={styles.divider}></div>
+                <h3 className={styles.sectionTitle} style={{marginTop: '24px'}}>SEO & Content Settings</h3>
+
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>Content Category</label>
+                    <select className={styles.input} value={editingBlog.category || "Fertility"} onChange={(e) => setEditingBlog({...editingBlog, category: e.target.value})}>
+                      <option value="Fertility">Fertility</option>
+                      <option value="PCOS">PCOS</option>
+                      <option value="Pregnancy">Pregnancy</option>
+                      <option value="Egg Freezing">Egg Freezing</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <label className={styles.label}>Related Tool (CTA)</label>
+                    <select className={styles.input} value={editingBlog.related_tool || ""} onChange={(e) => setEditingBlog({...editingBlog, related_tool: e.target.value})}>
+                      <option value="">None</option>
+                      <option value="egg-freezing-planner">Egg Freezing Planner</option>
+                      <option value="fertility-assessment">Fertility Assessment</option>
+                      <option value="pcos-assessment">PCOS Assessment</option>
+                      <option value="due-date-calculator">Due Date Calculator</option>
+                      <option value="ovulation-calculator">Ovulation Calculator</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>SEO Meta Title</label>
+                  <input className={styles.input} type="text" value={editingBlog.meta_title || ""} onChange={(e) => setEditingBlog({...editingBlog, meta_title: e.target.value})} placeholder="Title for Search Engines..." />
+                </div>
+                
+                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                  <label className={styles.label}>SEO Meta Description</label>
+                  <textarea className={styles.input} rows="2" value={editingBlog.meta_description || ""} onChange={(e) => setEditingBlog({...editingBlog, meta_description: e.target.value})} placeholder="Optimized description..."></textarea>
+                </div>
+                
+                <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                  <label className={styles.label}>SEO Meta Keywords</label>
+                  <input className={styles.input} type="text" value={editingBlog.meta_keywords || ""} onChange={(e) => setEditingBlog({...editingBlog, meta_keywords: e.target.value})} placeholder="fertility, IVF, pcos symptoms" />
                 </div>
 
                 <div className={styles.formGroup} style={{ marginBottom: '24px' }}>

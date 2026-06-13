@@ -137,3 +137,11 @@ ADD COLUMN IF NOT EXISTS pcos_pattern TEXT,
 ADD COLUMN IF NOT EXISTS pcos_responses JSONB,
 ADD COLUMN IF NOT EXISTS pcos_report_version TEXT,
 ADD COLUMN IF NOT EXISTS lead_priority TEXT;
+
+-- 9. Add SEO and Category columns to blog_posts
+ALTER TABLE blog_posts
+ADD COLUMN IF NOT EXISTS category TEXT,
+ADD COLUMN IF NOT EXISTS meta_title TEXT,
+ADD COLUMN IF NOT EXISTS meta_description TEXT,
+ADD COLUMN IF NOT EXISTS meta_keywords TEXT,
+ADD COLUMN IF NOT EXISTS related_tool TEXT;
