@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PcosWizard from "./PcosWizard";
-import { trackEvent } from "../lib/analytics";
+import { trackEvent } from "../../lib/analytics";
 import { ChunkErrorBoundary } from "../components/ChunkErrorBoundary";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";

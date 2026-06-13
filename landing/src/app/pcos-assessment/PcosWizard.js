@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import styles from "./PcosWizard.module.css";
 import PcosReportTemplate from "./PcosReportTemplate";
-import { trackEvent } from "../lib/analytics";
+import { trackEvent } from "../../lib/analytics";
 
 const CLINIC_ID = process.env.NEXT_PUBLIC_SORA_CLINIC_ID || "clinic_sora_ivf_clinic_613110";
 

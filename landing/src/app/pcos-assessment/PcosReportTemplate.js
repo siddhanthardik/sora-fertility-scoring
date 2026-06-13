@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Download, CheckCircle2, AlertTriangle, CheckSquare, Square, Activity, ArrowRight, Lightbulb, HeartPulse, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent } from '../../lib/analytics';
 
 const PAGE_STYLE = {
   width: '794px',
