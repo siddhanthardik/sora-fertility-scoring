@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, ArrowRight, Activity, Scale } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { trackEvent } from '../../../lib/analytics';
 
 export default function BmiCalculator() {
   const [unit, setUnit] = useState('metric'); // 'metric' or 'imperial'
@@ -14,6 +15,18 @@ export default function BmiCalculator() {
   const [heightIn, setHeightIn] = useState('');
   const [weightLbs, setWeightLbs] = useState('');
   const [results, setResults] = useState(null);
+  const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  React.useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "bmi_calculator" });
+  }, []);
+
+  const trackStart = () => {
+    if (!hasTrackedStart) {
+      trackEvent({ event: "tool_started", tool: "bmi_calculator" });
+      setHasTrackedStart(true);
+    }
+  };
 
   const calculateBMI = (e) => {
     e.preventDefault();
@@ -62,6 +75,7 @@ export default function BmiCalculator() {
       fertilityImpact,
       color
     });
+    trackEvent({ event: "tool_completed", tool: "bmi_calculator" });
   };
 
   return (
@@ -82,7 +96,7 @@ export default function BmiCalculator() {
           <p style={{ fontSize: '18px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }}>
+        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           
           <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '32px' }}>
             <button 

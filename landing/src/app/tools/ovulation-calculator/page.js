@@ -5,11 +5,24 @@ import { CalendarHeart, AlertCircle, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { trackEvent } from '../../../lib/analytics';
 
 export default function OvulationCalculator() {
   const [lastPeriod, setLastPeriod] = useState("");
   const [cycleLength, setCycleLength] = useState(28);
   const [results, setResults] = useState(null);
+  const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  React.useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "ovulation_calculator" });
+  }, []);
+
+  const trackStart = () => {
+    if (!hasTrackedStart) {
+      trackEvent({ event: "tool_started", tool: "ovulation_calculator" });
+      setHasTrackedStart(true);
+    }
+  };
 
   const calculateOvulation = (e) => {
     e.preventDefault();
@@ -39,6 +52,7 @@ export default function OvulationCalculator() {
       windowStart: windowStart.toLocaleDateString(undefined, formatOpts),
       windowEnd: windowEnd.toLocaleDateString(undefined, formatOpts)
     });
+    trackEvent({ event: "tool_completed", tool: "ovulation_calculator" });
   };
 
   return (
@@ -51,7 +65,7 @@ export default function OvulationCalculator() {
           <span style={{ color: '#ff2a5f' }}>Ovulation Calculator</span>
         </div>
         
-        <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
+        <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
             <div style={{ width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CalendarHeart size={28} color="#ff2a5f" />

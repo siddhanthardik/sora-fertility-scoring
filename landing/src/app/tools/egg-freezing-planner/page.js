@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, ArrowRight, Snowflake, Download, Mail, Activity, Target, Shield, Clock, Heart, BookOpen, AlertCircle } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { trackEvent } from '../../../lib/analytics';
 
 export default function EggFreezingPlanner() {
   const [hasStarted, setHasStarted] = useState(false);
@@ -27,6 +28,10 @@ export default function EggFreezingPlanner() {
 
   // Scroll ref
   const resultsRef = useRef(null);
+
+  useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "egg_freezing_planner" });
+  }, []);
 
   const handleCalculate = (e) => {
     if (e) e.preventDefault();
@@ -69,6 +74,7 @@ export default function EggFreezingPlanner() {
       cancer
     });
 
+    trackEvent({ event: "tool_completed", tool: "egg_freezing_planner" });
     setSendSuccess(false);
 
     setTimeout(() => {
@@ -114,6 +120,7 @@ export default function EggFreezingPlanner() {
         document.body.appendChild(a);
         a.click();
         a.remove();
+        trackEvent({ event: "report_downloaded", tool: "egg_freezing_planner" });
       }
     } catch (err) {
       console.error(err);
@@ -177,7 +184,7 @@ export default function EggFreezingPlanner() {
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-              <button onClick={() => setHasStarted(true)} style={{ padding: '16px 32px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '100px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button onClick={() => { trackEvent({ event: "tool_started", tool: "egg_freezing_planner" }); setHasStarted(true); }} style={{ padding: '16px 32px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '100px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Start Planning <ArrowRight size={20} />
               </button>
             </div>

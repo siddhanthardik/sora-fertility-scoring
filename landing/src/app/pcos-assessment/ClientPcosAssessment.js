@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PcosWizard from "./PcosWizard";
+import { trackEvent } from "../lib/analytics";
 import { ChunkErrorBoundary } from "../components/ChunkErrorBoundary";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -23,6 +24,15 @@ import {
 export default function ClientPcosAssessment() {
   const currentYear = new Date().getFullYear();
   const [isQuizOpen, setIsQuizOpen] = useState(false);
+
+  useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "pcos_assessment" });
+  }, []);
+
+  const handleStartAssessment = () => {
+    trackEvent({ event: "tool_started", tool: "pcos_assessment" });
+    setIsQuizOpen(true);
+  };
 
   useEffect(() => {
     document.body.style.overflow = isQuizOpen ? "hidden" : "unset";
@@ -56,7 +66,7 @@ export default function ClientPcosAssessment() {
 
   return (
     <div className={styles.container}>
-      <Navbar onCtaClick={() => setIsQuizOpen(true)} ctaText="Start PCOS Assessment" ctaColor="#2563eb" />
+      <Navbar onCtaClick={handleStartAssessment} ctaText="Start PCOS Assessment" ctaColor="#2563eb" />
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
@@ -69,7 +79,7 @@ export default function ClientPcosAssessment() {
             <p className={styles.heroSubtitle}>
               A private, clinical-grade assessment to identify signs of Polycystic Ovary Syndrome (PCOS). Free. 5 minutes. Receive a personalized report.
             </p>
-            <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={() => setIsQuizOpen(true)}>
+            <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={handleStartAssessment}>
               Start My Free Assessment <ArrowRight size={20} />
             </button>
           </div>
@@ -186,7 +196,7 @@ export default function ClientPcosAssessment() {
           <p className={styles.ctaDesc}>
             5 minutes from now, you'll have a personalized report to discuss with your healthcare provider.
           </p>
-          <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={() => setIsQuizOpen(true)}>
+          <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={handleStartAssessment}>
             Take the Free Assessment <ArrowRight size={20} />
           </button>
         </div>

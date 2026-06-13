@@ -22,7 +22,8 @@ import {
   Link2,
   List,
   Heading2,
-  Heading3
+  Heading3,
+  LineChart
 } from "lucide-react";
 import Image from "next/image";
 import RichTextEditor from "../components/RichTextEditor";
@@ -76,6 +77,8 @@ export default function SuperadminPage() {
   const [editingBlog, setEditingBlog] = useState(null);
   const [blogMessage, setBlogMessage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  const [analytics, setAnalytics] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -147,6 +150,14 @@ export default function SuperadminPage() {
     }
   }, []);
 
+  const loadAnalytics = useCallback(async () => {
+    const response = await fetch("/api/superadmin/analytics");
+    if (response.ok) {
+      const result = await response.json();
+      setAnalytics(result);
+    }
+  }, []);
+
   const checkSession = useCallback(async () => {
     const response = await fetch("/api/superadmin/session");
     if (response.ok) {
@@ -156,9 +167,10 @@ export default function SuperadminPage() {
       await loadPackages();
       await loadSeoSettings();
       await loadBlogs();
+      await loadAnalytics();
     }
     setLoading(false);
-  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs]);
+  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs, loadAnalytics]);
 
   useEffect(() => {
     checkSession();
@@ -184,6 +196,7 @@ export default function SuperadminPage() {
     await loadPackages();
     await loadSeoSettings();
     await loadBlogs();
+    await loadAnalytics();
   }
 
   async function logout() {
@@ -475,6 +488,13 @@ export default function SuperadminPage() {
           >
             <FileText size={20} />
             Blog Management
+          </button>
+          <button 
+            onClick={() => setActiveTab("analytics")}
+            className={`${styles.navItem} ${activeTab === "analytics" ? styles.active : ""}`}
+          >
+            <LineChart size={20} />
+            Growth Intelligence
           </button>
           <button 
             onClick={() => setSettingsOpen(true)}
@@ -895,6 +915,115 @@ export default function SuperadminPage() {
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {activeTab === "analytics" && analytics && (
+            <div>
+              <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h2 style={{ fontSize: "1.5rem", margin: 0, fontWeight: 800 }}>SORA Growth Intelligence</h2>
+                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Internal analytics engine tracking user intent and tool conversions.</p>
+                </div>
+                <button onClick={() => loadAnalytics()} className={styles.btnSecondary}>
+                  <RefreshCw size={16} /> Refresh Analytics
+                </button>
+              </div>
+
+              {/* KPI Cards */}
+              <div className={styles.metricsGrid} style={{ marginBottom: "32px" }}>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricCardTitle}>Total Visitors</span>
+                  <h3 className={styles.metricCardValue}>{analytics.summary.totalVisitors || 0}</h3>
+                </div>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricCardTitle}>Today's Users</span>
+                  <h3 className={styles.metricCardValue}>{analytics.summary.todayUsers || 0}</h3>
+                </div>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricCardTitle}>Assessments Completed</span>
+                  <h3 className={styles.metricCardValue} style={{color: '#16a34a'}}>{analytics.summary.assessmentsCompleted || 0}</h3>
+                </div>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricCardTitle}>Reports Downloaded</span>
+                  <h3 className={styles.metricCardValue} style={{color: '#3b82f6'}}>{analytics.summary.reportsDownloaded || 0}</h3>
+                </div>
+              </div>
+
+              {/* Tools Analytics Table */}
+              <div style={{ background: "white", borderRadius: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", marginBottom: "32px", overflow: "hidden" }}>
+                <div style={{ padding: "20px 24px", borderBottom: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                  <h3 style={{ margin: 0, fontSize: "1.1rem", color: "#0f172a" }}>Tools Analytics</h3>
+                  <p style={{ margin: "4px 0 0 0", color: "#64748b", fontSize: "0.875rem" }}>Engagement and drop-off rates across SORA public tools.</p>
+                </div>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Tool Name</th>
+                      <th>Views</th>
+                      <th>Starts</th>
+                      <th>Completes</th>
+                      <th>Downloads</th>
+                      <th>Completion %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.toolsAnalytics.map((tool, idx) => (
+                      <tr key={idx}>
+                        <td style={{fontWeight: 600, color: '#1e293b'}}>{tool.tool_name}</td>
+                        <td>{tool.views}</td>
+                        <td>{tool.starts}</td>
+                        <td style={{color: '#16a34a', fontWeight: 'bold'}}>{tool.completes}</td>
+                        <td style={{color: '#3b82f6', fontWeight: 'bold'}}>{tool.downloads}</td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: '60px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div style={{ width: `${tool.completion_rate}%`, height: '100%', background: tool.completion_rate > 75 ? '#10b981' : tool.completion_rate > 50 ? '#f59e0b' : '#ef4444' }}></div>
+                            </div>
+                            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{tool.completion_rate}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {analytics.toolsAnalytics.length === 0 && (
+                      <tr>
+                        <td colSpan="6" style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>No tool data recorded yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Traffic Sources */}
+              <div style={{ background: "white", borderRadius: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", marginBottom: "32px", overflow: "hidden" }}>
+                <div style={{ padding: "20px 24px", borderBottom: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                  <h3 style={{ margin: 0, fontSize: "1.1rem", color: "#0f172a" }}>Traffic Sources</h3>
+                </div>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Source</th>
+                      <th>Visitors</th>
+                      <th>Assessments Started</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.trafficSources.map((source, idx) => (
+                      <tr key={idx}>
+                        <td style={{fontWeight: 600, color: '#1e293b'}}>{source.source}</td>
+                        <td>{source.visitors}</td>
+                        <td>{source.assessments}</td>
+                      </tr>
+                    ))}
+                    {analytics.trafficSources.length === 0 && (
+                      <tr>
+                        <td colSpan="3" style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>No source data recorded yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
             </div>
           )}
 

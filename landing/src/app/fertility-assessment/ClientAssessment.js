@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import QuizWizard from "../components/QuizWizard";
+import { trackEvent } from "../../lib/analytics";
 import { ChunkErrorBoundary } from "../components/ChunkErrorBoundary";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -23,6 +24,15 @@ import {
 export default function Home() {
   const currentYear = new Date().getFullYear();
   const [isQuizOpen, setIsQuizOpen] = useState(false);
+
+  useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "fertility_assessment" });
+  }, []);
+
+  const handleStartAssessment = () => {
+    trackEvent({ event: "tool_started", tool: "fertility_assessment" });
+    setIsQuizOpen(true);
+  };
 
   useEffect(() => {
     document.body.style.overflow = isQuizOpen ? "hidden" : "unset";
@@ -56,7 +66,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <Navbar onCtaClick={() => setIsQuizOpen(true)} ctaText="Start fertility test" ctaColor="#2563eb" />
+      <Navbar onCtaClick={handleStartAssessment} ctaText="Start fertility test" ctaColor="#2563eb" />
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
@@ -69,7 +79,7 @@ export default function Home() {
             <p className={styles.heroSubtitle}>
               A private, evidence-aligned fertility risk score — designed for women 25–45 who want clarity, not more waiting. Free. 5 minutes. No clinic required.
             </p>
-            <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={() => setIsQuizOpen(true)}>
+            <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={handleStartAssessment}>
               Start My Free Test <ArrowRight size={20} />
             </button>
           </div>
@@ -232,7 +242,7 @@ export default function Home() {
           <p className={styles.ctaDesc}>
             5 minutes from now, you'll have a personalised fertility risk report — and a clear sense of what to do next.
           </p>
-          <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={() => setIsQuizOpen(true)}>
+          <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={handleStartAssessment}>
             Take the Free Assessment <ArrowRight size={20} />
           </button>
 

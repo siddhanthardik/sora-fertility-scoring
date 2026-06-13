@@ -13,11 +13,14 @@ import {
   AlertTriangle, 
   RotateCcw,
   Clock,
+  CheckCircle2,
+  AlertCircle,
   FileCheck,
   Award,
   BookOpen,
   Download
 } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import styles from "./QuizWizard.module.css";
 import PremiumReportTemplate from "./PremiumReportTemplate";
 
@@ -763,6 +766,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
         handler: async function (response) {
           setRazorpayOrderId(response.razorpay_order_id);
           setPaymentStatus("paid");
+          trackEvent({ event: "revenue_generated", tool: "fertility_assessment", metadata: { revenue: pricing.amount, currency: pricing.currency } });
           await submitFinalAssessment("premium", response.razorpay_order_id);
         },
         prefill: {
@@ -814,6 +818,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       if (!response.ok || resData?.success === false) {
         console.warn("Lead failed to save on Render node. Using client-side fail-safe.");
       }
+      trackEvent({ event: "tool_completed", tool: "fertility_assessment", metadata: { report_type: selectedType } });
       setResults(triageResults);
       if (triageResults.category !== "low") setConsultOpen(true);
       setCurrentStep(resultStepIndex);
@@ -896,7 +901,8 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       }
       
-      pdf.save(`Sora_Fertility_Report_${leadName.replace(/\\s+/g, "_") || "Patient"}.pdf`);
+      pdf.save(`Sora_Fertility_Report_${leadName.replace(/\s+/g, "_") || "Patient"}.pdf`);
+      trackEvent({ event: "report_downloaded", tool: "fertility_assessment" });
     } catch (err) {
       console.error(err);
       setError("Failed to generate PDF. Please try again.");

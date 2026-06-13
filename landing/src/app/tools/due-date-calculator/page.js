@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, Baby, Download, Mail, Heart, Calendar, CalendarClock, Clock } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { trackEvent } from '../../../lib/analytics';
 
 const insightsData = {
   default: { emoji: "🌱", size: "Growing quickly!", tagline: "A time of rapid development.", what: ["Your baby is developing rapidly.", "Important structures are forming."], didYouKnow: "Every pregnancy is unique, and babies grow at their own pace.", tip: "Stay hydrated and listen to your body's changing needs." },
@@ -36,6 +37,18 @@ export default function DueDateCalculator() {
   const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  React.useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "due_date_calculator" });
+  }, []);
+
+  const trackStart = () => {
+    if (!hasTrackedStart) {
+      trackEvent({ event: "tool_started", tool: "due_date_calculator" });
+      setHasTrackedStart(true);
+    }
+  };
 
   const calculateDueDate = (e) => {
     e.preventDefault();
@@ -151,6 +164,7 @@ export default function DueDateCalculator() {
         w40: formatShortDate(edd)
       }
     });
+    trackEvent({ event: "tool_completed", tool: "due_date_calculator" });
     setSendSuccess(false);
   };
 
@@ -190,6 +204,7 @@ export default function DueDateCalculator() {
         document.body.appendChild(a);
         a.click();
         a.remove();
+        trackEvent({ event: "report_downloaded", tool: "due_date_calculator" });
       }
     } catch (err) {
       console.error(err);
@@ -234,7 +249,7 @@ export default function DueDateCalculator() {
         )}
 
         {!results && (
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
+          <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', marginBottom: '32px', border: '1px solid #f1f5f9' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
             <form onSubmit={calculateDueDate}>
               <div style={{ marginBottom: '32px' }}>
                 <label style={{ display: 'block', marginBottom: '16px', fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>How did conception occur?</label>

@@ -5,11 +5,24 @@ import Link from 'next/link';
 import { ChevronRight, ArrowRight, Activity, CalendarDays } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { trackEvent } from '../../../lib/analytics';
 
 export default function PeriodCalculator() {
   const [lastPeriodDate, setLastPeriodDate] = useState('');
   const [cycleLength, setCycleLength] = useState(28);
   const [results, setResults] = useState(null);
+  const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  React.useEffect(() => {
+    trackEvent({ event: "tool_viewed", tool: "period_calculator" });
+  }, []);
+
+  const trackStart = () => {
+    if (!hasTrackedStart) {
+      trackEvent({ event: "tool_started", tool: "period_calculator" });
+      setHasTrackedStart(true);
+    }
+  };
 
   const calculatePeriod = (e) => {
     e.preventDefault();
@@ -48,6 +61,7 @@ export default function PeriodCalculator() {
       fertileWindow: fwString,
       ovulationEstimate: formatDate(ovulationDate)
     });
+    trackEvent({ event: "tool_completed", tool: "period_calculator" });
   };
 
   return (
@@ -68,7 +82,7 @@ export default function PeriodCalculator() {
           <p style={{ fontSize: '18px', color: '#64748b' }}>Calculate your next period, ovulation estimate, and fertile window.</p>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }}>
+        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           <form onSubmit={calculatePeriod}>
             <div style={{ marginBottom: '24px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Last period:</label>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Download, CheckCircle2, AlertTriangle, CheckSquare, Square, Activity, ArrowRight, Lightbulb, HeartPulse, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { trackEvent } from '../lib/analytics';
 
 const PAGE_STYLE = {
   width: '794px',
@@ -134,6 +135,7 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
         pdf.addImage(imgData, 'JPEG', 0, 0, 595.28, 841.89);
       }
       pdf.save(`SORA_PCOS_Report_${patientData.name || 'Patient'}.pdf`);
+      trackEvent({ event: "report_downloaded", tool: "pcos_assessment" });
     } catch (e) {
       console.error(e);
       alert("Failed to download PDF.");

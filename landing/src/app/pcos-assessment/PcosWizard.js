@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import styles from "./PcosWizard.module.css";
 import PcosReportTemplate from "./PcosReportTemplate";
+import { trackEvent } from "../lib/analytics";
 
 const CLINIC_ID = process.env.NEXT_PUBLIC_SORA_CLINIC_ID || "clinic_sora_ivf_clinic_613110";
 
@@ -337,6 +338,8 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+
+      trackEvent({ event: "tool_completed", tool: "pcos_assessment" });
 
       setCurrentStep(resultStepIndex);
     } catch (err) {

@@ -145,3 +145,32 @@ ADD COLUMN IF NOT EXISTS meta_title TEXT,
 ADD COLUMN IF NOT EXISTS meta_description TEXT,
 ADD COLUMN IF NOT EXISTS meta_keywords TEXT,
 ADD COLUMN IF NOT EXISTS related_tool TEXT;
+
+-- 10. SORA Growth Intelligence Event Tracking
+CREATE TABLE IF NOT EXISTS sora_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id TEXT NOT NULL,
+  event_name TEXT NOT NULL,
+  tool_name TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Note: In production you might want an index on event_name and tool_name for faster dashboard queries
+CREATE INDEX IF NOT EXISTS idx_sora_events_name ON sora_events(event_name);
+CREATE INDEX IF NOT EXISTS idx_sora_events_tool ON sora_events(tool_name);
+CREATE INDEX IF NOT EXISTS idx_sora_events_created ON sora_events(created_at);
+
+-- Policies for sora_events (Allow authenticated service role to insert/select)
+ALTER TABLE sora_events ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'sora_events' AND policyname = 'Service role can manage events'
+    ) THEN
+        CREATE POLICY "Service role can manage events" ON sora_events FOR ALL USING (true);
+    END IF;
+END
+$$;
