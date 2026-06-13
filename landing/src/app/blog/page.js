@@ -55,10 +55,7 @@ export default async function BlogIndex({ searchParams }) {
       <Navbar />
       
       <div className={styles.blogHero} style={{ background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%)', padding: '100px 24px', textAlign: 'center', borderBottom: '1px solid #fce7f3' }}>
-        <h1 className={styles.heroTitle} style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', marginBottom: '24px', fontFamily: 'var(--font-display)' }}>SORA Learning Hub</h1>
-        <p className={styles.heroDesc} style={{ fontSize: '1.25rem', color: '#475569', maxWidth: '600px', margin: '0 auto 48px', lineHeight: '1.6' }}>
-          Explore evidence-based articles, clinical insights, and step-by-step guides for every stage of your reproductive journey.
-        </p>
+        <h1 className={styles.heroTitle} style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', marginBottom: '48px', fontFamily: 'var(--font-display)' }}>SORA Learning Hub</h1>
         
         <div className={styles.categoryPills} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
           {categories.map((cat) => (
