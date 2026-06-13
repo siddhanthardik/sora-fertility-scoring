@@ -171,6 +171,15 @@ BEGIN
         SELECT 1 FROM pg_policies WHERE tablename = 'sora_events' AND policyname = 'Service role can manage events'
     ) THEN
         CREATE POLICY "Service role can manage events" ON sora_events FOR ALL USING (true);
-    END IF;
 END
 $$;
+
+-- 11. Add Scheduled Publishing to blog_posts
+ALTER TABLE blog_posts
+ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+
+-- Update the public policy to respect published_at
+DROP POLICY IF EXISTS "Public can view published blogs" ON blog_posts;
+CREATE POLICY "Public can view published blogs"
+  ON blog_posts FOR SELECT
+  USING (published = true AND (published_at IS NULL OR published_at <= NOW()));

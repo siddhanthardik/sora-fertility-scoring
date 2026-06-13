@@ -33,7 +33,7 @@ export async function POST(request) {
   }
 
   try {
-    const { slug, title, excerpt, content, author_name, cover_image, published } = await request.json();
+    const { slug, title, excerpt, content, author_name, cover_image, published, category, meta_title, meta_description, meta_keywords, related_tool, published_at } = await request.json();
 
     if (!slug || !title) {
       return NextResponse.json({ success: false, message: "Slug and title are required." }, { status: 400 });
@@ -53,6 +53,12 @@ export async function POST(request) {
         author_name,
         cover_image,
         published,
+        category,
+        meta_title,
+        meta_description,
+        meta_keywords,
+        related_tool,
+        published_at,
         updated_at: new Date().toISOString()
       }, { onConflict: "slug" })
       .select()

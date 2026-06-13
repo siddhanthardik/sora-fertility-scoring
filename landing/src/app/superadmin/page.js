@@ -870,7 +870,7 @@ export default function SuperadminPage() {
                   <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Write and publish articles for the public blog.</p>
                 </div>
                 <button className={styles.btnPrimary} onClick={() => {
-                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "" });
+                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "", published_at: null });
                   setBlogMessage("");
                 }}>
                   <Plus size={16} style={{marginRight: "8px"}} /> New Post
@@ -1302,11 +1302,24 @@ export default function SuperadminPage() {
                   <input className={styles.input} type="text" value={editingBlog.meta_keywords || ""} onChange={(e) => setEditingBlog({...editingBlog, meta_keywords: e.target.value})} placeholder="fertility, IVF, pcos symptoms" />
                 </div>
 
-                <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <div className={styles.formGroup} style={{ marginBottom: '24px', display: 'flex', gap: '32px', alignItems: 'center' }}>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0 }}>
                     <input type="checkbox" checked={editingBlog.published} onChange={(e) => setEditingBlog({...editingBlog, published: e.target.checked})} />
                     Publish publicly
                   </label>
+
+                  {editingBlog.published && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <label className={styles.label} style={{ margin: 0 }}>Publish At (Schedule):</label>
+                      <input 
+                        className={styles.input} 
+                        type="datetime-local" 
+                        value={editingBlog.published_at ? new Date(new Date(editingBlog.published_at).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''} 
+                        onChange={(e) => setEditingBlog({...editingBlog, published_at: e.target.value ? new Date(e.target.value).toISOString() : null})} 
+                      />
+                      <span className={styles.helpText} style={{ margin: 0 }}>(Leave blank to publish immediately)</span>
+                    </div>
+                  )}
                 </div>
 
                 {blogMessage && <p style={{color: 'red', marginBottom: '16px'}}>{blogMessage}</p>}
