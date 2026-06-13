@@ -1197,14 +1197,14 @@ export default function SuperadminPage() {
 
       {/* Blog Edit Modal */}
       {editingBlog && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent} style={{ maxWidth: "800px", width: "95%" }}>
-            <div className={styles.modalHeader}>
+        <div className={styles.modalOverlay} style={{ zIndex: 9999 }}>
+          <div className={styles.modalContent} style={{ maxWidth: "100vw", width: "100vw", height: "100vh", maxHeight: "100vh", margin: 0, borderRadius: 0, display: "flex", flexDirection: "column", background: "#f8fafc" }}>
+            <div className={styles.modalHeader} style={{ background: "white", padding: "20px 32px", borderBottom: "1px solid #e2e8f0" }}>
               <h2><FileText size={20}/> {editingBlog.id ? "Edit Blog Post" : "Create Blog Post"}</h2>
-              <button className={styles.closeBtn} onClick={() => setEditingBlog(null)}><X size={20} /></button>
+              <button className={styles.closeBtn} onClick={() => setEditingBlog(null)}><X size={24} /></button>
             </div>
-            <div className={styles.modalBody} style={{ maxHeight: "75vh", overflowY: "auto" }}>
-              <form onSubmit={saveBlogSettings}>
+            <div className={styles.modalBody} style={{ flex: 1, overflowY: "auto", padding: "32px", display: "flex", justifyContent: "center" }}>
+              <form onSubmit={saveBlogSettings} style={{ width: "100%", maxWidth: "900px", background: "white", padding: "40px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}>
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
                   <div className={styles.formGroup} style={{ flex: 1 }}>
                     <label className={styles.label}>Title</label>
@@ -1235,8 +1235,29 @@ export default function SuperadminPage() {
                     <input className={styles.input} type="text" value={editingBlog.author_name || ""} onChange={(e) => setEditingBlog({...editingBlog, author_name: e.target.value})} />
                   </div>
                   <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label className={styles.label}>Cover Image URL (Optional)</label>
-                    <input className={styles.input} type="text" value={editingBlog.cover_image || ""} onChange={(e) => setEditingBlog({...editingBlog, cover_image: e.target.value})} />
+                    <label className={styles.label}>Cover Image (Optional)</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input className={styles.input} type="text" placeholder="https://..." value={editingBlog.cover_image || ""} onChange={(e) => setEditingBlog({...editingBlog, cover_image: e.target.value})} style={{ flex: 1 }} />
+                      <button type="button" className={styles.btnSecondary} onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.accept = "image/*";
+                        input.onchange = async (e) => {
+                          const file = e.target.files[0];
+                          if (!file) return;
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          const res = await fetch("/api/superadmin/upload", { method: "POST", body: formData });
+                          const data = await res.json();
+                          if (data.success) {
+                            setEditingBlog(prev => ({...prev, cover_image: data.url}));
+                          } else {
+                            alert("Upload failed: " + data.message);
+                          }
+                        };
+                        input.click();
+                      }}>Upload Image</button>
+                    </div>
                   </div>
                 </div>
 

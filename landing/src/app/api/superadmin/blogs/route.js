@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-
-// Validate session using the superadmin cookie
-function checkAuth(request) {
-  const cookieHeader = request.headers.get("cookie") || "";
-  return cookieHeader.includes("sora_superadmin=authenticated");
-}
+import { requireSuperadmin } from "../../../lib/superadminAuth";
 
 export async function GET(request) {
-  if (!checkAuth(request)) {
+  try {
+    await requireSuperadmin();
+  } catch (error) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 
@@ -29,7 +26,9 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  if (!checkAuth(request)) {
+  try {
+    await requireSuperadmin();
+  } catch (error) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 

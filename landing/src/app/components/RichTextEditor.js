@@ -5,7 +5,8 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
-import { Bold, Italic, Strikethrough, Heading2, Heading3, List, ListOrdered, Link2, Image as ImageIcon } from "lucide-react";
+import TextAlign from "@tiptap/extension-text-align";
+import { Bold, Italic, Strikethrough, Heading2, Heading3, List, ListOrdered, Link2, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify } from "lucide-react";
 
 const MenuBar = ({ editor }) => {
   const [uploading, setUploading] = useState(false);
@@ -83,6 +84,13 @@ const MenuBar = ({ editor }) => {
       
       <div style={{ width: "1px", backgroundColor: "#cbd5e1", margin: "0 4px" }} />
 
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} style={btnStyle(editor.isActive({ textAlign: 'left' }))} title="Align Left"><AlignLeft size={18} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} style={btnStyle(editor.isActive({ textAlign: 'center' }))} title="Align Center"><AlignCenter size={18} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} style={btnStyle(editor.isActive({ textAlign: 'right' }))} title="Align Right"><AlignRight size={18} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} style={btnStyle(editor.isActive({ textAlign: 'justify' }))} title="Justify"><AlignJustify size={18} /></button>
+      
+      <div style={{ width: "1px", backgroundColor: "#cbd5e1", margin: "0 4px" }} />
+
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} style={btnStyle(editor.isActive("bulletList"))} title="Bullet List"><List size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} style={btnStyle(editor.isActive("orderedList"))} title="Ordered List"><ListOrdered size={18} /></button>
 
@@ -101,7 +109,8 @@ export default function RichTextEditor({ value, onChange }) {
     extensions: [
       StarterKit,
       Image,
-      Link.configure({ openOnClick: false })
+      Link.configure({ openOnClick: false }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] })
     ],
     content: value,
     immediatelyRender: false,
