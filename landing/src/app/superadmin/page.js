@@ -1204,29 +1204,39 @@ export default function SuperadminPage() {
               <button className={styles.closeBtn} onClick={() => setEditingBlog(null)}><X size={24} /></button>
             </div>
             <div className={styles.modalBody} style={{ flex: 1, overflowY: "auto", padding: "32px", display: "flex", justifyContent: "center" }}>
-              <form onSubmit={saveBlogSettings} style={{ width: "100%", maxWidth: "900px", background: "white", padding: "40px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}>
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+              <form onSubmit={saveBlogSettings} style={{ width: "100%", maxWidth: "900px", background: "white", padding: "40px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)", display: "flex", flexDirection: "column" }}>
                   <div className={styles.formGroup} style={{ flex: 1 }}>
                     <label className={styles.label}>Title</label>
-                    <input className={styles.input} type="text" value={editingBlog.title} onChange={(e) => setEditingBlog({...editingBlog, title: e.target.value})} required />
+                    <input 
+                      className={styles.input} 
+                      type="text" 
+                      value={editingBlog.title} 
+                      onChange={(e) => {
+                        const newTitle = e.target.value;
+                        if (!editingBlog.id) {
+                          const newSlug = newTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                          setEditingBlog({...editingBlog, title: newTitle, slug: newSlug});
+                        } else {
+                          setEditingBlog({...editingBlog, title: newTitle});
+                        }
+                      }} 
+                      required 
+                    />
                   </div>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label className={styles.label}>URL Slug</label>
-                    <input className={styles.input} type="text" value={editingBlog.slug} onChange={(e) => setEditingBlog({...editingBlog, slug: e.target.value})} placeholder="e.g., my-first-post" required disabled={!!editingBlog.id} />
-                  </div>
-                </div>
 
                 <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
                   <label className={styles.label}>Excerpt (Short summary)</label>
                   <textarea className={styles.input} rows="2" value={editingBlog.excerpt || ""} onChange={(e) => setEditingBlog({...editingBlog, excerpt: e.target.value})}></textarea>
                 </div>
 
-                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                <div className={styles.formGroup} style={{ flex: 1, marginBottom: '16px', display: 'flex', flexDirection: 'column' }}>
                   <label className={styles.label}>Content</label>
-                  <RichTextEditor 
-                    value={editingBlog.content || ""} 
-                    onChange={(content) => setEditingBlog({...editingBlog, content})} 
-                  />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <RichTextEditor 
+                      value={editingBlog.content || ""} 
+                      onChange={(content) => setEditingBlog({...editingBlog, content})} 
+                    />
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>

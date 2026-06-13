@@ -40,7 +40,8 @@ export default async function BlogIndex({ searchParams }) {
     .eq("published", true)
     .order("created_at", { ascending: false });
 
-  const selectedCategory = searchParams.category || "All";
+  const params = await searchParams;
+  const selectedCategory = params.category || "All";
   if (selectedCategory !== "All") {
     query = query.eq("category", selectedCategory);
   }

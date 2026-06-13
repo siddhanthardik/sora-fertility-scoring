@@ -126,14 +126,15 @@ export default function RichTextEditor({ value, onChange }) {
   }, [value, editor]);
 
   return (
-    <div style={{ border: "1px solid #cbd5e1", borderRadius: "6px", backgroundColor: "white", overflow: "hidden" }}>
+    <div style={{ border: "1px solid #cbd5e1", borderRadius: "6px", backgroundColor: "white", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", minHeight: "400px" }}>
       <MenuBar editor={editor} />
-      <div style={{ padding: "16px", minHeight: "300px", maxHeight: "500px", overflowY: "auto", cursor: "text" }}>
-        <EditorContent editor={editor} />
+      <div style={{ padding: "16px", flex: 1, overflowY: "auto", cursor: "text" }}>
+        <EditorContent editor={editor} style={{ height: '100%' }} />
       </div>
       <style jsx global>{`
         .tiptap {
           outline: none;
+          min-height: 100%;
         }
         .tiptap p {
           margin: 0 0 1em 0;
