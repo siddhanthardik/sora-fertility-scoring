@@ -19,6 +19,17 @@ const ALL_TOOLS = [
     features: ["Free", "No Login", "Instant Report"]
   },
   {
+    id: "period-calculator",
+    title: "Period Calculator",
+    description: "Calculate your next period, ovulation estimate, and fertile window.",
+    category: "Trying to Conceive",
+    href: "/tools/period-calculator",
+    icon: <Activity size={32} color="#ff2a5f" />,
+    users: "14,100+",
+    time: "1 min",
+    features: ["Free", "No Login", "Instant Results"]
+  },
+  {
     id: "ovulation-calculator",
     title: "Ovulation Calculator",
     description: "Estimate your fertile window and ovulation date to optimize your chances of conceiving.",
