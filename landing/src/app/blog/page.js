@@ -50,7 +50,7 @@ export default async function BlogIndex({ searchParams }) {
       .order("created_at", { ascending: false });
 
     // Handle searchParams safely
-    const params = (await searchParams) || {};
+    const params = searchParams || {};
     const selectedCategory = params.category || "All";
     
     if (selectedCategory !== "All") {

@@ -13,13 +13,12 @@ export async function generateMetadata({ params }) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
     if (supabaseUrl && supabaseKey) {
-      const resolvedParams = await params;
       const supabase = createClient(supabaseUrl, supabaseKey);
 
       const { data: blog } = await supabase
         .from("blog_posts")
         .select("*")
-        .eq("slug", resolvedParams.slug)
+        .eq("slug", params.slug)
         .single();
 
       if (blog) {
@@ -90,13 +89,12 @@ export default async function BlogPost({ params }) {
       return <div style={{ padding: '100px', textAlign: 'center' }}>Error: Supabase environment variables are missing.</div>;
     }
 
-    const resolvedParams = await params;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data: blog, error } = await supabase
       .from("blog_posts")
       .select("*")
-      .eq("slug", resolvedParams.slug)
+      .eq("slug", params.slug)
       .single();
 
     if (error || !blog) {
