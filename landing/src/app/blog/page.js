@@ -50,7 +50,7 @@ export default async function BlogIndex({ searchParams }) {
       .order("created_at", { ascending: false });
 
     // Handle searchParams safely
-    const params = searchParams || {};
+    const params = (await searchParams) || {};
     const selectedCategory = params.category || "All";
     
     if (selectedCategory !== "All") {
@@ -114,14 +114,6 @@ export default async function BlogIndex({ searchParams }) {
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 12px 24px -4px rgba(0,0,0,0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.05)';
                 }}
               >
                 {post.cover_image ? (
