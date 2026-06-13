@@ -35,6 +35,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
             </div>
           </div>
 
+          <Link href="/about" className={styles.navLink}>About</Link>
           <Link href="/blog" className={styles.navLink}>Blog</Link>
           <Link href="/contact" className={styles.navLink}>Contact</Link>
         </nav>
@@ -71,6 +72,7 @@ export default function Navbar({ onCtaClick, ctaText = "Book a Demo", hideCta = 
           <Link href="/tools/ovulation-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Ovulation Calculator</Link>
           <Link href="/tools/bmi-calculator" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>BMI Calculator</Link>
           <Link href="/tools/egg-freezing-planner" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Egg Freezing Planner</Link>
+          <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
           <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
           <Link href="/contact" className={styles.mobileNavLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
           {!hideCta && (

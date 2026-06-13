@@ -33,7 +33,8 @@ export default function Footer() {
             </div>
 
             <div className={styles.linkGroup}>
-              <div className={styles.linkGroupTitle}>CONNECT</div>
+              <div className={styles.linkGroupTitle}>COMPANY</div>
+              <Link href="/about" className={styles.linkItem}>About Us</Link>
               <Link href="/contact" className={styles.linkItem}>Contact Support</Link>
               <Link href="#" className={styles.linkItem}>Clinic Login</Link>
               <div className={styles.socialLinks}>

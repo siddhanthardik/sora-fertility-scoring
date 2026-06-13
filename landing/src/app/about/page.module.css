@@ -1,0 +1,213 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%);
+  padding: 100px 24px;
+  text-align: center;
+  border-bottom: 1px solid #fce7f3;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+}
+
+.heroDesc {
+  font-size: 1.25rem;
+  color: #475569;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Main Content Area */
+.main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  width: 100%;
+}
+
+/* Mission Section */
+.missionSection {
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.missionSection h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+}
+
+.missionSection p {
+  font-size: 1.15rem;
+  color: #475569;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* Values Section */
+.valuesSection {
+  margin-bottom: 100px;
+}
+
+.valuesSection h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 48px;
+  text-align: center;
+  font-family: var(--font-display);
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+}
+
+.valueCard {
+  background: white;
+  padding: 40px 32px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.valueCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -4px rgba(0,0,0,0.1);
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  background: #fff1f2;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: #f43f5e;
+}
+
+.valueCard h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.valueCard p {
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.ctaSection {
+  background: #0f172a;
+  border-radius: 32px;
+  padding: 80px 40px;
+  text-align: center;
+  color: white;
+  margin-bottom: 60px;
+}
+
+.ctaSection h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+}
+
+.ctaSection p {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryCta {
+  background: #f43f5e;
+  color: white;
+  padding: 16px 32px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 2px solid #f43f5e;
+}
+
+.primaryCta:hover {
+  background: #e11d48;
+  border-color: #e11d48;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.secondaryCta {
+  background: transparent;
+  color: white;
+  padding: 16px 32px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s;
+}
+
+.secondaryCta:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .missionSection h2,
+  .valuesSection h2,
+  .ctaSection h2 {
+    font-size: 2rem;
+  }
+  
+  .ctaSection {
+    padding: 60px 24px;
+    border-radius: 24px;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+  }
+  
+  .primaryCta, .secondaryCta {
+    width: 100%;
+  }
+}
