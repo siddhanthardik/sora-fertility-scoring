@@ -122,7 +122,21 @@ export default async function BlogPost({ params }) {
     }
   };
 
-  const relatedTool = blog.related_tool && TOOL_MAP[blog.related_tool] ? TOOL_MAP[blog.related_tool] : null;
+    const relatedTool = blog.related_tool && TOOL_MAP[blog.related_tool] ? TOOL_MAP[blog.related_tool] : null;
+
+    // Fetch related posts (same category, exclude current post)
+    const { data: relatedPosts } = await supabase
+      .from("blog_posts")
+      .select("id, title, slug, excerpt, cover_image, created_at")
+      .eq("category", blog.category)
+      .neq("id", blog.id)
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(3);
+
+    // Format date safely for Server Component
+    const blogDate = new Date(blog.created_at);
+    const formattedDate = blogDate.toISOString().split('T')[0];
 
   return (
     <div className={styles.container}>
@@ -134,13 +148,15 @@ export default async function BlogPost({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      <main className={styles.postContainer} style={{ maxWidth: '800px', margin: '0 auto', padding: '60px 24px 120px' }}>
-        <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: '600', marginBottom: '32px', textDecoration: 'none', transition: 'color 0.2s' }}>
-          <ArrowLeft size={16} /> Back to Learning Hub
-        </Link>
-        
-        <article>
-          <header style={{ marginBottom: '40px' }}>
+      <main className={styles.blogContainer}>
+        <div className={styles.blogArticle}>
+          <div style={{ width: '100%', maxWidth: '800px', marginBottom: '32px' }}>
+            <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
+              <ArrowLeft size={16} /> Back to Learning Hub
+            </Link>
+          </div>
+          
+          <header className={styles.blogHeader}>
             {blog.category && (
               <span style={{ background: '#fce7f3', color: '#e11d48', fontSize: '0.75rem', fontWeight: '700', padding: '6px 16px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px', display: 'inline-block' }}>
                 {blog.category}
@@ -152,40 +168,56 @@ export default async function BlogPost({ params }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748b', fontSize: '0.95rem' }}>
               {blog.author_name && <span style={{ fontWeight: '600', color: '#1e293b' }}>By {blog.author_name}</span>}
               <span>•</span>
-              <span>{new Date(blog.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              <span>{formattedDate}</span>
             </div>
           </header>
 
           {blog.cover_image && (
-            <div style={{ marginBottom: '48px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}>
+            <div className={styles.blogCover}>
               <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
             </div>
           )}
 
           <div 
-            className="prose prose-lg prose-pink max-w-none"
-            style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#334155' }}
+            className={styles.blogContent}
             dangerouslySetInnerHTML={{ __html: blog.content }} 
           />
-        </article>
 
-        {/* Dynamic CTA if Related Tool exists */}
-        {relatedTool && (
-          <div style={{ marginTop: '80px', background: '#e0e7ff', borderRadius: '24px', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', border: '1px solid #c7d2fe', boxShadow: '0 10px 30px rgba(67, 56, 202, 0.1)' }}>
-            <div style={{ background: 'white', padding: '16px', borderRadius: '50%', marginBottom: '24px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-              {relatedTool.icon}
+          {/* Sleek CTA Banner */}
+          {relatedTool && (
+            <div className={styles.ctaBanner} style={{ maxWidth: '800px', width: '100%' }}>
+              <div className={styles.ctaBannerContent}>
+                <h3 className={styles.ctaBannerTitle}>Wondering about your timing?</h3>
+                <p className={styles.ctaBannerDesc}>{relatedTool.description} Try the free {relatedTool.title}.</p>
+              </div>
+              <Link href={relatedTool.href} className={styles.ctaBannerBtn}>
+                Use {relatedTool.title} <ArrowRight size={18} />
+              </Link>
             </div>
-            <h3 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#1e293b', marginBottom: '12px' }}>
-              Wondering about your timing?
-            </h3>
-            <p style={{ fontSize: '1.1rem', color: '#4338ca', marginBottom: '32px', maxWidth: '500px' }}>
-              {relatedTool.description} Try the free {relatedTool.title}.
-            </p>
-            <Link href={relatedTool.href} style={{ background: '#4338ca', color: 'white', padding: '16px 32px', borderRadius: '12px', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(67, 56, 202, 0.4)', transition: 'transform 0.2s' }}>
-              Use {relatedTool.title} <ArrowRight size={18} />
-            </Link>
-          </div>
-        )}
+          )}
+
+          {/* Related Posts Section */}
+          {relatedPosts && relatedPosts.length > 0 && (
+            <section className={styles.relatedPosts}>
+              <h2 className={styles.relatedTitle}>Related Articles</h2>
+              <div className={styles.relatedGrid}>
+                {relatedPosts.map((post) => (
+                  <Link href={`/blog/${post.slug}`} key={post.id} className={styles.blogCard}>
+                    {post.cover_image && (
+                      <img src={post.cover_image} alt={post.title} className={styles.cardImage} />
+                    )}
+                    <div className={styles.cardContent}>
+                      <span className={styles.cardDate}>{new Date(post.created_at).toISOString().split('T')[0]}</span>
+                      <h3 className={styles.cardTitle}>{post.title}</h3>
+                      <p className={styles.cardExcerpt}>{post.excerpt && post.excerpt.substring(0, 100)}...</p>
+                      <span className={styles.readMore}>Read Article <ArrowRight size={16} /></span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       </main>
 
       <Footer />
