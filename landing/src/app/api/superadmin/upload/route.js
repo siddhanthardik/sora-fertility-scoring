@@ -3,9 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import { requireSuperadmin } from "../../../lib/superadminAuth";
 
 export async function POST(request) {
-  const auth = await requireSuperadmin();
-  if (auth.error) {
-    return NextResponse.json({ success: false, message: auth.error }, { status: 401 });
+  try {
+    await requireSuperadmin();
+  } catch (error) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 
   try {
