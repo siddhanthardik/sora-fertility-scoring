@@ -5,9 +5,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styles from "./page.module.css";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 60;
-
 export async function generateMetadata() {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
