@@ -30,6 +30,7 @@ export default function Footer() {
               <Link href="/privacy-policy" className={styles.linkItem}>Privacy Policy</Link>
               <Link href="/terms-of-service" className={styles.linkItem}>Terms of Service</Link>
               <Link href="/cookie-policy" className={styles.linkItem}>Cookie Policy</Link>
+              <Link href="/sitemap.xml" className={styles.linkItem}>Sitemap</Link>
             </div>
 
             <div className={styles.linkGroup}>
