@@ -234,8 +234,22 @@ export default function DueDateCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+      <style>{`
+        .toolLayout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+        }
+        @media (max-width: 900px) {
+          .toolLayout {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolLayout">
+        <div className="toolContent">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
           <span style={{ color: '#ff2a5f' }}>Due Date Calculator</span>
@@ -243,8 +257,8 @@ export default function DueDateCalculator() {
 
         {!results && (
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h1 style={{ fontSize: '42px', color: '#0f172a', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>SORA Pregnancy<br/>Due Date Calculator™</h1>
-            <p style={{ fontSize: '18px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>Calculate your estimated due date for natural conception, IUI, IVF, and embryo transfer pregnancies.</p>
+            <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>SORA Pregnancy<br/>Due Date Calculator™</h1>
+            <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>Calculate your estimated due date for natural conception, IUI, IVF, and embryo transfer pregnancies.</p>
           </div>
         )}
 
@@ -354,7 +368,7 @@ export default function DueDateCalculator() {
                 </div>
               )}
 
-              <button type="submit" style={{ width: '100%', padding: '20px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <button type="submit" style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 Calculate My Due Date
                 <ChevronRight size={20} />
               </button>
@@ -534,7 +548,7 @@ export default function DueDateCalculator() {
                   <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Download Pregnancy Timeline PDF</h3>
                   <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: 1.5 }}>Save a beautiful copy of your timeline to share with your family or healthcare provider.</p>
                   
-                  <button onClick={handleDownloadPdf} disabled={isSending} style={{ width: '100%', padding: '16px', background: '#ff2a5f', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s', marginBottom: '24px' }}>
+                  <button onClick={handleDownloadPdf} disabled={isSending} style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s', marginBottom: '24px' }}>
                     <Download size={18} />
                     Download PDF
                   </button>
@@ -573,6 +587,18 @@ export default function DueDateCalculator() {
 
           </div>
         )}
+
+        </div>
+
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AdSense Placement */}
+          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
+              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
+            </div>
+          </div>
+        </aside>
 
       </div>
 

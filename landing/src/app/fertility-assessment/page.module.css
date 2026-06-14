@@ -34,11 +34,11 @@
 
 .heroTitle {
   font-family: var(--font-display, serif);
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #111827;
   line-height: 1.1;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .heroTitle span {
@@ -55,12 +55,12 @@
 }
 
 .btnPrimary {
-  background: #0f172a;
+  background: #e11d48;
   color: white;
   font-weight: 600;
-  padding: 16px 32px;
+  padding: 12px 24px;
   border-radius: 999px;
-  font-size: 1.05rem;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   display: inline-flex;
@@ -493,7 +493,7 @@
 /* ========================================= */
 .ctaSection {
   padding: 120px 24px;
-  background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
   text-align: center;
 }
 
@@ -560,23 +560,23 @@
 }
 
 .btnHighlight {
-  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+  background: linear-gradient(135deg, #ff2a5f 0%, #e11d48 100%);
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
   transform: scale(1.05);
   animation: pulseHighlight 2s infinite;
   border: none;
 }
 
 @keyframes pulseHighlight {
-  0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
-  70% { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
 }
 
 .btnHighlight:hover {
-  background: linear-gradient(135deg, #db2777 0%, #e11d48 100%);
-  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.6);
 }
 
 /* ========================================= */

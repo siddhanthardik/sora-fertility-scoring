@@ -112,8 +112,8 @@ export default function ToolsHub() {
       
       <div style={{ background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%)', padding: '80px 20px', borderBottom: '1px solid #fce7f3' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '42px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>SORA Fertility Hub</h1>
-          <p style={{ fontSize: '18px', color: '#475569', margin: '0 0 32px 0', lineHeight: '1.6' }}>
+          <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>SORA Fertility Hub</h1>
+          <p style={{ fontSize: '16px', color: '#475569', margin: '0 0 32px 0', lineHeight: '1.6' }}>
             Private, evidence-based assessments and calculators to help you navigate every stage of your reproductive journey.
           </p>
           
@@ -140,31 +140,56 @@ export default function ToolsHub() {
         </div>
       </div>
 
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-        {categories.map(category => {
-          const categoryTools = filteredTools.filter(t => t.category === category);
-          if (categoryTools.length === 0) return null;
+      <style>{`
+        .toolsLayout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+        }
+        @media (max-width: 900px) {
+          .toolsLayout {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
 
-          return (
-            <div key={category} style={{ marginBottom: '64px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', margin: '0 0 24px 0', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
-                {category}
-              </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '24px' }}>
-                {categoryTools.map(tool => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolsLayout">
+        <div className="toolsContent">
+          {categories.map(category => {
+            const categoryTools = filteredTools.filter(t => t.category === category);
+            if (categoryTools.length === 0) return null;
+
+            return (
+              <div key={category} style={{ marginBottom: '64px' }}>
+                <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', margin: '0 0 24px 0', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
+                  {category}
+                </h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+                  {categoryTools.map(tool => (
+                    <ToolCard key={tool.id} tool={tool} />
+                  ))}
+                </div>
               </div>
+            );
+          })}
+          
+          {filteredTools.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+              <Search size={48} color="#cbd5e1" style={{ margin: '0 auto 16px' }} />
+              <p style={{ fontSize: '18px' }}>No tools found matching "{searchTerm}"</p>
             </div>
-          );
-        })}
+          )}
+        </div>
         
-        {filteredTools.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
-            <Search size={48} color="#cbd5e1" style={{ margin: '0 auto 16px' }} />
-            <p style={{ fontSize: '18px' }}>No tools found matching "{searchTerm}"</p>
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AdSense Placement */}
+          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
+              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
+            </div>
           </div>
-        )}
+        </aside>
       </div>
       <Footer />
     </div>

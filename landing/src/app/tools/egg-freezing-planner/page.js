@@ -159,14 +159,22 @@ export default function EggFreezingPlanner() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      
-      {/* Top AdSense Placeholder */}
-      <div style={{ width: '100%', padding: '20px', background: '#e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#94a3b8', fontSize: '12px', letterSpacing: '1px' }}>
-        Advertisement Space
-      </div>
+      <style>{`
+        .toolLayout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+        }
+        @media (max-width: 900px) {
+          .toolLayout {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
 
-      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolLayout">
+        <div className="toolContent">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
           <span style={{ color: '#ff2a5f' }}>Egg Freezing Planner</span>
@@ -174,18 +182,18 @@ export default function EggFreezingPlanner() {
 
         {!hasStarted ? (
           <div style={{ textAlign: 'center', marginTop: '40px', marginBottom: '60px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '80px', height: '80px', background: '#fff1f2', borderRadius: '24px', marginBottom: '24px' }}>
-              <Snowflake size={40} color="#ff2a5f" />
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
+              <Snowflake size={32} color="#e11d48" />
             </div>
-            <h1 style={{ fontSize: '48px', color: '#0f172a', fontWeight: '900', marginBottom: '16px', letterSpacing: '-1px' }}>Egg Freezing Planner™</h1>
-            <p style={{ fontSize: '20px', color: '#475569', maxWidth: '600px', margin: '0 auto 16px' }}>Understand how age influences fertility preservation and explore whether discussing egg freezing with a specialist may be worth considering.</p>
+            <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '900', marginBottom: '16px', letterSpacing: '-1px' }}>Egg Freezing Planner™</h1>
+            <p style={{ fontSize: '16px', color: '#475569', maxWidth: '600px', margin: '0 auto 16px' }}>Understand how age influences fertility preservation and explore whether discussing egg freezing with a specialist may be worth considering.</p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '40px' }}>
               <Shield size={14} /> Educational • Private • No Signup Required
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-              <button onClick={() => { trackEvent({ event: "tool_started", tool: "egg_freezing_planner" }); setHasStarted(true); }} style={{ padding: '16px 32px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '100px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                Start Planning <ArrowRight size={20} />
+              <button onClick={() => { trackEvent({ event: "tool_started", tool: "egg_freezing_planner" }); setHasStarted(true); }} style={{ padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                Start Planning <ArrowRight size={18} />
               </button>
             </div>
           </div>
@@ -246,9 +254,9 @@ export default function EggFreezingPlanner() {
                 </div>
               </div>
 
-              <button onClick={handleCalculate} style={{ width: '100%', padding: '20px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <button onClick={handleCalculate} style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 View Planner Results
-                <ChevronRight size={20} />
+                <ChevronRight size={18} />
               </button>
             </div>
 
@@ -287,10 +295,6 @@ export default function EggFreezingPlanner() {
                   </div>
                 </div>
 
-                {/* Mid AdSense Placeholder */}
-                <div style={{ width: '100%', padding: '20px', background: '#e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#94a3b8', fontSize: '12px', letterSpacing: '1px', borderRadius: '16px' }}>
-                  Advertisement Space
-                </div>
 
                 {/* Age-Based Trends Chart (Visual Mock) */}
                 <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
@@ -425,7 +429,7 @@ export default function EggFreezingPlanner() {
                   <p style={{ color: '#64748b', fontSize: '16px', marginBottom: '32px', maxWidth: '500px', margin: '0 auto 32px' }}>Save a beautiful PDF copy of your customized educational report to review later or share with your doctor.</p>
                   
                   <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-                    <button onClick={handleDownloadPdf} disabled={isSending} style={{ width: '100%', padding: '16px', background: '#ff2a5f', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s', marginBottom: '24px' }}>
+                    <button onClick={handleDownloadPdf} disabled={isSending} style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s', marginBottom: '24px' }}>
                       <Download size={18} />
                       Download PDF
                     </button>
@@ -460,8 +464,20 @@ export default function EggFreezingPlanner() {
                 </div>
               </div>
             )}
-          </div>
         )}
+
+        </div>
+
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AdSense Placement */}
+          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
+              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
+            </div>
+          </div>
+        </aside>
+
       </div>
 
       {/* Internal Linking & Bottom AdSense */}
@@ -474,10 +490,6 @@ export default function EggFreezingPlanner() {
                 {tool}
               </Link>
             ))}
-          </div>
-
-          <div style={{ width: '100%', padding: '20px', background: '#e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#94a3b8', fontSize: '12px', letterSpacing: '1px', borderRadius: '16px' }}>
-            Advertisement Space
           </div>
         </div>
       </div>

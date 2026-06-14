@@ -58,8 +58,22 @@ export default function OvulationCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+      <style>{`
+        .toolLayout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+        }
+        @media (max-width: 900px) {
+          .toolLayout {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }} className="toolLayout">
+        <div className="toolContent">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
           <span style={{ color: '#ff2a5f' }}>Ovulation Calculator</span>
@@ -67,10 +81,10 @@ export default function OvulationCalculator() {
         
         <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-            <div style={{ width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CalendarHeart size={28} color="#ff2a5f" />
+            <div style={{ width: '48px', height: '48px', background: '#fff1f2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CalendarHeart size={24} color="#ff2a5f" />
             </div>
-            <h1 style={{ fontSize: '28px', color: '#1e293b', margin: 0, fontWeight: '800' }}>Ovulation Calculator</h1>
+            <h1 style={{ fontSize: '24px', color: '#1e293b', margin: 0, fontWeight: '800' }}>Ovulation Calculator</h1>
           </div>
 
           <form onSubmit={calculateOvulation} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -97,7 +111,7 @@ export default function OvulationCalculator() {
               />
             </div>
 
-            <button type="submit" style={{ background: '#ff2a5f', color: '#fff', padding: '16px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '12px' }}>
+            <button type="submit" style={{ background: '#e11d48', color: '#fff', padding: '12px 24px', borderRadius: '12px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', marginTop: '12px' }}>
               Calculate Fertile Window
             </button>
           </form>
@@ -125,6 +139,16 @@ export default function OvulationCalculator() {
             </div>
           )}
         </div>
+        
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AdSense Placement */}
+          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
+              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
+            </div>
+          </div>
+        </aside>
       </div>
       <Footer />
     </div>

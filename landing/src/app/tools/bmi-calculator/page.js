@@ -81,19 +81,33 @@ export default function BmiCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
+      <style>{`
+        .toolLayout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+        }
+        @media (max-width: 900px) {
+          .toolLayout {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }} className="toolLayout">
+        <div className="toolContent">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
           <span style={{ color: '#ff2a5f' }}>BMI Fertility Calculator</span>
         </div>
 
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', background: '#fff1f2', borderRadius: '16px', marginBottom: '24px' }}>
-            <Scale size={32} color="#ff2a5f" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
+            <Scale size={24} color="#e11d48" />
           </div>
-          <h1 style={{ fontSize: '36px', color: '#0f172a', fontWeight: '800', marginBottom: '16px' }}>BMI Fertility Calculator</h1>
-          <p style={{ fontSize: '18px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
+          <h1 style={{ fontSize: '24px', color: '#0f172a', fontWeight: '800', marginBottom: '12px' }}>BMI Fertility Calculator</h1>
+          <p style={{ fontSize: '16px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
         </div>
 
         <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
@@ -157,7 +171,7 @@ export default function BmiCalculator() {
               </div>
             )}
 
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#ff2a5f', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <button type="submit" style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <Scale size={20} />
               Calculate My BMI
             </button>
@@ -178,6 +192,17 @@ export default function BmiCalculator() {
             </div>
           </div>
         )}
+        </div>
+
+        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AdSense Placement */}
+          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
+              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
+            </div>
+          </div>
+        </aside>
 
       </div>
 

@@ -66,7 +66,7 @@ export default function ClientPcosAssessment() {
 
   return (
     <div className={styles.container}>
-      <Navbar onCtaClick={handleStartAssessment} ctaText="Start PCOS Assessment" ctaColor="#2563eb" />
+      <Navbar onCtaClick={handleStartAssessment} ctaText="Start PCOS Assessment" ctaColor="#e11d48" />
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
