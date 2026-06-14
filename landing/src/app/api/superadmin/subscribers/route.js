@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+export const dynamic = "force-dynamic";
+
 // Basic auth check for superadmin routes
 function checkAuth(request) {
   const authHeader = request.headers.get('authorization');

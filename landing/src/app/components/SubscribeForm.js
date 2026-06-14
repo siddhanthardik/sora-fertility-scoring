@@ -55,7 +55,21 @@ export default function SubscribeForm({ source = "blog" }) {
           required 
           disabled={loading}
         />
-        <button type="submit" className={styles.subscribeBtn} disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ 
+            padding: '12px', 
+            background: '#f43f5e', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '8px', 
+            cursor: loading ? 'not-allowed' : 'pointer', 
+            fontWeight: '600', 
+            opacity: loading ? 0.7 : 1,
+            transition: 'opacity 0.2s ease'
+          }}
+        >
           {loading ? "Subscribing..." : "Subscribe"}
         </button>
         {message && (
