@@ -125,7 +125,7 @@ export default async function BlogPost({ params }) {
     const relatedTool = blog.related_tool && TOOL_MAP[blog.related_tool] ? TOOL_MAP[blog.related_tool] : null;
 
     // Fetch related posts (same category, exclude current post)
-    const { data: relatedPosts } = await supabase
+    let { data: relatedPosts } = await supabase
       .from("blog_posts")
       .select("id, title, slug, excerpt, cover_image, created_at")
       .eq("category", blog.category)
@@ -133,6 +133,17 @@ export default async function BlogPost({ params }) {
       .eq("published", true)
       .order("created_at", { ascending: false })
       .limit(3);
+
+    if (!relatedPosts || relatedPosts.length === 0) {
+      const { data: fallbackPosts } = await supabase
+        .from("blog_posts")
+        .select("id, title, slug, excerpt, cover_image, created_at")
+        .neq("id", blog.id)
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      relatedPosts = fallbackPosts;
+    }
 
     // Format date safely for Server Component
     const blogDate = new Date(blog.created_at);
@@ -151,40 +162,39 @@ export default async function BlogPost({ params }) {
       <main style={{ paddingBottom: '120px' }}>
         {/* Full-width Hero Image */}
         {blog.cover_image && (
-          <div style={{ width: '100%', height: '500px', position: 'relative', overflow: 'hidden' }}>
-            <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+          <div style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
+            <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </div>
         )}
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px 0' }}>
-          <div style={{ marginBottom: '32px' }}>
-            <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-              <ArrowLeft size={16} /> Back to Learning Hub
-            </Link>
-          </div>
-
-          <header style={{ width: '100%', marginBottom: '48px', borderBottom: '1px solid #e2e8f0', paddingBottom: '32px' }}>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', lineHeight: '1.2', marginBottom: '24px', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', maxWidth: '1000px' }}>
-              {blog.title}
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748b', fontSize: '1rem' }}>
-              {blog.author_name && <span style={{ fontWeight: '600', color: '#1e293b' }}>By {blog.author_name}</span>}
-              <span>•</span>
-              <span>{formattedDate}</span>
-              {blog.category && (
-                <>
-                  <span>•</span>
-                  <span style={{ color: '#e11d48', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {blog.category}
-                  </span>
-                </>
-              )}
-            </div>
-          </header>
-
           <div style={{ display: 'flex', gap: '64px', flexDirection: 'row', alignItems: 'flex-start' }}>
             {/* Main Content Column */}
             <div style={{ flex: 1, maxWidth: '800px' }}>
+              <div style={{ marginBottom: '32px' }}>
+                <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  <ArrowLeft size={16} /> Back to Learning Hub
+                </Link>
+              </div>
+
+              <header style={{ width: '100%', marginBottom: '40px' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: '#0f172a', lineHeight: '1.1', marginBottom: '16px', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', width: '100%', textWrap: 'auto' }}>
+                  {blog.title}
+                </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748b', fontSize: '1rem' }}>
+                  {blog.author_name && <span style={{ fontWeight: '600', color: '#1e293b' }}>By {blog.author_name}</span>}
+                  <span>•</span>
+                  <span>{formattedDate}</span>
+                  {blog.category && (
+                    <>
+                      <span>•</span>
+                      <span style={{ color: '#e11d48', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {blog.category}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </header>
               <div 
                 className={styles.blogContent}
                 dangerouslySetInnerHTML={{ __html: blog.content }} 
@@ -203,6 +213,19 @@ export default async function BlogPost({ params }) {
                   </Link>
                 </div>
               )}
+
+              {/* FAQs */}
+              {blog.faqs && blog.faqs.length > 0 && (
+                <div className={styles.faqContainer}>
+                  <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
+                  {blog.faqs.map((faq, idx) => (
+                    <div key={idx} className={styles.faqItem}>
+                      <h3 className={styles.faqQuestion}>{faq.question}</h3>
+                      <p className={styles.faqAnswer}>{faq.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Sidebar Column */}
@@ -212,7 +235,7 @@ export default async function BlogPost({ params }) {
                 <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '16px' }}>Get the latest insights and updates.</p>
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <input type="email" placeholder="Email address" style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', outline: 'none' }} required />
-                  <button type="button" style={{ background: '#0284c7', color: 'white', padding: '12px', borderRadius: '8px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>Subscribe</button>
+                  <button type="button" className={styles.subscribeBtn}>Subscribe</button>
                 </form>
               </div>
             </aside>

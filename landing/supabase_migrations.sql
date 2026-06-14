@@ -183,3 +183,6 @@ DROP POLICY IF EXISTS "Public can view published blogs" ON blog_posts;
 CREATE POLICY "Public can view published blogs"
   ON blog_posts FOR SELECT
   USING (published = true AND (published_at IS NULL OR published_at <= NOW()));
+
+-- 12. Add faqs to blog_posts
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS faqs JSONB DEFAULT '[]'::jsonb;

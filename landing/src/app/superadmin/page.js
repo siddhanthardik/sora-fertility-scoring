@@ -870,7 +870,7 @@ export default function SuperadminPage() {
                   <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Write and publish articles for the public blog.</p>
                 </div>
                 <button className={styles.btnPrimary} onClick={() => {
-                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "", published_at: null });
+                  setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "", published_at: null, faqs: [] });
                   setBlogMessage("");
                 }}>
                   <Plus size={16} style={{marginRight: "8px"}} /> New Post
@@ -1269,6 +1269,39 @@ export default function SuperadminPage() {
                       }}>Upload Image</button>
                     </div>
                   </div>
+                </div>
+
+                <div className={styles.divider}></div>
+                <h3 className={styles.sectionTitle} style={{marginTop: '24px'}}>Frequently Asked Questions (FAQs)</h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                  {(editingBlog.faqs || []).map((faq, idx) => (
+                    <div key={idx} style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <label className={styles.label} style={{ margin: 0 }}>Question {idx + 1}</label>
+                        <button type="button" onClick={() => {
+                          const newFaqs = [...editingBlog.faqs];
+                          newFaqs.splice(idx, 1);
+                          setEditingBlog({...editingBlog, faqs: newFaqs});
+                        }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem', fontWeight: 600 }}>
+                          <Trash2 size={14} /> Remove
+                        </button>
+                      </div>
+                      <input className={styles.input} type="text" placeholder="Question..." value={faq.question} onChange={(e) => {
+                        const newFaqs = [...editingBlog.faqs];
+                        newFaqs[idx].question = e.target.value;
+                        setEditingBlog({...editingBlog, faqs: newFaqs});
+                      }} />
+                      <textarea className={styles.input} rows="3" placeholder="Answer..." value={faq.answer} onChange={(e) => {
+                        const newFaqs = [...editingBlog.faqs];
+                        newFaqs[idx].answer = e.target.value;
+                        setEditingBlog({...editingBlog, faqs: newFaqs});
+                      }}></textarea>
+                    </div>
+                  ))}
+                  <button type="button" className={styles.btnSecondary} onClick={() => setEditingBlog({...editingBlog, faqs: [...(editingBlog.faqs || []), { question: "", answer: "" }]})} style={{ alignSelf: 'flex-start' }}>
+                    <Plus size={16} style={{marginRight: '8px'}} /> Add FAQ
+                  </button>
                 </div>
 
                 <div className={styles.divider}></div>
