@@ -31,6 +31,7 @@ export default function CookiePolicy() {
             <li><strong>Essential cookies:</strong> These cookies are strictly necessary to provide you with services available through our Websites and to use some of its features, such as access to secure areas (e.g., the CRM dashboard).</li>
             <li><strong>Performance and functionality cookies:</strong> These are used to enhance the performance and functionality of our Websites but are non-essential to their use.</li>
             <li><strong>Analytics and customization cookies:</strong> These cookies collect information that is used either in aggregate form to help us understand how our Websites are being used or how effective our marketing campaigns are.</li>
+            <li><strong>Advertising cookies:</strong> These cookies are used to make advertising messages more relevant to you. We use third-party advertising companies, including Google, to serve ads when you visit our website. Third party vendors, including Google, use cookies to serve ads based on your prior visits to our website or other websites. You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", textDecoration: "underline" }}>Google Ads Settings</a>.</li>
           </ul>
 
           <h2 style={{ fontSize: "1.5rem", color: "#011434", marginTop: "16px" }}>How can I control cookies?</h2>
