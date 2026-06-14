@@ -84,7 +84,7 @@ export default function ClientPcosAssessment() {
             </button>
           </div>
           <div className={styles.heroImageWrapper}>
-            <Image src="/hero-fertility.jpg" alt="Woman feeling relieved" width={600} height={600} className={styles.heroImage} priority />
+            <Image src="/hero-pcos.png" alt="Woman feeling relieved" width={600} height={600} className={styles.heroImage} priority />
           </div>
         </div>
       </section>
