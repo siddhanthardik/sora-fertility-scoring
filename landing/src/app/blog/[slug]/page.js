@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Activity, CalendarHeart, Scale, Baby, Snowflake } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import SubscribeForm from "../../components/SubscribeForm";
 import styles from "../page.module.css";
 
 
@@ -230,14 +231,7 @@ export default async function BlogPost({ params }) {
 
             {/* Sidebar Column */}
             <aside style={{ width: '320px', position: 'sticky', top: '100px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>Subscribe</h3>
-                <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '16px' }}>Get the latest insights and updates.</p>
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input type="email" placeholder="Email address" style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', outline: 'none' }} required />
-                  <button type="button" className={styles.subscribeBtn}>Subscribe</button>
-                </form>
-              </div>
+              <SubscribeForm source={`blog/${blog.slug}`} />
             </aside>
           </div>
 

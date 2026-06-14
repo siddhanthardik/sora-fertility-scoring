@@ -23,7 +23,8 @@ import {
   List,
   Heading2,
   Heading3,
-  LineChart
+  LineChart,
+  Mail,
 } from "lucide-react";
 import Image from "next/image";
 import RichTextEditor from "../components/RichTextEditor";
@@ -77,6 +78,7 @@ export default function SuperadminPage() {
   const [blogs, setBlogs] = useState([]);
   const [editingBlog, setEditingBlog] = useState(null);
   const [blogMessage, setBlogMessage] = useState("");
+  const [subscribers, setSubscribers] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const [analytics, setAnalytics] = useState(null);
@@ -159,6 +161,16 @@ export default function SuperadminPage() {
     }
   }, []);
 
+  const loadSubscribers = useCallback(async () => {
+    const response = await fetch("/api/superadmin/subscribers", {
+      headers: { "Authorization": `Bearer ${password}` }
+    });
+    if (response.ok) {
+      const result = await response.json();
+      setSubscribers(result.subscribers || []);
+    }
+  }, [password]);
+
   const checkSession = useCallback(async () => {
     const response = await fetch("/api/superadmin/session");
     if (response.ok) {
@@ -169,9 +181,10 @@ export default function SuperadminPage() {
       await loadSeoSettings();
       await loadBlogs();
       await loadAnalytics();
+      await loadSubscribers();
     }
     setLoading(false);
-  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs, loadAnalytics]);
+  }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs, loadAnalytics, loadSubscribers]);
 
   useEffect(() => {
     checkSession();
@@ -440,6 +453,26 @@ export default function SuperadminPage() {
     );
   }
 
+  const exportSubscribersCsv = () => {
+    if (!subscribers || subscribers.length === 0) return;
+    const headers = ["Email", "Status", "Source", "Subscribed At"];
+    const rows = subscribers.map(sub => [
+      sub.email,
+      sub.status,
+      sub.source || "blog",
+      new Date(sub.created_at).toLocaleString()
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `sora_subscribers_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className={styles.container}>
       {/* Sidebar */}
@@ -496,6 +529,13 @@ export default function SuperadminPage() {
           >
             <LineChart size={20} />
             Growth Intelligence
+          </button>
+          <button 
+            onClick={() => setActiveTab("subscribers")}
+            className={`${styles.navItem} ${activeTab === "subscribers" ? styles.active : ""}`}
+          >
+            <Mail size={20} />
+            Subscribers
           </button>
           <button 
             onClick={() => setSettingsOpen(true)}
@@ -1036,6 +1076,60 @@ export default function SuperadminPage() {
 
         </div>
       </main>
+
+          {/* Subscribers Tab */}
+          {activeTab === "subscribers" && (
+            <div className={styles.tabContent}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1e293b' }}>Newsletter Subscribers</h2>
+                <button onClick={exportSubscribersCsv} className={styles.btnPrimary} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Mail size={16} />
+                  Export to CSV
+                </button>
+              </div>
+
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Email Address</th>
+                      <th>Status</th>
+                      <th>Source</th>
+                      <th>Date Subscribed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subscribers.map((sub, idx) => (
+                      <tr key={idx}>
+                        <td style={{fontWeight: 600, color: '#1e293b'}}>{sub.email}</td>
+                        <td>
+                          <span style={{
+                            padding: '4px 8px', 
+                            borderRadius: '12px', 
+                            fontSize: '0.75rem', 
+                            fontWeight: '600',
+                            backgroundColor: sub.status === 'active' ? '#dcfce7' : '#f1f5f9',
+                            color: sub.status === 'active' ? '#16a34a' : '#64748b'
+                          }}>
+                            {sub.status.toUpperCase()}
+                          </span>
+                        </td>
+                        <td style={{color: '#64748b'}}>{sub.source || 'blog'}</td>
+                        <td style={{color: '#64748b'}}>{new Date(sub.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                    {subscribers.length === 0 && (
+                      <tr>
+                        <td colSpan="4" style={{textAlign: 'center', padding: '48px', color: '#94a3b8'}}>
+                          No subscribers yet. They will appear here once they sign up.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
       {/* Settings Modal */}
       {settingsOpen && (
