@@ -464,8 +464,8 @@ export default function EggFreezingPlanner() {
                 </div>
               </div>
             )}
-
-
+          </div>
+        )}
         </div>
 
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
