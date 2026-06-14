@@ -148,53 +148,77 @@ export default async function BlogPost({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      <main className={styles.blogContainer}>
-        <div className={styles.blogArticle}>
-          <div style={{ width: '100%', maxWidth: '800px', marginBottom: '32px' }}>
+      <main style={{ paddingBottom: '120px' }}>
+        {/* Full-width Hero Image */}
+        {blog.cover_image && (
+          <div style={{ width: '100%', height: '500px', position: 'relative', overflow: 'hidden' }}>
+            <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+          </div>
+        )}
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px 0' }}>
+          <div style={{ marginBottom: '32px' }}>
             <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
               <ArrowLeft size={16} /> Back to Learning Hub
             </Link>
           </div>
-          
-          <header className={styles.blogHeader}>
-            {blog.category && (
-              <span style={{ background: '#fce7f3', color: '#e11d48', fontSize: '0.75rem', fontWeight: '700', padding: '6px 16px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px', display: 'inline-block' }}>
-                {blog.category}
-              </span>
-            )}
-            <h1 style={{ fontSize: '3rem', fontWeight: '800', color: '#0f172a', lineHeight: '1.2', marginBottom: '24px', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}>
+
+          <header style={{ width: '100%', marginBottom: '48px', borderBottom: '1px solid #e2e8f0', paddingBottom: '32px' }}>
+            <h1 style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', lineHeight: '1.2', marginBottom: '24px', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', maxWidth: '1000px' }}>
               {blog.title}
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748b', fontSize: '0.95rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748b', fontSize: '1rem' }}>
               {blog.author_name && <span style={{ fontWeight: '600', color: '#1e293b' }}>By {blog.author_name}</span>}
               <span>•</span>
               <span>{formattedDate}</span>
+              {blog.category && (
+                <>
+                  <span>•</span>
+                  <span style={{ color: '#e11d48', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {blog.category}
+                  </span>
+                </>
+              )}
             </div>
           </header>
 
-          {blog.cover_image && (
-            <div className={styles.blogCover}>
-              <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
+          <div style={{ display: 'flex', gap: '64px', flexDirection: 'row', alignItems: 'flex-start' }}>
+            {/* Main Content Column */}
+            <div style={{ flex: 1, maxWidth: '800px' }}>
+              <div 
+                className={styles.blogContent}
+                dangerouslySetInnerHTML={{ __html: blog.content }} 
+                style={{ maxWidth: '100%' }}
+              />
+
+              {/* Sleek CTA Banner */}
+              {relatedTool && (
+                <div className={styles.ctaBanner} style={{ width: '100%', marginTop: '60px' }}>
+                  <div className={styles.ctaBannerContent}>
+                    <h3 className={styles.ctaBannerTitle}>Wondering about your timing?</h3>
+                    <p className={styles.ctaBannerDesc}>{relatedTool.description} Try the free {relatedTool.title}.</p>
+                  </div>
+                  <Link href={relatedTool.href} className={styles.ctaBannerBtn}>
+                    Use {relatedTool.title} <ArrowRight size={18} />
+                  </Link>
+                </div>
+              )}
             </div>
-          )}
 
-          <div 
-            className={styles.blogContent}
-            dangerouslySetInnerHTML={{ __html: blog.content }} 
-          />
-
-          {/* Sleek CTA Banner */}
-          {relatedTool && (
-            <div className={styles.ctaBanner} style={{ maxWidth: '800px', width: '100%' }}>
-              <div className={styles.ctaBannerContent}>
-                <h3 className={styles.ctaBannerTitle}>Wondering about your timing?</h3>
-                <p className={styles.ctaBannerDesc}>{relatedTool.description} Try the free {relatedTool.title}.</p>
+            {/* Sidebar Column */}
+            <aside style={{ width: '320px', position: 'sticky', top: '100px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>Subscribe</h3>
+                <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '16px' }}>Get the latest insights and updates.</p>
+                <form style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input type="email" placeholder="Email address" style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', outline: 'none' }} required />
+                  <button type="button" style={{ background: '#0284c7', color: 'white', padding: '12px', borderRadius: '8px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>Subscribe</button>
+                </form>
               </div>
-              <Link href={relatedTool.href} className={styles.ctaBannerBtn}>
-                Use {relatedTool.title} <ArrowRight size={18} />
-              </Link>
-            </div>
-          )}
+            </aside>
+          </div>
+
+
 
           {/* Related Posts Section */}
           {relatedPosts && relatedPosts.length > 0 && (
