@@ -71,6 +71,7 @@ export default function SuperadminPage() {
 
   const [seoSettings, setSeoSettings] = useState([]);
   const [editingSeo, setEditingSeo] = useState(null);
+  const [seoTab, setSeoTab] = useState("general");
   const [seoMessage, setSeoMessage] = useState("");
 
   const [blogs, setBlogs] = useState([]);
@@ -823,7 +824,13 @@ export default function SuperadminPage() {
                   <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Manage Meta Titles, Descriptions, and Keywords for public pages.</p>
                 </div>
                 <button className={styles.btnPrimary} onClick={() => {
-                  setEditingSeo({ page_route: "/", meta_title: "", meta_description: "", meta_keywords: "" });
+                  setEditingSeo({ 
+                    page_route: "/", meta_title: "", meta_description: "", meta_keywords: "",
+                    og_title: "", og_description: "", og_image: "",
+                    twitter_card: "summary_large_image", twitter_title: "", twitter_description: "", twitter_image: "",
+                    canonical_url: "", noindex: false, nofollow: false, structured_data: "" 
+                  });
+                  setSeoTab("general");
                   setSeoMessage("");
                 }}>
                   <Plus size={16} style={{marginRight: "8px"}} /> Add Page SEO
@@ -844,7 +851,7 @@ export default function SuperadminPage() {
                       <td style={{fontWeight: 600, color: '#1e293b'}}>{seo.page_route}</td>
                       <td>{seo.meta_title}</td>
                       <td style={{textAlign: 'right'}}>
-                        <button onClick={() => { setEditingSeo(seo); setSeoMessage(""); }} className={styles.btnIcon}>
+                        <button onClick={() => { setEditingSeo(seo); setSeoTab("general"); setSeoMessage(""); }} className={styles.btnIcon}>
                           <Settings size={16} /> Edit
                         </button>
                       </td>
@@ -1170,23 +1177,98 @@ export default function SuperadminPage() {
               <button className={styles.closeBtn} onClick={() => setEditingSeo(null)}><X size={20} /></button>
             </div>
             <div className={styles.modalBody}>
+              <div style={{ display: "flex", gap: "16px", marginBottom: "24px", borderBottom: "1px solid #e2e8f0", paddingBottom: "8px" }}>
+                <button type="button" onClick={() => setSeoTab("general")} style={{ background: "none", border: "none", fontWeight: seoTab === "general" ? "bold" : "normal", color: seoTab === "general" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>General</button>
+                <button type="button" onClick={() => setSeoTab("social")} style={{ background: "none", border: "none", fontWeight: seoTab === "social" ? "bold" : "normal", color: seoTab === "social" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Social Media</button>
+                <button type="button" onClick={() => setSeoTab("advanced")} style={{ background: "none", border: "none", fontWeight: seoTab === "advanced" ? "bold" : "normal", color: seoTab === "advanced" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Advanced</button>
+              </div>
               <form onSubmit={saveSeoSettings}>
-                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                  <label className={styles.label}>Page Route (e.g., / or /fertility-assessment)</label>
-                  <input className={styles.input} type="text" value={editingSeo.page_route} onChange={(e) => setEditingSeo({...editingSeo, page_route: e.target.value})} required />
-                </div>
-                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                  <label className={styles.label}>Meta Title</label>
-                  <input className={styles.input} type="text" value={editingSeo.meta_title} onChange={(e) => setEditingSeo({...editingSeo, meta_title: e.target.value})} required />
-                </div>
-                <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                  <label className={styles.label}>Meta Description</label>
-                  <textarea className={styles.input} rows="3" value={editingSeo.meta_description || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_description: e.target.value})}></textarea>
-                </div>
-                <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                  <label className={styles.label}>Meta Keywords</label>
-                  <input className={styles.input} type="text" placeholder="fertility, IVF, testing" value={editingSeo.meta_keywords || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_keywords: e.target.value})} />
-                </div>
+                {seoTab === "general" && (
+                  <>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Page Route (e.g., / or /fertility-assessment)</label>
+                      <input className={styles.input} type="text" value={editingSeo.page_route} onChange={(e) => setEditingSeo({...editingSeo, page_route: e.target.value})} required />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Meta Title <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_title?.length || 0} / 60</span></label>
+                      <input className={styles.input} type="text" value={editingSeo.meta_title} onChange={(e) => setEditingSeo({...editingSeo, meta_title: e.target.value})} required />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Meta Description <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_description?.length || 0} / 160</span></label>
+                      <textarea className={styles.input} rows="3" value={editingSeo.meta_description || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_description: e.target.value})}></textarea>
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                      <label className={styles.label}>Meta Keywords</label>
+                      <input className={styles.input} type="text" placeholder="fertility, IVF, testing" value={editingSeo.meta_keywords || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_keywords: e.target.value})} />
+                    </div>
+                  </>
+                )}
+
+                {seoTab === "social" && (
+                  <>
+                    <h3 className={styles.sectionTitle}>Open Graph (Facebook/LinkedIn)</h3>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>OG Title</label>
+                      <input className={styles.input} type="text" placeholder={editingSeo.meta_title || "Default Title"} value={editingSeo.og_title || ""} onChange={(e) => setEditingSeo({...editingSeo, og_title: e.target.value})} />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>OG Description</label>
+                      <textarea className={styles.input} rows="2" placeholder={editingSeo.meta_description || "Default Description"} value={editingSeo.og_description || ""} onChange={(e) => setEditingSeo({...editingSeo, og_description: e.target.value})}></textarea>
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                      <label className={styles.label}>OG Image URL</label>
+                      <input className={styles.input} type="url" placeholder="https://example.com/image.jpg" value={editingSeo.og_image || ""} onChange={(e) => setEditingSeo({...editingSeo, og_image: e.target.value})} />
+                    </div>
+
+                    <h3 className={styles.sectionTitle}>Twitter Card</h3>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Card Type</label>
+                      <select className={styles.input} value={editingSeo.twitter_card || "summary_large_image"} onChange={(e) => setEditingSeo({...editingSeo, twitter_card: e.target.value})}>
+                        <option value="summary">Summary (Small Image)</option>
+                        <option value="summary_large_image">Summary Large Image</option>
+                      </select>
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Twitter Title</label>
+                      <input className={styles.input} type="text" placeholder={editingSeo.og_title || editingSeo.meta_title || ""} value={editingSeo.twitter_title || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_title: e.target.value})} />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Twitter Description</label>
+                      <textarea className={styles.input} rows="2" placeholder={editingSeo.og_description || editingSeo.meta_description || ""} value={editingSeo.twitter_description || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_description: e.target.value})}></textarea>
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                      <label className={styles.label}>Twitter Image URL</label>
+                      <input className={styles.input} type="url" placeholder={editingSeo.og_image || "https://example.com/image.jpg"} value={editingSeo.twitter_image || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_image: e.target.value})} />
+                    </div>
+                  </>
+                )}
+
+                {seoTab === "advanced" && (
+                  <>
+                    <h3 className={styles.sectionTitle}>Indexing & Links</h3>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                      <label className={styles.label}>Canonical URL</label>
+                      <input className={styles.input} type="url" placeholder="https://sorafertility.com/..." value={editingSeo.canonical_url || ""} onChange={(e) => setEditingSeo({...editingSeo, canonical_url: e.target.value})} />
+                    </div>
+                    <div className={styles.formGroup} style={{ marginBottom: '16px', display: 'flex', gap: '24px' }}>
+                      <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={editingSeo.noindex || false} onChange={(e) => setEditingSeo({...editingSeo, noindex: e.target.checked})} />
+                        NoIndex
+                      </label>
+                      <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={editingSeo.nofollow || false} onChange={(e) => setEditingSeo({...editingSeo, nofollow: e.target.checked})} />
+                        NoFollow
+                      </label>
+                    </div>
+
+                    <h3 className={styles.sectionTitle}>Structured Data</h3>
+                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                      <label className={styles.label}>Custom JSON-LD</label>
+                      <textarea className={styles.input} rows="5" placeholder="{ '@context': 'https://schema.org', '@type': 'WebPage', ... }" value={editingSeo.structured_data || ""} onChange={(e) => setEditingSeo({...editingSeo, structured_data: e.target.value})} style={{ fontFamily: "monospace", fontSize: "0.875rem" }}></textarea>
+                    </div>
+                  </>
+                )}
+
                 {seoMessage && <p style={{color: 'red', marginBottom: '16px'}}>{seoMessage}</p>}
                 <button type="submit" className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}}>Save SEO Configuration</button>
               </form>

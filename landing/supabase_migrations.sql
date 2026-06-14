@@ -186,3 +186,17 @@ CREATE POLICY "Public can view published blogs"
 
 -- 12. Add faqs to blog_posts
 ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS faqs JSONB DEFAULT '[]'::jsonb;
+
+-- 13. Advanced SEO features
+ALTER TABLE seo_settings 
+ADD COLUMN IF NOT EXISTS og_title TEXT,
+ADD COLUMN IF NOT EXISTS og_description TEXT,
+ADD COLUMN IF NOT EXISTS og_image TEXT,
+ADD COLUMN IF NOT EXISTS twitter_card TEXT DEFAULT 'summary_large_image',
+ADD COLUMN IF NOT EXISTS twitter_title TEXT,
+ADD COLUMN IF NOT EXISTS twitter_description TEXT,
+ADD COLUMN IF NOT EXISTS twitter_image TEXT,
+ADD COLUMN IF NOT EXISTS canonical_url TEXT,
+ADD COLUMN IF NOT EXISTS noindex BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS nofollow BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS structured_data JSONB;

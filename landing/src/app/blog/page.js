@@ -5,34 +5,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styles from "./page.module.css";
 
+import { buildMetadata, getStructuredData } from "@/lib/seo";
+
 export async function generateMetadata() {
-  try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey) {
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      const { data } = await supabase.from("seo_settings").select("*").eq("page_route", "/blog").single();
-
-      if (data) {
-        return {
-          title: data.meta_title,
-          description: data.meta_description,
-          keywords: data.meta_keywords,
-        };
-      }
-    }
-  } catch (error) {
-    console.error("Metadata error:", error);
-  }
-
-  return {
-    title: "SORA Fertility Blog | Clinical Insights & Research",
-    description: "Read the latest clinical insights, product updates, and fertility research from the SORA team.",
-  };
+  return buildMetadata("/blog", "SORA Fertility Blog | Clinical Insights & Research", "Read the latest clinical insights, product updates, and fertility research from the SORA team.");
 }
 
 export default async function BlogIndex({ searchParams }) {
+  const jsonLd = await getStructuredData("/blog");
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -69,6 +50,7 @@ export default async function BlogIndex({ searchParams }) {
 
   return (
     <div className={styles.container}>
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />}
       <Navbar />
       
       <div className={styles.blogHero} style={{ background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%)', padding: '100px 24px', textAlign: 'center', borderBottom: '1px solid #fce7f3' }}>

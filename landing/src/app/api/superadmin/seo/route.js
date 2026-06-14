@@ -34,7 +34,12 @@ export async function POST(request) {
   }
 
   try {
-    const { page_route, meta_title, meta_description, meta_keywords } = await request.json();
+    const { 
+      page_route, meta_title, meta_description, meta_keywords,
+      og_title, og_description, og_image,
+      twitter_card, twitter_title, twitter_description, twitter_image,
+      canonical_url, noindex, nofollow, structured_data
+    } = await request.json();
 
     if (!page_route || !meta_title) {
       return NextResponse.json({ success: false, message: "Page route and title are required." }, { status: 400 });
@@ -51,6 +56,17 @@ export async function POST(request) {
         meta_title,
         meta_description,
         meta_keywords,
+        og_title, 
+        og_description, 
+        og_image,
+        twitter_card: twitter_card || 'summary_large_image', 
+        twitter_title, 
+        twitter_description, 
+        twitter_image,
+        canonical_url, 
+        noindex: noindex || false, 
+        nofollow: nofollow || false, 
+        structured_data,
         updated_at: new Date().toISOString()
       }, { onConflict: "page_route" });
 
