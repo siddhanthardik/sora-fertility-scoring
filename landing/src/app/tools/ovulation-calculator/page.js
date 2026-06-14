@@ -139,6 +139,7 @@ export default function OvulationCalculator() {
             </div>
           )}
         </div>
+        </div>
         
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* AdSense Placement */}
