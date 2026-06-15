@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Activity, CalendarHeart, Scale, Baby, Snowflake 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import SubscribeForm from "../../components/SubscribeForm";
+import SocialShare from "../../components/SocialShare";
 import styles from "../page.module.css";
 
 
@@ -195,6 +196,8 @@ export default async function BlogPost({ params }) {
                     </>
                   )}
                 </div>
+                
+                <SocialShare title={blog.title} />
               </header>
               <div 
                 className={styles.blogContent}
