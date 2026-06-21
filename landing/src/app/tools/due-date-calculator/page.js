@@ -66,6 +66,7 @@ export default function DueDateCalculator() {
   const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [sendError, setSendError] = useState('');
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
 
   React.useEffect(() => {
@@ -199,19 +200,27 @@ export default function DueDateCalculator() {
 
   const handleSendPdf = async () => {
     if (!email) {
-      alert("Please enter an email address to receive the PDF.");
+      setSendError('Please enter an email address.');
       return;
     }
     setIsSending(true);
+    setSendSuccess(false);
+    setSendError('');
     try {
       const res = await fetch('/api/tools/due-date', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ results, email, insights: getInsights() })
       });
-      if (res.ok) setSendSuccess(true);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setSendSuccess(true);
+      } else {
+        setSendError(data.error || 'Failed to send email. Please try again.');
+      }
     } catch (err) {
       console.error(err);
+      setSendError('Network error. Please check your connection and try again.');
     }
     setIsSending(false);
   };
@@ -614,7 +623,16 @@ export default function DueDateCalculator() {
                     </button>
                   </div>
                   
-                  {sendSuccess && <div className="mt-4 text-sm text-emerald-600 font-semibold text-center bg-emerald-50 py-2 rounded-lg border border-emerald-100">PDF sent successfully!</div>}
+                  {sendSuccess && (
+                    <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-semibold bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-200">
+                      <span>✅</span> PDF sent to <span className="font-bold">{email}</span>! Check your inbox.
+                    </div>
+                  )}
+                  {sendError && (
+                    <div className="mt-4 flex items-center gap-2 text-sm text-rose-700 font-semibold bg-rose-50 px-4 py-3 rounded-xl border border-rose-200">
+                      <span>⚠️</span> {sendError}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
