@@ -410,70 +410,70 @@ export default function DueDateCalculator() {
             </div>
 
             {/* Row 1: Snapshot and Countdown */}
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-6">
               
               {/* Hero Snapshot */}
-              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-slate-100">
-                <div className="absolute -top-10 -right-10 opacity-5 transform rotate-12">
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden border border-slate-100">
+                <div className="absolute -top-10 -right-10 opacity-5 transform rotate-12 pointer-events-none">
                   <Heart size={160} fill="#000" />
                 </div>
                 
-                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-4">
+                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-6">
                   <Heart size={14} className="fill-rose-500" /> Your Pregnancy Snapshot
                 </div>
 
-                <div className="text-slate-500 text-sm font-medium mb-2">Estimated Due Date</div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-6 tracking-tight">
-                  {results.dueDateShort}
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div className="text-lg font-bold text-slate-700">{results.gestationalAge} pregnant</div>
-                  <div className="text-base text-slate-500">{results.trimester}</div>
-                  <div className="text-base text-slate-500 pb-6 border-b border-slate-100">{results.method}</div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div>
-                    <div className="text-slate-400 text-xs uppercase font-bold mb-1 tracking-wide">Baby Size</div>
-                    <div className="text-base font-semibold text-slate-800 flex items-center gap-2">
-                      <span className="text-2xl">{insights.emoji}</span> {insights.size}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
+                  <div className="flex-1">
+                    <div className="text-slate-500 text-sm font-medium mb-1">Estimated Due Date</div>
+                    <div className="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight mb-3">
+                      {results.dueDateShort}
                     </div>
-                    {insights.clinicalSize && <div className="text-xs text-slate-500 mt-1">{insights.clinicalSize}</div>}
+                    <div className="text-lg font-bold text-slate-700 mb-1">{results.gestationalAge} pregnant</div>
+                    <div className="text-sm text-slate-500 font-medium">{results.trimester} • {results.method}</div>
                   </div>
-                  <div>
-                    <div className="text-slate-400 text-xs uppercase font-bold mb-1 tracking-wide">Arrival Window</div>
-                    <div className="text-base font-semibold text-slate-800">{results.arrivalWindow}</div>
+
+                  <div className="w-full md:w-px md:h-28 bg-slate-100 hidden md:block"></div>
+
+                  <div className="flex-1 flex flex-col gap-5">
+                    <div>
+                      <div className="text-slate-400 text-xs uppercase font-bold tracking-wide mb-2">Baby Size</div>
+                      <div className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                        <span className="text-3xl drop-shadow-sm">{insights.emoji}</span> {insights.size}
+                      </div>
+                      {insights.clinicalSize && <div className="text-xs text-slate-500 mt-2 font-medium">{insights.clinicalSize}</div>}
+                    </div>
+                    <div>
+                      <div className="text-slate-400 text-xs uppercase font-bold tracking-wide mb-1">Arrival Window</div>
+                      <div className="text-base font-semibold text-slate-800">{results.arrivalWindow}</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Countdown Card */}
-              <div className="bg-rose-50/50 rounded-3xl p-6 md:p-8 text-rose-900 flex flex-col justify-center relative overflow-hidden shadow-xl shadow-rose-100/50 border border-rose-100">
-                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-4">
-                  <Clock size={14} /> Countdown
-                </div>
-
-                <div className="text-4xl sm:text-5xl font-extrabold text-rose-900 leading-tight mb-2 tracking-tight">
-                  {results.daysUntilDue > 0 ? results.daysUntilDue : 0}
-                </div>
-                <div className="text-base text-rose-600 font-medium mb-6">days remaining</div>
-
-                <div className="flex gap-6 mb-6">
-                  <div>
-                    <div className="text-xl font-bold text-rose-800 mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
-                    <div className="text-sm text-rose-600 font-medium">weeks left</div>
+              {/* Countdown Banner */}
+              <div className="bg-rose-50/80 rounded-3xl p-6 md:p-8 border border-rose-100 shadow-[0_8px_30px_rgb(225,29,72,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden">
+                <div className="flex flex-col relative z-10">
+                  <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-3">
+                    <Clock size={14} /> Countdown
                   </div>
-                  <div className="w-px bg-rose-200"></div>
-                  <div>
-                    <div className="text-xl font-bold text-rose-800 mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
-                    <div className="text-sm text-rose-600 font-medium">months left</div>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-5xl sm:text-6xl font-extrabold text-rose-900 tracking-tight leading-none">
+                      {results.daysUntilDue > 0 ? results.daysUntilDue : 0}
+                    </span>
+                    <span className="text-lg text-rose-600 font-semibold">days to go</span>
                   </div>
                 </div>
 
-                <div className="bg-white/60 backdrop-blur-md p-4 rounded-2xl text-sm text-rose-800 font-medium border border-rose-100 flex items-center gap-2">
-                  <Heart size={16} className="text-rose-500 fill-rose-500" />
-                  Only {results.monthsLeft > 0 ? results.monthsLeft : 0} months until you meet your baby
+                <div className="flex gap-8 items-center bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-rose-50 relative z-10">
+                  <div className="text-center min-w-[80px]">
+                    <div className="text-3xl font-bold text-rose-800 mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
+                    <div className="text-xs text-rose-500 font-bold uppercase tracking-wider">Weeks</div>
+                  </div>
+                  <div className="w-px h-12 bg-rose-200"></div>
+                  <div className="text-center min-w-[80px]">
+                    <div className="text-3xl font-bold text-rose-800 mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
+                    <div className="text-xs text-rose-500 font-bold uppercase tracking-wider">Months</div>
+                  </div>
                 </div>
               </div>
 
@@ -516,11 +516,19 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Coming Up Next */}
-              <div className="mt-6 bg-slate-50 p-6 rounded-2xl border-l-4 border-rose-500 shadow-sm transition-all hover:shadow-md">
-                <div className="text-rose-600 text-xs font-bold uppercase tracking-wider mb-2">Coming Up Next</div>
-                <div className="text-xl font-bold text-slate-800 mb-1">{results.nextMilestone.name}</div>
-                <div className="text-sm text-slate-500 font-medium mb-2">{results.nextMilestone.time}</div>
-                <div className="text-sm text-slate-600 leading-relaxed">{results.nextMilestone.desc}</div>
+              <div className="mt-8 flex flex-col md:flex-row gap-6 items-start md:items-center bg-slate-50/80 p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-slate-100">
+                  <CalendarClock className="text-rose-500" size={26} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-rose-600 text-xs font-bold uppercase tracking-wider mb-2">Coming Up Next</div>
+                  <div className="text-xl font-extrabold text-slate-800 mb-1 tracking-tight">{results.nextMilestone.name}</div>
+                  <div className="text-sm text-slate-600 font-medium leading-relaxed">{results.nextMilestone.desc}</div>
+                </div>
+                <div className="bg-white px-5 py-4 rounded-2xl border border-slate-200 shadow-sm shrink-0 min-w-[160px] text-center">
+                  <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1.5">Expected Window</div>
+                  <div className="text-sm font-bold text-slate-800">{results.nextMilestone.time}</div>
+                </div>
               </div>
             </div>
 
