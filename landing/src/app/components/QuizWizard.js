@@ -357,6 +357,18 @@ const steps = [
     ] 
   },
   { 
+    section: "Lifestyle", 
+    id: "stressLevel", 
+    question: "What is your current stress level?", 
+    type: "radio", 
+    key: "stressLevel", 
+    options: [
+      { val: "low", label: "Low" }, 
+      { val: "medium", label: "Medium" }, 
+      { val: "high", label: "High" }
+    ] 
+  },
+  { 
     section: "Optional Labs", 
     id: "labToggle", 
     question: "Would you like to add AMH, FSH, and AFC lab values?", 
@@ -406,6 +418,7 @@ const getReadableValue = (key, value) => {
     caffeine: { low: "Low: 0-100 mg/day", moderate: "Moderate: 100-200 mg/day", high: "High: more than 200 mg/day", notSure: "Not sure" },
     alcohol: { no: "No", yes: "Yes", notSure: "Not sure" },
     recreationalDrugs: { no: "No", occasional: "Yes, occasionally", regular: "Yes, regularly" },
+    stressLevel: { low: "Low", medium: "Medium", high: "High" },
     includeLab: { yes: "Yes, add clinical labs", no: "No, skip labs" }
   };
 
@@ -472,6 +485,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
     caffeine: "",
     alcohol: "",
     recreationalDrugs: "",
+    stressLevel: "",
     includeLab: "",
     amhValue: "",
     amhUnit: "ng/mL",
@@ -485,7 +499,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
   const [leadPhone, setLeadPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [leadConsent, setLeadConsent] = useState(false);
-  const [pricing, setPricing] = useState({ currency: "INR", amount: 199, symbol: "₹" });
+  const [pricing, setPricing] = useState({ currency: "INR", amount: 1, symbol: "₹" });
 
   useEffect(() => {
     fetch('https://ipapi.co/json/')
@@ -498,6 +512,38 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       })
       .catch(() => {});
   }, []);
+
+  // Restore saved quiz progress
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sora_quiz_save_fertility");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          if (parsed.formData) setFormData(parsed.formData);
+          if (parsed.currentStep !== undefined) setCurrentStep(parsed.currentStep);
+        } else {
+          localStorage.removeItem("sora_quiz_save_fertility");
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore quiz state:", e);
+    }
+  }, []);
+
+  // Save quiz progress on change
+  useEffect(() => {
+    if (currentStep > 0 && !results) {
+      try {
+        const payload = {
+          formData,
+          currentStep,
+          timestamp: Date.now()
+        };
+        localStorage.setItem("sora_quiz_save_fertility", JSON.stringify(payload));
+      } catch (e) {}
+    }
+  }, [formData, currentStep, results]);
   const [showData, setShowData] = useState(false);
   const [consultOpen, setConsultOpen] = useState(false);
   const [consultSubmitting, setConsultSubmitting] = useState(false);
@@ -621,6 +667,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
   };
 
   const handleRadioSelect = (step, option, autoAdvance = false) => {
+    const updatedData = { ...formData, [step.key]: option.val, ...(option.set || {}) };
     setFormData(prev => ({ ...prev, [step.key]: option.val, ...(option.set || {}) }));
     setError("");
 
@@ -628,7 +675,17 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       setTimeout(() => {
         // Evaluate lab toggle skip during auto advance
         if (step.key === "includeLab" && option.val === "no") {
-          setCurrentStep(leadStepIndex);
+          setLoading(true);
+          requestAssessment(updatedData).then(res => {
+            setResults(res);
+            setCurrentStep(leadStepIndex);
+          }).catch(err => setError(err.message)).finally(() => setLoading(false));
+        } else if (currentStep + 1 === leadStepIndex) {
+          setLoading(true);
+          requestAssessment(updatedData).then(res => {
+            setResults(res);
+            setCurrentStep(prev => prev + 1);
+          }).catch(err => setError(err.message)).finally(() => setLoading(false));
         } else {
           setCurrentStep(prev => prev + 1);
         }
@@ -677,6 +734,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
     caffeine: formData.caffeine,
     alcohol: formData.alcohol,
     recreationalDrugs: formData.recreationalDrugs,
+    stressLevel: formData.stressLevel,
     includeLab: formData.includeLab,
     amhValue: formData.amhValue,
     amhUnit: formData.amhUnit,
@@ -703,6 +761,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
 
   const handleLeadSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!leadName.trim()) {
       setError("Please enter your full name.");
       return;
@@ -807,16 +866,25 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
       }
     }
 
+    // Wipe auto-save on completion
+    try { localStorage.removeItem("sora_quiz_save_fertility"); } catch(e) {}
+
     const payload = buildLeadPayload(triageResults);
     try {
-      const response = await fetch(LEAD_API_URL, {
+      let response = await fetch(LEAD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const resData = await response.json().catch(() => null);
+      let resData = await response.json().catch(() => null);
       if (!response.ok || resData?.success === false) {
-        console.warn("Lead failed to save on Render node. Using client-side fail-safe.");
+        console.warn("Lead failed to save on primary node. Using client-side fail-safe.");
+        response = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        resData = await response.json().catch(() => null);
       }
       trackEvent({ event: "tool_completed", tool: "fertility_assessment", metadata: { report_type: selectedType } });
       setResults(triageResults);
@@ -845,7 +913,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
     setConsultMessage("");
 
     try {
-      const response = await fetch(LEAD_API_URL, {
+      let response = await fetch(LEAD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildLeadPayload(results, {
@@ -858,10 +926,26 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
         })),
       });
 
-      const resData = await response.json().catch(() => null);
+      let resData = await response.json().catch(() => null);
 
       if (!response.ok || resData?.success === false) {
-        throw new Error(resData?.message || "We could not submit the consultation request.");
+        console.warn("Consultation failed on primary node. Using fallback.");
+        response = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildLeadPayload(results, {
+            source: "nextjs_consultation_request",
+            consultation_request: true,
+            preferred_date: consultForm.preferredDate,
+            preferred_time: consultForm.preferredTime,
+            consultation_notes: consultForm.notes.trim(),
+            report_requested: false
+          })),
+        });
+        resData = await response.json().catch(() => null);
+        if (!response.ok || resData?.success === false) {
+          throw new Error(resData?.message || "We could not submit the consultation request.");
+        }
       }
 
       setConsultMessage("Your priority consult request has been sent. A coordinator will use your saved contact details.");

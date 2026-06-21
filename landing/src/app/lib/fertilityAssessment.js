@@ -27,7 +27,8 @@ const factorDefinitions = {
   familyEarlyMenopause: { title: 'Family history of early menopause' },
   recreationalDrugs: { title: 'Recreational drug use' },
   caffeine: { title: 'Caffeine intake' },
-  cancerTreatment: { title: 'Cancer treatment history' }
+  cancerTreatment: { title: 'Cancer treatment history' },
+  stressLevel: { title: 'Stress level' }
 };
 
 function classifyRiskFactor(factor, value) {
@@ -148,6 +149,10 @@ function classifyRiskFactor(factor, value) {
       if (value === 'yes') return band('red', 'History of chemotherapy or radiation');
       if (value === 'notSure') return band('amber', 'Cancer treatment history not sure');
       return band('green', 'No chemotherapy or radiation history');
+    case 'stressLevel':
+      if (value === 'high') return band('red', 'High stress level');
+      if (value === 'medium') return band('amber', 'Medium stress level');
+      return band('green', 'Low stress level');
     default:
       return band('green', '');
   }
@@ -185,7 +190,8 @@ function buildFactors(data) {
     familyEarlyMenopause: data.familyEarlyMenopause,
     recreationalDrugs: data.recreationalDrugs,
     caffeine: data.caffeine,
-    cancerTreatment: data.cancerTreatment
+    cancerTreatment: data.cancerTreatment,
+    stressLevel: data.stressLevel
   };
 }
 
@@ -294,6 +300,8 @@ function calculateWeightedRisk(factors) {
   if (factors.caffeine === 'notSure') addWeight(items, 'caffeine', 1, 'Caffeine intake not sure');
   if (factors.cancerTreatment === 'yes') addWeight(items, 'cancerTreatment', 4, 'History of chemotherapy or radiation');
   if (factors.cancerTreatment === 'notSure') addWeight(items, 'cancerTreatment', 1, 'Cancer treatment history not sure');
+  if (factors.stressLevel === 'medium') addWeight(items, 'stressLevel', 1, 'Medium stress level');
+  if (factors.stressLevel === 'high') addWeight(items, 'stressLevel', 2, 'High stress level');
 
   const rawTotal = items.reduce((sum, item) => sum + item.weight, 0);
   const total = Math.max(0, rawTotal);
@@ -424,7 +432,8 @@ const factorDetails = {
   smoking: 'Smoking can affect ovarian reserve, egg quality, miscarriage risk, and IVF outcomes.',
   caffeine: 'Caffeine risk is usually dose-related. Staying at or below moderate intake is commonly advised while trying to conceive.',
   alcohol: 'Higher alcohol intake may affect fecundability and pregnancy safety, so reduction is usually recommended while trying.',
-  recreationalDrugs: 'Recreational or non-prescribed drugs may affect ovulation, hormones, pregnancy safety, and treatment planning.'
+  recreationalDrugs: 'Recreational or non-prescribed drugs may affect ovulation, hormones, pregnancy safety, and treatment planning.',
+  stressLevel: 'High chronic stress can affect hormone balance, ovulation, and overall fertility.'
 };
 
 

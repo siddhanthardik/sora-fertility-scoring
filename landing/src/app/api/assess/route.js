@@ -36,6 +36,7 @@ const fieldRules = {
   caffeine: ["low", "moderate", "high", "notSure"],
   alcohol: ["no", "yes", "notSure"],
   recreationalDrugs: ["no", "occasional", "regular"],
+  stressLevel: ["low", "medium", "high"],
   includeLab: ["yes", "no"],
   amhUnit: ["ng/mL", "pmol/L"],
 };
@@ -87,6 +88,7 @@ export async function POST(request) {
 
     // 1. Calculate Score
     const assessment = assessFertilityPayload(payload);
+    assessment.rawPayload = payload;
     
     // Extract Patient Info
     const patientInfo = {

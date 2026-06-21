@@ -90,7 +90,12 @@ export default function SuperadminLeads() {
                 >
                   <div style={{ color: "#111827", fontWeight: "500", wordBreak: "break-word" }}>{lead.name}</div>
                   <div style={{ color: "#4b5563", wordBreak: "break-word", paddingRight: "10px" }}>
-                    <div>{lead.email}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{lead.email}</span>
+                      {lead.consultation_request && (
+                        <span style={{ backgroundColor: "#fef3c7", color: "#b45309", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold" }}>CONSULT</span>
+                      )}
+                    </div>
                     <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>{lead.phone}</div>
                   </div>
                   <div style={{ color: "#6b7280", fontSize: "13px", wordBreak: "break-word", paddingRight: "10px" }}>

@@ -45,6 +45,7 @@ const getReadableValue = (key, value) => {
     caffeine: { low: "Low: 0-100 mg/day", moderate: "Moderate: 100-200 mg/day", high: "High: more than 200 mg/day", notSure: "Not sure" },
     alcohol: { no: "No", yes: "Yes", notSure: "Not sure" },
     recreationalDrugs: { no: "No", occasional: "Yes, occasionally", regular: "Yes, regularly" },
+    stressLevel: { low: "Low", medium: "Medium", high: "High" },
     
     // Labs
     includeLab: { yes: "Yes, add clinical labs", no: "No, skip labs" }
@@ -215,23 +216,8 @@ export async function POST(request) {
           
           // Labs
           lab_amh: rawPayload.amhValue ? Number(rawPayload.amhValue) : null,
-          lab_amh_unit: rawPayload.amhUnit || null,
           lab_fsh: rawPayload.fsh ? Number(rawPayload.fsh) : null,
           lab_afc: rawPayload.afc ? Number(rawPayload.afc) : null,
-          
-          // Consents
-          consent_marketing: rawPayload.consent_marketing === true,
-          consent_research: rawPayload.consent_research === true,
-          
-          // Other medical info
-          tb_personal: rawPayload.tbHistory || null,
-          tb_contact: rawPayload.tbTreatment || null,
-          sti_history: rawPayload.stiHistory || null,
-          pelvic_surgery: rawPayload.pelvicSurgery || null,
-          family_early_menopause: rawPayload.familyEarlyMenopause || null,
-          recreational_drugs: rawPayload.recreationalDrugs || null,
-          caffeine: rawPayload.caffeine || null,
-          cancer_treatment: rawPayload.cancerTreatment || null,
           
           // PCOS fields
           pcos_assessment_score: rawPayload.pcos_assessment_score ? Number(rawPayload.pcos_assessment_score) : null,
@@ -244,13 +230,12 @@ export async function POST(request) {
           triage_tier: rawPayload.risk_category || null,
           urgency: rawPayload.referral_urgency || null,
           flagged_markers: rawPayload.flagged_factors ? JSON.stringify(rawPayload.flagged_factors) : null,
-          risk_report: rawPayload.risk_category || null,
-          basic_score: rawPayload.basic_score ? Number(rawPayload.basic_score) : null,
-          enhanced_score: rawPayload.enhanced_score ? Number(rawPayload.enhanced_score) : null,
-          country: rawPayload.country || null,
           
-          // Store entire raw payload as backup
-          raw_data: rawPayload
+          // Consultation Request
+          consultation_request: rawPayload.consultation_request === true,
+          preferred_date: rawPayload.preferred_date || null,
+          preferred_time: rawPayload.preferred_time || null,
+          consultation_notes: rawPayload.consultation_notes || null
         };
         
         const sbResponse = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/leads`, {
@@ -344,7 +329,7 @@ export async function POST(request) {
         let htmlBody = `
           <div style="font-family: Arial, sans-serif; color: #1F2B22; background: #FAF9F6; padding: 30px; line-height: 1.6; max-width: 680px; margin: 0 auto; border-radius: 16px;">
             <div style="text-align: center; border-bottom: 2px solid #5F7D67; padding-bottom: 20px; margin-bottom: 25px;">
-              <img src="https://sora-fertility-scoring.vercel.app/sora-logo.png" alt="Sora Fertility Logo" style="height: 60px; margin-bottom: 15px;" />
+              <img src="${process.env.NEXT_PUBLIC_BASE_URL || 'https://sorafertility.com'}/sora-logo.png" alt="Sora Fertility Logo" style="height: 60px; margin-bottom: 15px;" />
               <h1 style="color: #1F2B22; margin: 0; font-size: 26px;">Sora Fertility Clinic</h1>
               <p style="color: #5F7D67; margin: 4px 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold;">Confidential Triage & FertiSTAT Report</p>
             </div>
@@ -535,7 +520,7 @@ export async function POST(request) {
 
                   <!-- Lifestyle & Labs -->
                   <tr style="border-bottom: 1px solid #edf0ed;">
-                    <td rowspan="7" style="padding: 8px; font-weight: bold; color: #5F7D67; vertical-align: top; border-right: 1px solid #edf0ed; background: #FAF9F6;">Lifestyle & Labs</td>
+                    <td rowspan="8" style="padding: 8px; font-weight: bold; color: #5F7D67; vertical-align: top; border-right: 1px solid #edf0ed; background: #FAF9F6;">Lifestyle & Labs</td>
                     <td style="padding: 8px;">Cigarettes / Tobacco</td>
                     <td style="padding: 8px; font-weight: bold;">${getReadableValue("smoking", payload.smoking)}</td>
                   </tr>
@@ -550,6 +535,10 @@ export async function POST(request) {
                   <tr style="border-bottom: 1px solid #edf0ed;">
                     <td style="padding: 8px;">Recreational drug use</td>
                     <td style="padding: 8px; font-weight: bold;">${getReadableValue("recreationalDrugs", payload.recreationalDrugs)}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #edf0ed;">
+                    <td style="padding: 8px;">Stress Level</td>
+                    <td style="padding: 8px; font-weight: bold;">${getReadableValue("stressLevel", payload.stressLevel)}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid #edf0ed;">
                     <td style="padding: 8px;">AMH Value</td>
@@ -570,7 +559,7 @@ export async function POST(request) {
             <div style="background: #5F7D67; color: white; text-align: center; border-radius: 12px; padding: 24px; box-shadow: 0 4px 10px rgba(95,125,103,0.15); margin-bottom: 25px;">
               <h3 style="margin-top: 0; color: #DFBA89; font-size: 16px;">Next Step: Your Complimentary consultation</h3>
               <p style="margin: 0 0 15px; font-size: 13px;">Discuss these FertiSTAT findings with a clinical matching expert to review top-tier laboratories and clinics.</p>
-              <a href="https://sora-fertility-bot.onrender.com/" target="_blank" style="background: #DFBA89; color: #1F2B22; font-weight: bold; border-radius: 8px; padding: 10px 20px; text-decoration: none; display: inline-block; font-size: 13px;">Book My Secure Consultation</a>
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://sorafertility.com'}/book-appointment?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}" target="_blank" style="background: #DFBA89; color: #1F2B22; font-weight: bold; border-radius: 8px; padding: 10px 20px; text-decoration: none; display: inline-block; font-size: 13px;">Book My Secure Consultation</a>
             </div>
 
             <p style="font-size: 11px; color: #63716b; line-height: 1.5; margin-top: 20px; border-top: 1px solid #e3e7e2; padding-top: 15px; text-align: justify;">

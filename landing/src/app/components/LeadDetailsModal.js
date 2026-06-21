@@ -81,6 +81,21 @@ export default function LeadDetailsModal({ lead, onClose }) {
               <DataRow label="Source" value={lead.source} />
             </div>
 
+            {/* Consultation Request */}
+            {lead.consultation_request && (
+              <div style={{ background: "#fff7ea", padding: "20px", borderRadius: "8px", border: "1px solid #DFBA89" }}>
+                <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", color: "#b45309" }}>Priority Consultation Request</h3>
+                <DataRow label="Preferred Date" value={lead.preferred_date || "Not specified"} />
+                <DataRow label="Preferred Time" value={lead.preferred_time || "Not specified"} />
+                {lead.consultation_notes && (
+                  <div style={{ marginTop: "12px", borderTop: "1px solid #f3f4f6", paddingTop: "12px" }}>
+                    <div style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500", marginBottom: "4px" }}>Notes</div>
+                    <div style={{ color: "#111827", fontSize: "14px" }}>{lead.consultation_notes}</div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* FertiSTAT Assessment Scores */}
             {lead.triage_tier && (
               <div style={{ background: "white", padding: "20px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>

@@ -25,6 +25,7 @@ import {
   Heading3,
   LineChart,
   Mail,
+  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import RichTextEditor from "../components/RichTextEditor";
@@ -56,6 +57,7 @@ export default function SuperadminPage() {
   const [settingsMessage, setSettingsMessage] = useState("");
   const [widgetHostUrl, setWidgetHostUrl] = useState("http://localhost:3000");
   const [limitsMessage, setLimitsMessage] = useState("");
+  const [dateRange, setDateRange] = useState("all");
 
   const [clinicSettingsOpen, setClinicSettingsOpen] = useState(false);
   const [editingClinic, setEditingClinic] = useState(null);
@@ -112,6 +114,8 @@ export default function SuperadminPage() {
     setCurrentPage(1);
   }, [searchQuery]);
 
+
+
   const loadClinics = useCallback(async () => {
     const response = await fetch("/api/superadmin/clinics");
     const result = await response.json();
@@ -154,12 +158,18 @@ export default function SuperadminPage() {
   }, []);
 
   const loadAnalytics = useCallback(async () => {
-    const response = await fetch("/api/superadmin/analytics");
+    const response = await fetch(`/api/superadmin/analytics?range=${dateRange}`);
     if (response.ok) {
       const result = await response.json();
       setAnalytics(result);
     }
-  }, []);
+  }, [dateRange]);
+
+  useEffect(() => {
+    if (authenticated) {
+      loadAnalytics();
+    }
+  }, [authenticated, dateRange, loadAnalytics]);
 
   const loadSubscribers = useCallback(async () => {
     const response = await fetch("/api/superadmin/subscribers", {
@@ -538,8 +548,8 @@ export default function SuperadminPage() {
             Subscribers
           </button>
           <button 
-            onClick={() => setSettingsOpen(true)}
-            className={styles.navItem}
+            onClick={() => setActiveTab("settings")}
+            className={`${styles.navItem} ${activeTab === "settings" ? styles.active : ""}`}
           >
             <Settings size={20} />
             Platform Settings
@@ -557,8 +567,26 @@ export default function SuperadminPage() {
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <div className={styles.headerTitle}>
-            <h1>{activeTab === "clinics" ? "Network Dashboard" : activeTab === "packages" ? "Package Manager" : activeTab === "leads" ? "Leads Dashboard" : "Register New Clinic"}</h1>
-            <p>Manage all SORA SaaS tenants and leads across the network.</p>
+            {(() => {
+              const tabHeaders = {
+                clinics: { title: "Network Dashboard", desc: "Manage all SORA SaaS tenants and leads across the network." },
+                leads: { title: "Leads Dashboard", desc: "View and manage incoming patient leads." },
+                add_clinic: { title: "Register New Clinic", desc: "Create a new tenant in the SORA network." },
+                packages: { title: "Package Manager", desc: "Manage subscription packages and features." },
+                seo: { title: "SEO Management", desc: "Manage Meta Titles, Descriptions, and Keywords for public pages." },
+                blogs: { title: "Blog Management", desc: "Write and publish articles for the public blog." },
+                analytics: { title: "Growth Intelligence", desc: "Track platform usage and performance metrics." },
+                subscribers: { title: "Newsletter Subscribers", desc: "Manage and export email subscribers." },
+                settings: { title: "Platform Settings", desc: "Configure global platform settings." }
+              };
+              const currentHeader = tabHeaders[activeTab] || tabHeaders.clinics;
+              return (
+                <>
+                  <h1>{currentHeader.title}</h1>
+                  <p>{currentHeader.desc}</p>
+                </>
+              );
+            })()}
           </div>
           <button onClick={() => { loadClinics(); loadPackages(); if(activeTab === "leads") window.location.reload(); }} className={styles.btnSecondary}>
             <RefreshCw size={16} /> Refresh
@@ -858,17 +886,14 @@ export default function SuperadminPage() {
 
           {activeTab === "seo" && (
             <div>
-              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.25rem", margin: 0 }}>SEO Management</h2>
-                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Manage Meta Titles, Descriptions, and Keywords for public pages.</p>
-                </div>
+              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                 <button className={styles.btnPrimary} onClick={() => {
                   setEditingSeo({ 
                     page_route: "/", meta_title: "", meta_description: "", meta_keywords: "",
                     og_title: "", og_description: "", og_image: "",
                     twitter_card: "summary_large_image", twitter_title: "", twitter_description: "", twitter_image: "",
-                    canonical_url: "", noindex: false, nofollow: false, structured_data: "" 
+                    canonical_url: "", noindex: false, nofollow: false, structured_data: "",
+                    ai_summary: "", target_entities: ""
                   });
                   setSeoTab("general");
                   setSeoMessage("");
@@ -877,7 +902,8 @@ export default function SuperadminPage() {
                 </button>
               </div>
               
-              <table className={styles.table}>
+              {!editingSeo ? (
+                <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>Page Route</th>
@@ -906,16 +932,144 @@ export default function SuperadminPage() {
                   )}
                 </tbody>
               </table>
+              ) : (
+              <div style={{ background: "white", padding: "32px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", borderBottom: "1px solid #e2e8f0", paddingBottom: "16px" }}>
+                  <h3 style={{ margin: 0, fontSize: "1.25rem", color: "#0f172a" }}>
+                    <Search size={20} style={{ verticalAlign: 'text-bottom', marginRight: '8px' }}/> 
+                    {editingSeo.page_route === '/' || seoSettings.some(s => s.page_route === editingSeo.page_route) ? `Editing: ${editingSeo.page_route}` : "New Page SEO"}
+                  </h3>
+                  <button className={styles.btnSecondary} onClick={() => setEditingSeo(null)}>
+                    <X size={16} style={{marginRight: "4px"}} /> Cancel
+                  </button>
+                </div>
+                
+                <div style={{ display: "flex", gap: "16px", marginBottom: "24px", borderBottom: "1px solid #e2e8f0", paddingBottom: "8px" }}>
+                  <button type="button" onClick={() => setSeoTab("general")} style={{ background: "none", border: "none", fontWeight: seoTab === "general" ? "bold" : "normal", color: seoTab === "general" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>General</button>
+                  <button type="button" onClick={() => setSeoTab("social")} style={{ background: "none", border: "none", fontWeight: seoTab === "social" ? "bold" : "normal", color: seoTab === "social" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Social Media</button>
+                  <button type="button" onClick={() => setSeoTab("advanced")} style={{ background: "none", border: "none", fontWeight: seoTab === "advanced" ? "bold" : "normal", color: seoTab === "advanced" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Advanced Settings</button>
+                  <button type="button" onClick={() => setSeoTab("aio")} style={{ background: "none", border: "none", fontWeight: seoTab === "aio" ? "bold" : "normal", color: seoTab === "aio" ? "#10b981" : "#64748b", cursor: "pointer", padding: "8px", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <Sparkles size={14} /> AI Optimisation (AIO)
+                  </button>
+                </div>
+
+                <form onSubmit={saveSeoSettings}>
+                  {seoTab === "general" && (
+                    <>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Page Route (e.g., / or /fertility-assessment)</label>
+                        <input className={styles.input} type="text" value={editingSeo.page_route} onChange={(e) => setEditingSeo({...editingSeo, page_route: e.target.value})} required />
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Meta Title <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_title?.length || 0} / 60</span></label>
+                        <input className={styles.input} type="text" value={editingSeo.meta_title} onChange={(e) => setEditingSeo({...editingSeo, meta_title: e.target.value})} required />
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Meta Description <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_description?.length || 0} / 160</span></label>
+                        <textarea className={styles.input} rows="3" value={editingSeo.meta_description || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_description: e.target.value})}></textarea>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                        <label className={styles.label}>Meta Keywords</label>
+                        <input className={styles.input} type="text" placeholder="fertility, IVF, testing" value={editingSeo.meta_keywords || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_keywords: e.target.value})} />
+                      </div>
+                    </>
+                  )}
+
+                  {seoTab === "social" && (
+                    <>
+                      <h3 className={styles.sectionTitle}>Open Graph (Facebook/LinkedIn)</h3>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>OG Title</label>
+                        <input className={styles.input} type="text" placeholder={editingSeo.meta_title || "Default Title"} value={editingSeo.og_title || ""} onChange={(e) => setEditingSeo({...editingSeo, og_title: e.target.value})} />
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>OG Description</label>
+                        <textarea className={styles.input} rows="2" placeholder={editingSeo.meta_description || "Default Description"} value={editingSeo.og_description || ""} onChange={(e) => setEditingSeo({...editingSeo, og_description: e.target.value})}></textarea>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                        <label className={styles.label}>OG Image URL</label>
+                        <input className={styles.input} type="url" placeholder="https://example.com/image.jpg" value={editingSeo.og_image || ""} onChange={(e) => setEditingSeo({...editingSeo, og_image: e.target.value})} />
+                      </div>
+
+                      <h3 className={styles.sectionTitle}>Twitter Card</h3>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Card Type</label>
+                        <select className={styles.input} value={editingSeo.twitter_card || "summary_large_image"} onChange={(e) => setEditingSeo({...editingSeo, twitter_card: e.target.value})}>
+                          <option value="summary">Summary (Small Image)</option>
+                          <option value="summary_large_image">Summary Large Image</option>
+                        </select>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Twitter Title</label>
+                        <input className={styles.input} type="text" placeholder={editingSeo.og_title || editingSeo.meta_title || ""} value={editingSeo.twitter_title || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_title: e.target.value})} />
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Twitter Description</label>
+                        <textarea className={styles.input} rows="2" placeholder={editingSeo.og_description || editingSeo.meta_description || ""} value={editingSeo.twitter_description || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_description: e.target.value})}></textarea>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                        <label className={styles.label}>Twitter Image URL</label>
+                        <input className={styles.input} type="url" placeholder={editingSeo.og_image || "https://example.com/image.jpg"} value={editingSeo.twitter_image || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_image: e.target.value})} />
+                      </div>
+                    </>
+                  )}
+
+                  {seoTab === "advanced" && (
+                    <>
+                      <h3 className={styles.sectionTitle}>Indexing & Links</h3>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>Canonical URL</label>
+                        <input className={styles.input} type="url" placeholder="https://sorafertility.com/..." value={editingSeo.canonical_url || ""} onChange={(e) => setEditingSeo({...editingSeo, canonical_url: e.target.value})} />
+                      </div>
+                      <div className={styles.formGroup} style={{ marginBottom: '16px', display: 'flex', gap: '24px' }}>
+                        <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={editingSeo.noindex || false} onChange={(e) => setEditingSeo({...editingSeo, noindex: e.target.checked})} />
+                          NoIndex
+                        </label>
+                        <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={editingSeo.nofollow || false} onChange={(e) => setEditingSeo({...editingSeo, nofollow: e.target.checked})} />
+                          NoFollow
+                        </label>
+                      </div>
+
+                      <h3 className={styles.sectionTitle}>Structured Data</h3>
+                      <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                        <label className={styles.label}>Custom JSON-LD</label>
+                        <textarea className={styles.input} rows="5" placeholder="{ '@context': 'https://schema.org', '@type': 'WebPage', ... }" value={editingSeo.structured_data || ""} onChange={(e) => setEditingSeo({...editingSeo, structured_data: e.target.value})} style={{ fontFamily: "monospace", fontSize: "0.875rem" }}></textarea>
+                      </div>
+                    </>
+                  )}
+
+                  {seoTab === "aio" && (
+                    <>
+                      <h3 className={styles.sectionTitle} style={{color: '#10b981'}}>AI Search Engine Optimization (AIO)</h3>
+                      <p style={{fontSize: '0.875rem', color: '#64748b', marginBottom: '24px'}}>Configure explicit metadata for Large Language Models (LLMs) like ChatGPT, Perplexity, and Google SGE.</p>
+                      
+                      <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
+                        <label className={styles.label}>AI Assistant Summary</label>
+                        <textarea className={styles.input} rows="4" placeholder="Briefly summarize this page specifically for AI scrapers..." value={editingSeo.ai_summary || ""} onChange={(e) => setEditingSeo({...editingSeo, ai_summary: e.target.value})}></textarea>
+                        <span className={styles.helpText}>This will be embedded as a special meta tag to guide AI agents summarizing your content.</span>
+                      </div>
+
+                      <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
+                        <label className={styles.label}>Target Entities (Keywords for AI)</label>
+                        <input className={styles.input} type="text" placeholder="Fertility Assessment, IVF, PCOS..." value={editingSeo.target_entities || ""} onChange={(e) => setEditingSeo({...editingSeo, target_entities: e.target.value})} />
+                        <span className={styles.helpText}>Comma-separated list of entities/concepts this page covers.</span>
+                      </div>
+                    </>
+                  )}
+
+                  {seoMessage && <p style={{color: 'red', marginBottom: '16px'}}>{seoMessage}</p>}
+                  <button type="submit" className={styles.btnPrimary} style={{width: '200px'}}>Save Configuration</button>
+                </form>
+              </div>
+              )}
             </div>
           )}
 
           {activeTab === "blogs" && (
             <div>
-              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.25rem", margin: 0 }}>Blog Management</h2>
-                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Write and publish articles for the public blog.</p>
-                </div>
+              <div style={{ marginBottom: "24px", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                 <button className={styles.btnPrimary} onClick={() => {
                   setEditingBlog({ slug: "", title: "", excerpt: "", content: "", author_name: "SORA Team", cover_image: "", published: false, category: "Fertility", meta_title: "", meta_description: "", meta_keywords: "", related_tool: "", published_at: null, faqs: [] });
                   setBlogMessage("");
@@ -967,11 +1121,18 @@ export default function SuperadminPage() {
 
           {activeTab === "analytics" && analytics && (
             <div>
-              <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.5rem", margin: 0, fontWeight: 800 }}>SORA Growth Intelligence</h2>
-                  <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>Internal analytics engine tracking user intent and tool conversions.</p>
-                </div>
+              <div style={{ marginBottom: "32px", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
+                <select 
+                  value={dateRange} 
+                  onChange={(e) => setDateRange(e.target.value)}
+                  className={styles.input}
+                  style={{ width: "auto", margin: 0, padding: "8px 16px" }}
+                >
+                  <option value="all">All Time</option>
+                  <option value="7d">Last 7 Days</option>
+                  <option value="30d">Last 30 Days</option>
+                  <option value="this_month">This Month</option>
+                </select>
                 <button onClick={() => loadAnalytics()} className={styles.btnSecondary}>
                   <RefreshCw size={16} /> Refresh Analytics
                 </button>
@@ -1011,6 +1172,7 @@ export default function SuperadminPage() {
                       <th>Starts</th>
                       <th>Completes</th>
                       <th>Downloads</th>
+                      <th>Paid Downloads</th>
                       <th>Completion %</th>
                     </tr>
                   </thead>
@@ -1021,7 +1183,8 @@ export default function SuperadminPage() {
                         <td>{tool.views}</td>
                         <td>{tool.starts}</td>
                         <td style={{color: '#16a34a', fontWeight: 'bold'}}>{tool.completes}</td>
-                        <td style={{color: '#3b82f6', fontWeight: 'bold'}}>{tool.downloads}</td>
+                        <td style={{color: '#3b82f6', fontWeight: 600}}>{tool.downloads}</td>
+                        <td style={{color: '#8b5cf6', fontWeight: 600}}>{tool.paid_downloads || 0}</td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{ width: '60px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
@@ -1074,14 +1237,10 @@ export default function SuperadminPage() {
             </div>
           )}
 
-        </div>
-      </main>
-
           {/* Subscribers Tab */}
           {activeTab === "subscribers" && (
             <div className={styles.tabContent}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1e293b' }}>Newsletter Subscribers</h2>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '24px' }}>
                 <button onClick={exportSubscribersCsv} className={styles.btnPrimary} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Mail size={16} />
                   Export to CSV
@@ -1131,51 +1290,62 @@ export default function SuperadminPage() {
             </div>
           )}
 
-      {/* Settings Modal */}
-      {settingsOpen && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h2><Settings size={20}/> Platform Settings</h2>
-              <button className={styles.closeBtn} onClick={() => setSettingsOpen(false)}><X size={20} /></button>
-            </div>
-            
-            <div className={styles.modalBody}>
-              <form onSubmit={updatePassword}>
-                <h3 className={styles.sectionTitle}>Superadmin Security</h3>
-                <div style={{display: 'flex', gap: '12px'}}>
-                  <input 
-                    className={styles.input}
-                    type="password" 
-                    placeholder="Enter new master password" 
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                    minLength={8}
-                  />
-                  <button className={styles.btnPrimary} style={{whiteSpace: 'nowrap'}} type="submit">Update</button>
+          {/* Platform Settings Tab */}
+          {activeTab === "settings" && (
+            <div className={styles.tabContent} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
+              {/* Security Card */}
+              <div style={{ background: 'white', borderRadius: '12px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                  <div style={{ background: '#eff6ff', padding: '12px', borderRadius: '12px', color: '#3b82f6' }}>
+                    <Settings size={24} />
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1e293b' }}>Superadmin Security</h3>
                 </div>
-                {settingsMessage && <p style={{marginTop: '8px', fontSize: '0.875rem', color: '#16a34a'}}>{settingsMessage}</p>}
-              </form>
+                <form onSubmit={updatePassword}>
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+                    <div>
+                      <label className={styles.label}>Master Password</label>
+                      <input 
+                        className={styles.input}
+                        type="password" 
+                        placeholder="Enter new master password" 
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        minLength={8}
+                      />
+                    </div>
+                    <button className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}} type="submit">Update Password</button>
+                  </div>
+                  {settingsMessage && <p style={{marginTop: '16px', fontSize: '0.875rem', color: '#16a34a', textAlign: 'center'}}>{settingsMessage}</p>}
+                </form>
+              </div>
 
-              <div className={styles.divider}></div>
-
-              <form onSubmit={updateLimits}>
-                <h3 className={styles.sectionTitle}>Global Configuration</h3>
-
-                <div className={styles.infoBox}>
-                  <h3>Widget Host URL</h3>
-                  <input className={styles.input} style={{marginTop: '12px'}} type="url" placeholder="https://app.sorafertility.com" value={widgetHostUrl} onChange={(e) => setWidgetHostUrl(e.target.value)} required />
-                  <p style={{marginTop: '8px'}}>Used to generate the embed codes for clinics. Must be the domain where this app is running.</p>
+              {/* Global Config Card */}
+              <div style={{ background: 'white', borderRadius: '12px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                  <div style={{ background: '#eff6ff', padding: '12px', borderRadius: '12px', color: '#3b82f6' }}>
+                    <Building2 size={24} />
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1e293b' }}>Global Configuration</h3>
                 </div>
-
-                <button className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}} type="submit">Save Settings</button>
-                {limitsMessage && <p style={{marginTop: '12px', textAlign: 'center', fontSize: '0.875rem', color: '#16a34a'}}>{limitsMessage}</p>}
-              </form>
+                <form onSubmit={updateLimits}>
+                  <div className={styles.infoBox} style={{ marginBottom: '24px' }}>
+                    <h4 style={{ margin: '0 0 8px 0', color: '#1e293b' }}>Widget Host URL</h4>
+                    <p style={{ margin: '0 0 16px 0', fontSize: '0.875rem', color: '#64748b' }}>Used to generate the embed codes for clinics. Must be the domain where this app is running.</p>
+                    <input className={styles.input} type="url" placeholder="https://app.sorafertility.com" value={widgetHostUrl} onChange={(e) => setWidgetHostUrl(e.target.value)} required />
+                  </div>
+                  <button className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}} type="submit">Save Configuration</button>
+                  {limitsMessage && <p style={{marginTop: '16px', textAlign: 'center', fontSize: '0.875rem', color: '#16a34a'}}>{limitsMessage}</p>}
+                </form>
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
-      )}
+      </main>
+
+
 
       {/* Clinic Report Settings Modal */}
       {clinicSettingsOpen && editingClinic && (
@@ -1262,114 +1432,7 @@ export default function SuperadminPage() {
         </div>
       )}
 
-      {/* SEO Edit Modal */}
-      {editingSeo && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h2><Search size={20}/> {editingSeo.page_route === '/' || seoSettings.some(s => s.page_route === editingSeo.page_route) ? `Edit SEO: ${editingSeo.page_route}` : "New Page SEO"}</h2>
-              <button className={styles.closeBtn} onClick={() => setEditingSeo(null)}><X size={20} /></button>
-            </div>
-            <div className={styles.modalBody}>
-              <div style={{ display: "flex", gap: "16px", marginBottom: "24px", borderBottom: "1px solid #e2e8f0", paddingBottom: "8px" }}>
-                <button type="button" onClick={() => setSeoTab("general")} style={{ background: "none", border: "none", fontWeight: seoTab === "general" ? "bold" : "normal", color: seoTab === "general" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>General</button>
-                <button type="button" onClick={() => setSeoTab("social")} style={{ background: "none", border: "none", fontWeight: seoTab === "social" ? "bold" : "normal", color: seoTab === "social" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Social Media</button>
-                <button type="button" onClick={() => setSeoTab("advanced")} style={{ background: "none", border: "none", fontWeight: seoTab === "advanced" ? "bold" : "normal", color: seoTab === "advanced" ? "#3b82f6" : "#64748b", cursor: "pointer", padding: "8px" }}>Advanced</button>
-              </div>
-              <form onSubmit={saveSeoSettings}>
-                {seoTab === "general" && (
-                  <>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Page Route (e.g., / or /fertility-assessment)</label>
-                      <input className={styles.input} type="text" value={editingSeo.page_route} onChange={(e) => setEditingSeo({...editingSeo, page_route: e.target.value})} required />
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Meta Title <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_title?.length || 0} / 60</span></label>
-                      <input className={styles.input} type="text" value={editingSeo.meta_title} onChange={(e) => setEditingSeo({...editingSeo, meta_title: e.target.value})} required />
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Meta Description <span style={{fontWeight: "normal", color: "#94a3b8"}}>- {editingSeo.meta_description?.length || 0} / 160</span></label>
-                      <textarea className={styles.input} rows="3" value={editingSeo.meta_description || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_description: e.target.value})}></textarea>
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                      <label className={styles.label}>Meta Keywords</label>
-                      <input className={styles.input} type="text" placeholder="fertility, IVF, testing" value={editingSeo.meta_keywords || ""} onChange={(e) => setEditingSeo({...editingSeo, meta_keywords: e.target.value})} />
-                    </div>
-                  </>
-                )}
 
-                {seoTab === "social" && (
-                  <>
-                    <h3 className={styles.sectionTitle}>Open Graph (Facebook/LinkedIn)</h3>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>OG Title</label>
-                      <input className={styles.input} type="text" placeholder={editingSeo.meta_title || "Default Title"} value={editingSeo.og_title || ""} onChange={(e) => setEditingSeo({...editingSeo, og_title: e.target.value})} />
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>OG Description</label>
-                      <textarea className={styles.input} rows="2" placeholder={editingSeo.meta_description || "Default Description"} value={editingSeo.og_description || ""} onChange={(e) => setEditingSeo({...editingSeo, og_description: e.target.value})}></textarea>
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                      <label className={styles.label}>OG Image URL</label>
-                      <input className={styles.input} type="url" placeholder="https://example.com/image.jpg" value={editingSeo.og_image || ""} onChange={(e) => setEditingSeo({...editingSeo, og_image: e.target.value})} />
-                    </div>
-
-                    <h3 className={styles.sectionTitle}>Twitter Card</h3>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Card Type</label>
-                      <select className={styles.input} value={editingSeo.twitter_card || "summary_large_image"} onChange={(e) => setEditingSeo({...editingSeo, twitter_card: e.target.value})}>
-                        <option value="summary">Summary (Small Image)</option>
-                        <option value="summary_large_image">Summary Large Image</option>
-                      </select>
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Twitter Title</label>
-                      <input className={styles.input} type="text" placeholder={editingSeo.og_title || editingSeo.meta_title || ""} value={editingSeo.twitter_title || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_title: e.target.value})} />
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Twitter Description</label>
-                      <textarea className={styles.input} rows="2" placeholder={editingSeo.og_description || editingSeo.meta_description || ""} value={editingSeo.twitter_description || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_description: e.target.value})}></textarea>
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                      <label className={styles.label}>Twitter Image URL</label>
-                      <input className={styles.input} type="url" placeholder={editingSeo.og_image || "https://example.com/image.jpg"} value={editingSeo.twitter_image || ""} onChange={(e) => setEditingSeo({...editingSeo, twitter_image: e.target.value})} />
-                    </div>
-                  </>
-                )}
-
-                {seoTab === "advanced" && (
-                  <>
-                    <h3 className={styles.sectionTitle}>Indexing & Links</h3>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px' }}>
-                      <label className={styles.label}>Canonical URL</label>
-                      <input className={styles.input} type="url" placeholder="https://sorafertility.com/..." value={editingSeo.canonical_url || ""} onChange={(e) => setEditingSeo({...editingSeo, canonical_url: e.target.value})} />
-                    </div>
-                    <div className={styles.formGroup} style={{ marginBottom: '16px', display: 'flex', gap: '24px' }}>
-                      <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <input type="checkbox" checked={editingSeo.noindex || false} onChange={(e) => setEditingSeo({...editingSeo, noindex: e.target.checked})} />
-                        NoIndex
-                      </label>
-                      <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <input type="checkbox" checked={editingSeo.nofollow || false} onChange={(e) => setEditingSeo({...editingSeo, nofollow: e.target.checked})} />
-                        NoFollow
-                      </label>
-                    </div>
-
-                    <h3 className={styles.sectionTitle}>Structured Data</h3>
-                    <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
-                      <label className={styles.label}>Custom JSON-LD</label>
-                      <textarea className={styles.input} rows="5" placeholder="{ '@context': 'https://schema.org', '@type': 'WebPage', ... }" value={editingSeo.structured_data || ""} onChange={(e) => setEditingSeo({...editingSeo, structured_data: e.target.value})} style={{ fontFamily: "monospace", fontSize: "0.875rem" }}></textarea>
-                    </div>
-                  </>
-                )}
-
-                {seoMessage && <p style={{color: 'red', marginBottom: '16px'}}>{seoMessage}</p>}
-                <button type="submit" className={styles.btnPrimary} style={{width: '100%', justifyContent: 'center'}}>Save SEO Configuration</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Blog Edit Modal */}
       {editingBlog && (

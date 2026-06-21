@@ -161,6 +161,30 @@ export async function generateAssessmentPDF(patientInfo, assessment, options = {
         });
       }
 
+      // --- PATIENT RESPONSES (Added to bottom of premium report) ---
+      if (type === 'premium') {
+        doc.addPage();
+        doc.fontSize(20).fillColor(colors.secondary).text('Your Complete Questionnaire Responses', { align: 'center' });
+        doc.moveDown(1.5);
+        
+        doc.fontSize(10).fillColor(colors.textDark);
+        if (assessment.rawPayload) {
+          const excludedKeys = ['reportType', 'paymentStatus', 'razorpayOrderId', 'name', 'email', 'phone'];
+          for (const [key, value] of Object.entries(assessment.rawPayload)) {
+             if (excludedKeys.includes(key) || value === '' || value === null) continue;
+             
+             const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+             
+             doc.font('Helvetica-Bold').text(`${formattedKey}: `, { continued: true })
+                .font('Helvetica').text(`${value}`);
+             doc.moveDown(0.5);
+          }
+        } else {
+          doc.text('No questionnaire data provided.');
+        }
+        doc.moveDown(2);
+      }
+
       // --- FOOTER ---
       const bottom = doc.page.margins.bottom;
       doc.page.margins.bottom = 0;

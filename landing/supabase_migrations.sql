@@ -21,6 +21,19 @@ CREATE TABLE IF NOT EXISTS seo_settings (
   meta_title TEXT NOT NULL,
   meta_description TEXT,
   meta_keywords TEXT,
+  og_title TEXT,
+  og_description TEXT,
+  og_image TEXT,
+  twitter_card TEXT DEFAULT 'summary_large_image',
+  twitter_title TEXT,
+  twitter_description TEXT,
+  twitter_image TEXT,
+  canonical_url TEXT,
+  noindex BOOLEAN DEFAULT false,
+  nofollow BOOLEAN DEFAULT false,
+  structured_data TEXT,
+  ai_summary TEXT,
+  target_entities TEXT,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -51,6 +64,29 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add an RPC to generate sitemap URLs dynamically from db (if needed)
+CREATE OR REPLACE FUNCTION get_sitemap_urls()
+RETURNS TABLE (
+  url TEXT,
+  lastmod TIMESTAMPTZ,
+  changefreq TEXT,
+  priority NUMERIC
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    '/blog/' || slug as url,
+    updated_at as lastmod,
+    'weekly' as changefreq,
+    0.7 as priority
+  FROM blog_posts
+  WHERE published = true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Reload PostgREST schema cache so API immediately recognizes new columns
+NOTIFY pgrst, 'reload schema';
 
 -- Enable RLS for blog_posts
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
@@ -101,6 +137,7 @@ CREATE TABLE IF NOT EXISTS leads (
   smoking TEXT,
   alcohol TEXT,
   try_duration TEXT,
+  stress_level TEXT,
   
   -- Labs
   lab_amh NUMERIC,
@@ -111,6 +148,12 @@ CREATE TABLE IF NOT EXISTS leads (
   triage_tier TEXT,
   urgency TEXT,
   flagged_markers JSONB,
+  
+  -- Consultation Request
+  consultation_request BOOLEAN DEFAULT false,
+  preferred_date TEXT,
+  preferred_time TEXT,
+  consultation_notes TEXT,
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

@@ -228,6 +228,38 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
   const [countryCode, setCountryCode] = useState("+91");
   const [leadConsent, setLeadConsent] = useState(false);
 
+  // Restore saved quiz progress
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sora_quiz_save_pcos");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          if (parsed.formData) setFormData(parsed.formData);
+          if (parsed.currentStep !== undefined) setCurrentStep(parsed.currentStep);
+        } else {
+          localStorage.removeItem("sora_quiz_save_pcos");
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore pcos quiz state:", e);
+    }
+  }, []);
+
+  // Save quiz progress on change
+  useEffect(() => {
+    if (currentStep > 0 && !results) {
+      try {
+        const payload = {
+          formData,
+          currentStep,
+          timestamp: Date.now()
+        };
+        localStorage.setItem("sora_quiz_save_pcos", JSON.stringify(payload));
+      } catch (e) {}
+    }
+  }, [formData, currentStep, results]);
+
   useEffect(() => {
     const cardElement = document.getElementById("pcosWizardCard");
     if (cardElement) cardElement.scrollTop = 0;
@@ -305,6 +337,7 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
 
   const handleLeadSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!leadName.trim() || !leadEmail.trim() || !leadPhone.trim() || !leadConsent) {
       setError("Please fill in all details and accept the consent.");
       return;
@@ -317,6 +350,9 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
       // 1. Calculate Score Server Side
       const assessmentData = await requestAssessment();
       setResults(assessmentData);
+      
+      // Wipe auto-save on completion
+      try { localStorage.removeItem("sora_quiz_save_pcos"); } catch(e) {}
       
       // 2. Submit Lead
       const payload = {
@@ -369,7 +405,7 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
         </div>
       </div>
 
-      <div className={styles.wizardBody}>
+      <div className={styles.wizardBody} style={{ pointerEvents: loading ? 'none' : 'auto', opacity: loading ? 0.8 : 1 }}>
         {error && <div className={styles.errorMessage}><AlertTriangle size={18}/> {error}</div>}
 
         {currentStep < leadStepIndex && (

@@ -38,7 +38,8 @@ export async function POST(request) {
       page_route, meta_title, meta_description, meta_keywords,
       og_title, og_description, og_image,
       twitter_card, twitter_title, twitter_description, twitter_image,
-      canonical_url, noindex, nofollow, structured_data
+      canonical_url, noindex, nofollow, structured_data,
+      ai_summary, target_entities
     } = await request.json();
 
     if (!page_route || !meta_title) {
@@ -67,6 +68,8 @@ export async function POST(request) {
         noindex: noindex || false, 
         nofollow: nofollow || false, 
         structured_data,
+        ai_summary,
+        target_entities,
         updated_at: new Date().toISOString()
       }, { onConflict: "page_route" });
 

@@ -26,8 +26,17 @@ export async function buildMetadata(pageRoute, defaultTitle, defaultDescription)
     robots: {
       index: !data.noindex,
       follow: !data.nofollow,
-    }
+    },
+    other: {}
   };
+
+  if (data.ai_summary) {
+    metadata.other["ai-summary"] = data.ai_summary;
+  }
+  
+  if (data.target_entities) {
+    metadata.other["entities"] = data.target_entities;
+  }
 
   if (data.canonical_url) {
     metadata.alternates.canonical = data.canonical_url;
