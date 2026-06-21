@@ -499,7 +499,7 @@ export default function QuizWizard({ clinicId = CLINIC_ID, reportSettings = {} }
   const [leadPhone, setLeadPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [leadConsent, setLeadConsent] = useState(false);
-  const [pricing, setPricing] = useState({ currency: "INR", amount: 1, symbol: "₹" });
+  const [pricing, setPricing] = useState({ currency: "INR", amount: 199, symbol: "₹" });
 
   useEffect(() => {
     fetch('https://ipapi.co/json/')
