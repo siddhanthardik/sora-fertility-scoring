@@ -47,7 +47,7 @@ export async function POST(request) {
 
       if (updateError) {
         console.error("Error updating lead with consultation:", updateError);
-        return NextResponse.json({ success: false, message: "Failed to update lead." }, { status: 500 });
+        return NextResponse.json({ success: false, message: "Failed to update lead.", error: updateError }, { status: 500 });
       }
     } else {
       // Insert new lead (if they somehow bypassed the assessment)
@@ -58,7 +58,6 @@ export async function POST(request) {
           email,
           phone,
           country_code,
-          source: "appointment_booking",
           consultation_request: true,
           preferred_date,
           preferred_time,
@@ -67,7 +66,7 @@ export async function POST(request) {
 
       if (insertError) {
         console.error("Error inserting new lead:", insertError);
-        return NextResponse.json({ success: false, message: "Failed to save booking." }, { status: 500 });
+        return NextResponse.json({ success: false, message: "Failed to save booking.", error: insertError }, { status: 500 });
       }
     }
 
@@ -76,7 +75,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Booking API error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error." },
+      { success: false, message: "Internal server error.", error: error.message || String(error) },
       { status: 500 }
     );
   }
