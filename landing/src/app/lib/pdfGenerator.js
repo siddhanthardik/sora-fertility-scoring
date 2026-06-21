@@ -372,7 +372,7 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
         { weeks: '18–22 weeks', name: 'Anomaly Scan (Anatomy ultrasound)' },
         { weeks: '24–28 weeks', name: 'Gestational diabetes screening' },
         { weeks: '32 weeks', name: 'Growth Scan (If indicated)' },
-        { weeks: '36–37 weeks', name: 'Group B Strep test' }
+        { weeks: '35–37 weeks', name: 'Group B Strep test (Risk-based)' }
       ];
 
       tests.forEach(test => {
@@ -427,12 +427,12 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
       const oldBottom = doc.page.margins.bottom;
       doc.page.margins.bottom = 0;
 
-      const dY = doc.page.height - 120;
-      doc.rect(0, dY, doc.page.width, 120).fill(colors.background);
-      doc.fontSize(12).fillColor(colors.textDark).text('Medical Disclaimer', 50, dY + 20, { align: 'center', width: doc.page.width - 100 });
+      const dY = doc.page.height - 140;
+      doc.rect(0, dY, doc.page.width, 140).fill(colors.background);
+      doc.fontSize(12).fillColor(colors.textDark).text('Medical Disclaimer', 50, dY + 15, { align: 'center', width: doc.page.width - 100 });
       doc.fontSize(10).fillColor(colors.textLight).text(
         'Only around 4–5% of babies arrive on their exact due date. Healthcare providers may adjust your due date based on ultrasound findings. Important: Please consult your medical practitioners or doctors for any clinical decisions. This data is purely for informational purposes, depends entirely on user input, and cannot be challenged in court.',
-        70, dY + 40, { align: 'center', width: doc.page.width - 140 }
+        70, dY + 35, { align: 'center', width: doc.page.width - 140 }
       );
 
       doc.page.margins.bottom = oldBottom;
