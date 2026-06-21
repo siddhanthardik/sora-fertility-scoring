@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Baby, Download, Mail, Heart, Calendar, CalendarClock, Clock } from 'lucide-react';
+import { ChevronRight, Baby, Download, Mail, Heart, Calendar, CalendarClock, Clock, AlertCircle } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { trackEvent } from '../../../lib/analytics';
@@ -566,7 +566,7 @@ export default function DueDateCalculator() {
                   <div className="absolute -right-4 -bottom-4 text-indigo-100 rotate-12 opacity-50">
                     <Heart size={120} fill="currentColor" />
                   </div>
-                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 relative z-10">This Week's Tip</div>
+                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 relative z-10">This Week&apos;s Tip</div>
                   <div className="text-xl font-semibold text-indigo-900 leading-relaxed relative z-10">
                     {insights.tip}
                   </div>
