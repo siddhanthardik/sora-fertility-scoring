@@ -315,9 +315,12 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
       // Left Box
       doc.roundedRect(50, startY, boxWidth, 80, 10).fillOpacity(0.05).fill(colors.textLight);
       doc.fillOpacity(1);
-      doc.fontSize(12).fillColor(colors.textLight).text('Baby Size', 70, startY + 20);
+      doc.fontSize(12).fillColor(colors.textLight).text('Baby Size', 70, startY + 15);
       const sizeText = insights.size ? insights.size.charAt(0).toUpperCase() + insights.size.slice(1) : 'Growing quickly!';
-      doc.fontSize(16).fillColor(colors.textDark).text(sizeText, 70, startY + 45);
+      doc.fontSize(16).fillColor(colors.textDark).text(sizeText, 70, startY + 35);
+      if (insights.clinicalSize) {
+        doc.fontSize(11).fillColor(colors.textLight).text(insights.clinicalSize, 70, startY + 55);
+      }
 
       // Right Box
       doc.roundedRect(x2, startY, boxWidth, 80, 10).fillOpacity(0.05).fill(colors.textLight);
@@ -369,7 +372,7 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
         { weeks: '18–22 weeks', name: 'Anomaly Scan (Anatomy ultrasound)' },
         { weeks: '24–28 weeks', name: 'Gestational diabetes screening' },
         { weeks: '32 weeks', name: 'Growth Scan (If indicated)' },
-        { weeks: '35–37 weeks', name: 'Group B Strep test' }
+        { weeks: '36–37 weeks', name: 'Group B Strep test' }
       ];
 
       tests.forEach(test => {
