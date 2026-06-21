@@ -44,8 +44,21 @@ export async function generateAssessmentPDF(patientInfo, assessment, options = {
       if (type === 'premium') {
         // Premium Colorful Header
         doc.rect(0, 0, doc.page.width, 120).fill(colors.background);
-        doc.fillColor(colors.primary).fontSize(28).text(whiteLabel ? clinicName : 'SORA Fertility Network', 50, 40, { align: 'center' });
-        doc.fontSize(14).fillColor(colors.secondary).text('Comprehensive FertiSTAT Assessment', { align: 'center' });
+        if (!whiteLabel) {
+          try {
+            const soraLogoBuffer = await fetchImageBuffer("https://sora-fertility-scoring.vercel.app/sora-logo.png");
+            if (soraLogoBuffer) {
+              doc.image(soraLogoBuffer, (doc.page.width - 160) / 2, 20, { width: 160 });
+            } else {
+              doc.fillColor(colors.primary).fontSize(28).text('SORA Fertility Network', 50, 40, { align: 'center' });
+            }
+          } catch(e) {
+            doc.fillColor(colors.primary).fontSize(28).text('SORA Fertility Network', 50, 40, { align: 'center' });
+          }
+        } else {
+          doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center' });
+        }
+        doc.fontSize(14).fillColor(colors.secondary).text('Comprehensive FertiSTAT Assessment', 50, 80, { align: 'center' });
         doc.moveDown(3);
       } else {
         // Basic Header
@@ -54,7 +67,17 @@ export async function generateAssessmentPDF(patientInfo, assessment, options = {
            doc.image(logoBuffer, 50, 40, { width: 150 });
            doc.moveDown(2);
         } else {
-           doc.fillColor('#000000').fontSize(24).text(whiteLabel ? clinicName : 'SORA Fertility Network', { align: 'center' });
+           if (!whiteLabel) {
+             const soraLogoBuffer = await fetchImageBuffer("https://sora-fertility-scoring.vercel.app/sora-logo.png");
+             if (soraLogoBuffer) {
+               doc.image(soraLogoBuffer, 50, 40, { width: 150 });
+               doc.moveDown(2);
+             } else {
+               doc.fillColor('#000000').fontSize(24).text('SORA Fertility Network', { align: 'center' });
+             }
+           } else {
+             doc.fillColor('#000000').fontSize(24).text(clinicName, { align: 'center' });
+           }
         }
         doc.moveDown(0.5);
         doc.fontSize(14).fillColor('#666666').text('FertiSTAT Assessment Report', { align: 'center' });
@@ -250,7 +273,20 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
       // PAGE 1: Pregnancy Snapshot
       // -------------------------------------------------------------
       doc.rect(0, 0, doc.page.width, 140).fill(colors.background);
-      doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+      if (clinicName === "SORA Fertility Network") {
+        try {
+          const soraLogoBuffer = await fetchImageBuffer("https://sora-fertility-scoring.vercel.app/sora-logo.png");
+          if (soraLogoBuffer) {
+            doc.image(soraLogoBuffer, (doc.page.width - 160) / 2, 20, { width: 160 });
+          } else {
+            doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+          }
+        } catch(e) {
+          doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+        }
+      } else {
+        doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+      }
       doc.fontSize(14).fillColor(colors.secondary).text('Pregnancy Snapshot & Due Date Report', 50, 80, { align: 'center', width: doc.page.width - 100 });
 
       doc.fontSize(14).fillColor(colors.textDark).text('Estimated Due Date', 50, 180, { align: 'center', width: doc.page.width - 100 });

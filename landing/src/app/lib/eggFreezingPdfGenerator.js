@@ -11,6 +11,17 @@ export async function generateEggFreezingPDF(results, options = {}) {
       doc.on('data', buffers.push.bind(buffers));
       doc.on('end', () => resolve(Buffer.concat(buffers)));
 
+      async function fetchImageBuffer(url) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) return null;
+          const arrayBuffer = await res.arrayBuffer();
+          return Buffer.from(arrayBuffer);
+        } catch {
+          return null;
+        }
+      }
+
       const colors = {
         primary: '#E83E8C', // SORA Pink
         secondary: '#0f172a', // Dark slate
@@ -36,7 +47,20 @@ export async function generateEggFreezingPDF(results, options = {}) {
       // PAGE 1: Planning Snapshot & Timeline
       // -------------------------------------------------------------
       doc.rect(0, 0, doc.page.width, 140).fill(colors.background);
-      doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+      if (clinicName === "SORA Fertility Network") {
+        try {
+          const soraLogoBuffer = await fetchImageBuffer("https://sora-fertility-scoring.vercel.app/sora-logo.png");
+          if (soraLogoBuffer) {
+            doc.image(soraLogoBuffer, (doc.page.width - 160) / 2, 20, { width: 160 });
+          } else {
+            doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+          }
+        } catch(e) {
+          doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+        }
+      } else {
+        doc.fillColor(colors.primary).fontSize(28).text(clinicName, 50, 40, { align: 'center', width: doc.page.width - 100 });
+      }
       doc.fontSize(14).fillColor(colors.secondary).text('Egg Freezing Planner Report™', 50, 80, { align: 'center', width: doc.page.width - 100 });
 
       // Info Cards Row 1
