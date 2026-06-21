@@ -422,13 +422,13 @@ export default function DueDateCalculator() {
                   <Heart size={14} className="fill-rose-500" /> Your Pregnancy Snapshot
                 </div>
 
-                <div className="text-slate-500 text-sm font-medium mb-1">Estimated Due Date</div>
-                <div className="text-3xl sm:text-4xl font-black text-slate-800 mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
+                <div className="text-slate-500 text-sm font-medium mb-2">Estimated Due Date</div>
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-6 tracking-tight">
                   {results.dueDateShort}
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div className="text-xl font-bold text-slate-700">{results.gestationalAge} pregnant</div>
+                  <div className="text-lg font-bold text-slate-700">{results.gestationalAge} pregnant</div>
                   <div className="text-base text-slate-500">{results.trimester}</div>
                   <div className="text-base text-slate-500 pb-6 border-b border-slate-100">{results.method}</div>
                 </div>
@@ -449,30 +449,30 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Countdown Card */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white flex flex-col justify-center relative overflow-hidden shadow-xl shadow-slate-900/20 border border-slate-700/50">
-                <div className="flex items-center gap-2 text-slate-400 font-bold uppercase tracking-widest text-xs mb-4">
+              <div className="bg-rose-50/50 rounded-3xl p-6 md:p-8 text-rose-900 flex flex-col justify-center relative overflow-hidden shadow-xl shadow-rose-100/50 border border-rose-100">
+                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-4">
                   <Clock size={14} /> Countdown
                 </div>
 
-                <div className="text-5xl sm:text-6xl font-black text-white leading-none mb-2 tracking-tight">
+                <div className="text-4xl sm:text-5xl font-extrabold text-rose-900 leading-tight mb-2 tracking-tight">
                   {results.daysUntilDue > 0 ? results.daysUntilDue : 0}
                 </div>
-                <div className="text-base text-slate-400 font-medium mb-6">days remaining</div>
+                <div className="text-base text-rose-600 font-medium mb-6">days remaining</div>
 
                 <div className="flex gap-6 mb-6">
                   <div>
-                    <div className="text-2xl font-bold text-white mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
-                    <div className="text-sm text-slate-400 font-medium">weeks left</div>
+                    <div className="text-xl font-bold text-rose-800 mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
+                    <div className="text-sm text-rose-600 font-medium">weeks left</div>
                   </div>
-                  <div className="w-px bg-slate-700"></div>
+                  <div className="w-px bg-rose-200"></div>
                   <div>
-                    <div className="text-2xl font-bold text-white mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
-                    <div className="text-sm text-slate-400 font-medium">months left</div>
+                    <div className="text-xl font-bold text-rose-800 mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
+                    <div className="text-sm text-rose-600 font-medium">months left</div>
                   </div>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-sm text-slate-200 font-medium border border-white/5 flex items-center gap-2">
-                  <Heart size={16} className="text-rose-400 fill-rose-400" />
+                <div className="bg-white/60 backdrop-blur-md p-4 rounded-2xl text-sm text-rose-800 font-medium border border-rose-100 flex items-center gap-2">
+                  <Heart size={16} className="text-rose-500 fill-rose-500" />
                   Only {results.monthsLeft > 0 ? results.monthsLeft : 0} months until you meet your baby
                 </div>
               </div>
@@ -533,11 +533,11 @@ export default function DueDateCalculator() {
                   Baby Development • Week {results.currentWeeks}
                 </div>
                 
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-2 leading-tight">
-                  <span className="text-3xl mr-2">{insights.emoji}</span> Your baby is the size of {insights.size}
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-3 leading-relaxed">
+                  <span className="text-2xl mr-2">{insights.emoji}</span> Your baby is the size of {insights.size}
                 </h3>
                 {insights.clinicalSize && <p className="text-xs sm:text-sm text-slate-500 font-semibold mb-4">{insights.clinicalSize}</p>}
-                <p className="text-base sm:text-lg text-rose-500 font-semibold mb-6">{insights.tagline}</p>
+                <p className="text-base font-semibold text-rose-500 mb-6">{insights.tagline}</p>
                 
                 <div className="mb-8">
                   <div className="text-base font-bold text-slate-800 mb-4">This week:</div>
