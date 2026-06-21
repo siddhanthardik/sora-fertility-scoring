@@ -96,6 +96,7 @@ export default function ToolsHub() {
       savedId = "SRA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
       localStorage.setItem("soraId", savedId);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSoraId(savedId);
   }, []);
 
@@ -176,7 +177,7 @@ export default function ToolsHub() {
           {filteredTools.length === 0 && (
             <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
               <Search size={48} color="#cbd5e1" style={{ margin: '0 auto 16px' }} />
-              <p style={{ fontSize: '18px' }}>No tools found matching "{searchTerm}"</p>
+              <p style={{ fontSize: '18px' }}>No tools found matching &quot;{searchTerm}&quot;</p>
             </div>
           )}
         </div>

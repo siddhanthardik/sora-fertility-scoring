@@ -143,7 +143,7 @@ export default function ClientPcosAssessment() {
             
             <div className={styles.howStep}>
               <div className={styles.stepNumber}>2</div>
-              <h3 className={styles.stepTitle}>SORA's engine scores inputs</h3>
+              <h3 className={styles.stepTitle}>SORA&apos;s engine scores inputs</h3>
               <p className={styles.stepDesc}>Our algorithm calculates a risk score based on established clinical parameters. Instant. Secure.</p>
             </div>
 
@@ -194,7 +194,7 @@ export default function ClientPcosAssessment() {
         <div className={styles.ctaInner}>
           <h2 className={styles.ctaTitle}>Ready for clarity?</h2>
           <p className={styles.ctaDesc}>
-            5 minutes from now, you'll have a personalized report to discuss with your healthcare provider.
+            5 minutes from now, you&apos;ll have a personalized report to discuss with your healthcare provider.
           </p>
           <button type="button" className={`${styles.btnPrimary} ${styles.btnHighlight}`} onClick={handleStartAssessment}>
             Take the Free Assessment <ArrowRight size={20} />

@@ -235,6 +235,7 @@ export default function PcosWizard({ clinicId = CLINIC_ID, onComplete }) {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           if (parsed.formData) setFormData(parsed.formData);
           if (parsed.currentStep !== undefined) setCurrentStep(parsed.currentStep);
         } else {

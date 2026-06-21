@@ -185,7 +185,7 @@ export default function PeriodCalculator() {
           </p>
 
           <h3 style={{ fontSize: '24px', color: '#0f172a', fontWeight: 'bold', marginBottom: '16px', marginTop: '48px' }}>
-            What is the "Fertile Window"?
+            What is the &quot;Fertile Window&quot;?
           </h3>
           <p style={{ marginBottom: '24px' }}>
             Your fertile window is the brief period during your menstrual cycle when pregnancy is possible. It typically spans <strong>six days</strong>: the five days leading up to ovulation, plus the day of ovulation itself. Sperm can survive in the female reproductive tract for up to 5 days, which is why having intercourse before you actually ovulate can still result in conception.

@@ -7,6 +7,34 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { trackEvent } from '../../../lib/analytics';
 
+const RadioButton = ({ label, options, state, setState }) => (
+  <div style={{ marginBottom: '24px' }}>
+    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1e293b' }}>{label}</label>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+      {options.map(opt => (
+        <button 
+          key={opt.value}
+          type="button" 
+          onClick={() => setState(opt.value)}
+          style={{ 
+            padding: '12px 20px', 
+            borderRadius: '12px', 
+            border: `1px solid ${state === opt.value ? '#ff2a5f' : '#cbd5e1'}`, 
+            background: state === opt.value ? '#fff1f2' : '#fff', 
+            color: state === opt.value ? '#e11d48' : '#475569', 
+            fontWeight: '600', 
+            fontSize: '15px', 
+            cursor: 'pointer', 
+            transition: 'all 0.2s' 
+          }}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 export default function EggFreezingPlanner() {
   const [hasStarted, setHasStarted] = useState(false);
   
@@ -128,33 +156,7 @@ export default function EggFreezingPlanner() {
     setIsSending(false);
   };
 
-  const RadioButton = ({ label, options, state, setState }) => (
-    <div style={{ marginBottom: '24px' }}>
-      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1e293b' }}>{label}</label>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-        {options.map(opt => (
-          <button 
-            key={opt.value}
-            type="button" 
-            onClick={() => setState(opt.value)}
-            style={{ 
-              padding: '12px 20px', 
-              borderRadius: '12px', 
-              border: `1px solid ${state === opt.value ? '#ff2a5f' : '#cbd5e1'}`, 
-              background: state === opt.value ? '#fff1f2' : '#fff', 
-              color: state === opt.value ? '#e11d48' : '#475569', 
-              fontWeight: '600', 
-              fontSize: '15px', 
-              cursor: 'pointer', 
-              transition: 'all 0.2s' 
-            }}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>

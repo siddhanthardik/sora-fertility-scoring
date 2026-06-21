@@ -149,8 +149,9 @@ export default function PremiumReportTemplate({ results, formData, leadName, rep
   }
 
   // Calculate total pages
-  // 1 (Summary) + chunkedFactors.length (Risk Factor pages) + 1 (Ovarian) + 1 (Action Plan) + 1 (Education) + 1 (Wellness) + 2 (Appendix Split)
-  const totalPages = 1 + chunkedFactors.length + 1 + 1 + 1 + 1 + 2;
+  // 1 (Summary) + (1 for Triggers if exist) + chunkedFactors.length (Risk Factor pages) + 1 (Ovarian) + 1 (Action Plan) + 1 (Education) + 1 (Wellness) + 2 (Appendix Split)
+  const hasTriggers = results.triggers && results.triggers.length > 0;
+  const totalPages = 1 + (hasTriggers ? 1 : 0) + chunkedFactors.length + 1 + 1 + 1 + 1 + 2;
   let currentPage = 1;
 
   // IMPORTANT: We need to use specific IDs or classes for the html2canvas to correctly parse
@@ -186,22 +187,32 @@ export default function PremiumReportTemplate({ results, formData, leadName, rep
             </div>
           </div>
         </div>
+        <Footer reportSettings={reportSettings} />
+      </div>
 
-        {results.triggers.length > 0 && (
+      {/* PAGE 1.5 (Conditional): Immediate Referral Triggers */}
+      {hasTriggers && (
+        <div className="report-page" style={PAGE_STYLE}>
+          <Header pageNum={currentPage++} title="Immediate Referral Triggers" reportSettings={reportSettings} totalPages={totalPages} />
+          
           <div style={{ paddingLeft: '48px', paddingRight: '48px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#191c1e', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: 0 }}>Immediate Referral Triggers</h3>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ fontSize: '22px', fontFamily: 'Georgia, serif', fontWeight: 'bold', color: '#191c1e', borderBottom: '2px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: 0 }}>Immediate Referral Triggers</h3>
+            <p style={{ fontSize: '15px', color: '#475569', marginBottom: '24px', marginTop: 0, lineHeight: '1.6' }}>
+              Based on your clinical assessment, we strongly advise consulting a healthcare professional regarding the following findings:
+            </p>
+            <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {results.triggers.map((trigger, idx) => (
-                <li key={idx} style={{ display: 'flex', gap: '16px', background: 'linear-gradient(to right, #fff1f2, #ffffff)', padding: '16px 20px', borderRadius: '12px', border: '1px solid #ffe4e6', boxShadow: '0 2px 8px rgba(255, 42, 95, 0.05)' }}>
-                  <ShieldAlert style={{ color: '#ff2a5f', flexShrink: 0, width: '24px', height: '24px' }} />
-                  <span style={{ color: '#ff2a5f', fontWeight: '600', fontSize: '16px' }}>{trigger}</span>
+                <li key={idx} style={{ display: 'flex', gap: '20px', background: 'linear-gradient(to right, #fff1f2, #ffffff)', padding: '24px', borderRadius: '16px', border: '1px solid #ffe4e6', boxShadow: '0 4px 12px rgba(255, 42, 95, 0.04)' }}>
+                  <ShieldAlert style={{ color: '#ff2a5f', flexShrink: 0, width: '28px', height: '28px' }} />
+                  <span style={{ color: '#191c1e', fontWeight: '600', fontSize: '18px', lineHeight: '1.4' }}>{trigger}</span>
                 </li>
               ))}
             </ul>
           </div>
-        )}
-        <Footer reportSettings={reportSettings} />
-      </div>
+          
+          <Footer reportSettings={reportSettings} />
+        </div>
+      )}
 
       {/* PAGE 2(s): Risk Factor Analysis (Chunked) */}
       {chunkedFactors.map((chunk, chunkIndex) => (

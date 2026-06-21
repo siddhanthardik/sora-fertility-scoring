@@ -111,6 +111,7 @@ export default function SuperadminPage() {
   }, [filteredClinics, currentPage]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [searchQuery]);
 
@@ -167,6 +168,7 @@ export default function SuperadminPage() {
 
   useEffect(() => {
     if (authenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadAnalytics();
     }
   }, [authenticated, dateRange, loadAnalytics]);
@@ -197,6 +199,7 @@ export default function SuperadminPage() {
   }, [loadClinics, loadSettings, loadPackages, loadSeoSettings, loadBlogs, loadAnalytics, loadSubscribers]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkSession();
   }, [checkSession]);
 
