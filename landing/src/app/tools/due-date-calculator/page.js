@@ -609,8 +609,8 @@ export default function DueDateCalculator() {
                       onChange={(e) => setEmail(e.target.value)}
                       className="flex-1 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm transition-all shadow-sm"
                     />
-                    <button onClick={handleSendPdf} disabled={isSending} className="px-6 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold cursor-pointer transition-colors shadow-md disabled:opacity-70 flex items-center justify-center">
-                      {isSending ? '...' : <Mail size={20} />}
+                    <button onClick={handleSendPdf} disabled={isSending} className="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold cursor-pointer transition-colors shadow-md disabled:opacity-70 flex items-center justify-center min-w-[60px]">
+                      {isSending ? <span className="text-white text-sm">Sending...</span> : <Mail size={20} className="text-white" color="white" />}
                     </button>
                   </div>
                   
