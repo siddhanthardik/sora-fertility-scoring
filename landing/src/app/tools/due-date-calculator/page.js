@@ -403,217 +403,223 @@ export default function DueDateCalculator() {
         )}
 
         {results && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.5px' }}>Your Results</h2>
-              <button onClick={() => setResults(null)} style={{ background: 'none', border: 'none', color: '#ff2a5f', fontWeight: 'bold', cursor: 'pointer' }}>Recalculate</button>
+          <div className="flex flex-col gap-8 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex justify-between items-center bg-white/50 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-slate-100">
+              <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Your Results</h2>
+              <button onClick={() => setResults(null)} className="text-rose-600 font-semibold hover:text-rose-700 transition-colors px-4 py-2 bg-rose-50 rounded-xl hover:bg-rose-100">Recalculate</button>
             </div>
 
             {/* Row 1: Snapshot and Countdown */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
               {/* Hero Snapshot */}
-              <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-10%', right: '-10%', opacity: 0.03, transform: 'rotate(15deg)' }}>
+              <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-slate-100">
+                <div className="absolute -top-10 -right-10 opacity-5 transform rotate-12">
                   <Heart size={200} fill="#000" />
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ff2a5f', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px', marginBottom: '24px' }}>
-                  <Heart size={14} fill="#ff2a5f" /> Your Pregnancy Snapshot
+                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-6">
+                  <Heart size={14} className="fill-rose-500" /> Your Pregnancy Snapshot
                 </div>
 
-                <div style={{ color: '#64748b', fontSize: '16px', marginBottom: '4px' }}>Estimated Due Date</div>
-                <div style={{ fontSize: '42px', fontWeight: '900', color: '#0f172a', marginBottom: '24px', letterSpacing: '-1px', lineHeight: 1.1 }}>
+                <div className="text-slate-500 text-sm font-medium mb-1">Estimated Due Date</div>
+                <div className="text-4xl sm:text-5xl font-black text-slate-800 mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
                   {results.dueDateShort}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e293b' }}>{results.gestationalAge} pregnant</div>
-                  <div style={{ fontSize: '16px', color: '#475569' }}>{results.trimester}</div>
-                  <div style={{ fontSize: '16px', color: '#475569', paddingBottom: '24px', borderBottom: '1px solid #f1f5f9' }}>{results.method}</div>
+                <div className="flex flex-col gap-3">
+                  <div className="text-xl font-bold text-slate-700">{results.gestationalAge} pregnant</div>
+                  <div className="text-base text-slate-500">{results.trimester}</div>
+                  <div className="text-base text-slate-500 pb-6 border-b border-slate-100">{results.method}</div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '24px' }}>
+                <div className="grid grid-cols-2 gap-4 mt-6">
                   <div>
-                    <div style={{ color: '#94a3b8', fontSize: '13px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '4px' }}>Baby Size</div>
-                    <div style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a' }}>{insights.emoji} {insights.size}</div>
-                    {insights.clinicalSize && <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>{insights.clinicalSize}</div>}
+                    <div className="text-slate-400 text-xs uppercase font-bold mb-1 tracking-wide">Baby Size</div>
+                    <div className="text-base font-semibold text-slate-800 flex items-center gap-2">
+                      <span className="text-2xl">{insights.emoji}</span> {insights.size}
+                    </div>
+                    {insights.clinicalSize && <div className="text-xs text-slate-500 mt-1">{insights.clinicalSize}</div>}
                   </div>
                   <div>
-                    <div style={{ color: '#94a3b8', fontSize: '13px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '4px' }}>Arrival Window</div>
-                    <div style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a' }}>{results.arrivalWindow}</div>
+                    <div className="text-slate-400 text-xs uppercase font-bold mb-1 tracking-wide">Arrival Window</div>
+                    <div className="text-base font-semibold text-slate-800">{results.arrivalWindow}</div>
                   </div>
                 </div>
               </div>
 
               {/* Countdown Card */}
-              <div style={{ background: '#0f172a', borderRadius: '24px', padding: '40px', color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px', marginBottom: '24px' }}>
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 text-white flex flex-col justify-center relative overflow-hidden shadow-xl shadow-slate-900/20 border border-slate-700/50">
+                <div className="flex items-center gap-2 text-slate-400 font-bold uppercase tracking-widest text-xs mb-6">
                   <Clock size={14} /> Countdown
                 </div>
 
-                <div style={{ fontSize: '64px', fontWeight: '900', color: '#fff', lineHeight: 1, marginBottom: '8px' }}>
+                <div className="text-6xl sm:text-7xl font-black text-white leading-none mb-2 tracking-tight">
                   {results.daysUntilDue > 0 ? results.daysUntilDue : 0}
                 </div>
-                <div style={{ fontSize: '20px', color: '#94a3b8', fontWeight: '600', marginBottom: '32px' }}>days remaining</div>
+                <div className="text-lg text-slate-400 font-medium mb-8">days remaining</div>
 
-                <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
+                <div className="flex gap-8 mb-8">
                   <div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fff' }}>{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
-                    <div style={{ fontSize: '14px', color: '#64748b' }}>weeks left</div>
+                    <div className="text-3xl font-bold text-white mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
+                    <div className="text-sm text-slate-400 font-medium">weeks left</div>
                   </div>
-                  <div style={{ width: '1px', background: '#334155' }}></div>
+                  <div className="w-px bg-slate-700"></div>
                   <div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fff' }}>{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
-                    <div style={{ fontSize: '14px', color: '#64748b' }}>months left</div>
+                    <div className="text-3xl font-bold text-white mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
+                    <div className="text-sm text-slate-400 font-medium">months left</div>
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '16px', borderRadius: '12px', fontSize: '15px', color: '#cbd5e1', fontWeight: '600' }}>
-                  Only {results.monthsLeft > 0 ? results.monthsLeft : 0} months until you meet your baby ❤️
+                <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-sm text-slate-200 font-medium border border-white/5 flex items-center gap-2">
+                  <Heart size={16} className="text-rose-400 fill-rose-400" />
+                  Only {results.monthsLeft > 0 ? results.monthsLeft : 0} months until you meet your baby
                 </div>
               </div>
 
             </div>
 
             {/* Row 2: Journey Timeline and Coming Up Next */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
-              
-              <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', gridColumn: '1 / -1' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px', marginBottom: '32px' }}>
-                  <Calendar size={14} /> Pregnancy Journey
-                </div>
+            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-8">
+                <Calendar size={14} /> Pregnancy Journey
+              </div>
 
-                {/* Horizontal Timeline */}
-                <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '20px' }}>
-                  <div style={{ minWidth: '600px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', padding: '0 20px' }}>
-                    
-                    {/* Connecting Line */}
-                    <div style={{ position: 'absolute', top: '24px', left: '40px', right: '40px', height: '4px', background: '#f1f5f9', zIndex: 0 }}></div>
-                    <div style={{ position: 'absolute', top: '24px', left: '40px', width: `${Math.min((results.currentWeeks / 40) * 100, 100)}%`, maxWidth: 'calc(100% - 80px)', height: '4px', background: '#ff2a5f', zIndex: 0 }}></div>
+              {/* Horizontal Timeline */}
+              <div className="w-full overflow-x-auto pb-6">
+                <div className="min-w-[600px] flex items-center justify-between relative px-6">
+                  
+                  {/* Connecting Line */}
+                  <div className="absolute top-6 left-10 right-10 h-1 bg-slate-100 z-0 rounded-full"></div>
+                  <div className="absolute top-6 left-10 h-1 bg-gradient-to-r from-rose-400 to-rose-500 z-0 rounded-full transition-all duration-1000" style={{ width: `${Math.min((results.currentWeeks / 40) * 100, 100)}%`, maxWidth: 'calc(100% - 80px)' }}></div>
 
-                    {/* Nodes */}
-                    {[
-                      { w: 4, label: '4w', date: results.timeline.w4 },
-                      { w: 12, label: '12w', date: results.timeline.w12 },
-                      { w: 20, label: '20w', date: results.timeline.w20 },
-                      { w: 28, label: '28w', date: results.timeline.w28 },
-                      { w: 40, label: '40w', date: results.timeline.w40 }
-                    ].map((node, i) => {
-                      const isPast = results.currentWeeks >= node.w;
-                      const isCurrent = Math.abs(results.currentWeeks - node.w) <= 4 && isPast;
-                      return (
-                        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, position: 'relative' }}>
-                          <div style={{ color: isPast ? '#0f172a' : '#94a3b8', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>{node.date}</div>
-                          <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: isPast ? '#ff2a5f' : '#cbd5e1', border: '4px solid #fff', boxShadow: '0 0 0 2px ' + (isPast ? '#ff2a5f' : '#e2e8f0'), marginBottom: '12px' }}></div>
-                          <div style={{ fontWeight: '900', fontSize: '18px', color: isPast ? '#0f172a' : '#94a3b8' }}>{node.label}</div>
-                          {isCurrent && <div style={{ position: 'absolute', top: '-30px', background: '#0f172a', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '4px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>You are here</div>}
-                        </div>
-                      )
-                    })}
-                  </div>
+                  {/* Nodes */}
+                  {[
+                    { w: 4, label: '4w', date: results.timeline.w4 },
+                    { w: 12, label: '12w', date: results.timeline.w12 },
+                    { w: 20, label: '20w', date: results.timeline.w20 },
+                    { w: 28, label: '28w', date: results.timeline.w28 },
+                    { w: 40, label: '40w', date: results.timeline.w40 }
+                  ].map((node, i) => {
+                    const isPast = results.currentWeeks >= node.w;
+                    const isCurrent = Math.abs(results.currentWeeks - node.w) <= 4 && isPast;
+                    return (
+                      <div key={i} className="flex flex-col items-center z-10 relative group">
+                        <div className={`text-xs font-semibold mb-3 transition-colors ${isPast ? 'text-slate-800' : 'text-slate-400'}`}>{node.date}</div>
+                        <div className={`w-4 h-4 rounded-full border-[3px] border-white shadow-md mb-4 transition-all duration-300 ${isPast ? 'bg-rose-500 ring-4 ring-rose-100' : 'bg-slate-200 ring-2 ring-transparent'}`}></div>
+                        <div className={`text-lg font-bold transition-colors ${isPast ? 'text-slate-800' : 'text-slate-400'}`}>{node.label}</div>
+                        {isCurrent && <div className="absolute -top-8 bg-slate-800 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg animate-bounce">You are here</div>}
+                      </div>
+                    )
+                  })}
                 </div>
+              </div>
 
-                {/* Coming Up Next */}
-                <div style={{ marginTop: '32px', background: '#f8fafc', padding: '24px', borderRadius: '16px', borderLeft: '4px solid #ff2a5f' }}>
-                  <div style={{ color: '#ff2a5f', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Coming Up Next</div>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>{results.nextMilestone.name}</div>
-                  <div style={{ fontSize: '16px', color: '#64748b', marginBottom: '8px' }}>{results.nextMilestone.time}</div>
-                  <div style={{ fontSize: '15px', color: '#475569' }}>{results.nextMilestone.desc}</div>
-                </div>
+              {/* Coming Up Next */}
+              <div className="mt-8 bg-slate-50 p-6 rounded-2xl border-l-4 border-rose-500 shadow-sm transition-all hover:shadow-md">
+                <div className="text-rose-600 text-xs font-bold uppercase tracking-wider mb-2">Coming Up Next</div>
+                <div className="text-2xl font-bold text-slate-800 mb-1">{results.nextMilestone.name}</div>
+                <div className="text-base text-slate-500 font-medium mb-2">{results.nextMilestone.time}</div>
+                <div className="text-sm text-slate-600 leading-relaxed">{results.nextMilestone.desc}</div>
               </div>
             </div>
 
             {/* Row 3: Insights and This Week's Tip */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
-              <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px', marginBottom: '24px' }}>
+              {/* Insights */}
+              <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
+                <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-6">
                   Baby Development • Week {results.currentWeeks}
                 </div>
                 
-                <h3 style={{ fontSize: '28px', fontWeight: '900', color: '#0f172a', marginBottom: '4px', lineHeight: 1.2 }}>
-                  {insights.emoji} Your baby is the size of {insights.size}
+                <h3 className="text-3xl font-black text-slate-800 mb-2 leading-tight">
+                  <span className="text-4xl mr-2">{insights.emoji}</span> Your baby is the size of {insights.size}
                 </h3>
-                {insights.clinicalSize && <p style={{ fontSize: '15px', color: '#64748b', fontWeight: 'bold', marginBottom: '12px' }}>{insights.clinicalSize}</p>}
-                <p style={{ fontSize: '18px', color: '#ff2a5f', fontWeight: '600', marginBottom: '32px' }}>{insights.tagline}</p>
+                {insights.clinicalSize && <p className="text-sm text-slate-500 font-semibold mb-4">{insights.clinicalSize}</p>}
+                <p className="text-lg text-rose-500 font-semibold mb-8">{insights.tagline}</p>
                 
-                <div style={{ marginBottom: '32px' }}>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1e293b', marginBottom: '16px' }}>This week:</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="mb-8">
+                  <div className="text-base font-bold text-slate-800 mb-4">This week:</div>
+                  <div className="flex flex-col gap-4">
                     {insights.what.map((item, i) => (
-                      <div key={i} style={{ display: 'flex', gap: '12px', fontSize: '16px', color: '#475569', lineHeight: 1.5 }}>
-                        <span style={{ fontSize: '18px' }}>✨</span> <span>{item}</span>
+                      <div key={i} className="flex gap-4 text-base text-slate-600 leading-relaxed items-start">
+                        <span className="text-xl shrink-0 mt-0.5">✨</span> <span>{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div style={{ background: '#fff1f2', padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#e11d48', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div className="bg-rose-50/50 p-6 rounded-2xl border border-rose-100 mt-auto">
+                  <div className="text-sm font-bold text-rose-600 mb-2 flex items-center gap-2">
                     💡 Did you know?
                   </div>
-                  <div style={{ color: '#be123c', fontSize: '15px', lineHeight: 1.5 }}>
+                  <div className="text-rose-900 text-sm leading-relaxed font-medium">
                     {insights.didYouKnow}
                   </div>
                 </div>
               </div>
 
               {/* Tip and PDF */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div style={{ background: '#e0e7ff', borderRadius: '24px', padding: '32px', border: '1px solid #c7d2fe' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#4338ca', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>This Week's Tip</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#312e81', lineHeight: 1.4 }}>
+              <div className="flex flex-col gap-8">
+                <div className="bg-indigo-50/50 rounded-3xl p-8 border border-indigo-100 shadow-sm relative overflow-hidden">
+                  <div className="absolute -right-4 -bottom-4 text-indigo-100 rotate-12 opacity-50">
+                    <Heart size={120} fill="currentColor" />
+                  </div>
+                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 relative z-10">This Week's Tip</div>
+                  <div className="text-xl font-semibold text-indigo-900 leading-relaxed relative z-10">
                     {insights.tip}
                   </div>
                 </div>
 
-                <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ width: '48px', height: '48px', background: '#fff1f2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-                    <Download size={24} color="#ff2a5f" />
+                <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex-1 flex flex-col justify-center">
+                  <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-rose-100">
+                    <Download size={24} className="text-rose-500" />
                   </div>
-                  <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Download Pregnancy Timeline PDF</h3>
-                  <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: 1.5 }}>Save a beautiful copy of your timeline to share with your family or healthcare provider.</p>
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Download Pregnancy Timeline PDF</h3>
+                  <p className="text-slate-500 text-sm mb-8 leading-relaxed">Save a beautiful copy of your timeline to share with your family or healthcare provider.</p>
                   
-                  <button onClick={handleDownloadPdf} disabled={isSending} style={{ width: '100%', padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s', marginBottom: '24px' }}>
+                  <button onClick={handleDownloadPdf} disabled={isSending} className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold text-base transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2 mb-6 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0">
                     <Download size={18} />
                     Download PDF
                   </button>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                    <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
-                    <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase' }}>or email it</span>
-                    <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex-1 h-px bg-slate-100"></div>
+                    <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">or email it</span>
+                    <div className="flex-1 h-px bg-slate-100"></div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="flex gap-3">
                     <input 
                       type="email" 
                       placeholder="Email (optional)"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '15px' }}
+                      className="flex-1 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm transition-all shadow-sm"
                     />
-                    <button onClick={handleSendPdf} disabled={isSending} style={{ padding: '0 24px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    <button onClick={handleSendPdf} disabled={isSending} className="px-6 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold cursor-pointer transition-colors shadow-md disabled:opacity-70 flex items-center justify-center">
                       {isSending ? '...' : <Mail size={20} />}
                     </button>
                   </div>
-                  {sendSuccess && <div style={{ color: '#10b981', fontSize: '14px', textAlign: 'center', fontWeight: 'bold', marginTop: '12px' }}>Sent successfully!</div>}
+                  
+                  {sendSuccess && <div className="mt-4 text-sm text-emerald-600 font-semibold text-center bg-emerald-50 py-2 rounded-lg border border-emerald-100">PDF sent successfully!</div>}
                 </div>
               </div>
-
             </div>
 
-            <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '24px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <div style={{ fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>Medical Disclaimer</div>
-              <p style={{ margin: 0, fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>
+            {/* Medical Disclaimer */}
+            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 text-center shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200"></div>
+              <div className="font-bold text-slate-700 mb-3 flex items-center justify-center gap-2">
+                <AlertCircle size={18} className="text-slate-400" /> Medical Disclaimer
+              </div>
+              <p className="m-0 text-sm text-slate-500 leading-relaxed max-w-3xl mx-auto">
                 Only around 4–5% of babies arrive on their exact due date. Healthcare providers may adjust your due date based on ultrasound findings.<br/>
                 <br/>
-                <strong>Important:</strong> Please consult your medical practitioners or doctors for any clinical decisions. This data is purely for informational purposes, depends entirely on user input, and cannot be challenged in court.
+                <strong className="text-slate-700">Important:</strong> Please consult your medical practitioners or doctors for any clinical decisions. This data is purely for informational purposes, depends entirely on user input, and cannot be challenged in court.
               </p>
             </div>
-
           </div>
         )}
 
