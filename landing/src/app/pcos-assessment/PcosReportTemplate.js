@@ -19,8 +19,9 @@ const PAGE_STYLE = {
 
 const Header = ({ pageNum, title, totalPages = 3 }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '3px solid #ff2a5f', paddingBottom: '16px', marginBottom: '32px', paddingTop: '32px', paddingLeft: '48px', paddingRight: '48px', background: 'linear-gradient(to right, #fff1f2, #ffffff)' }}>
-    <div>
-      <h1 style={{ fontSize: '30px', fontFamily: 'Georgia, serif', color: '#191c1e', fontWeight: 'bold', margin: 0 }}>SORA PCOS Assessment</h1>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <img src="/sora-logo.png" alt="SORA Fertility" style={{ height: '40px', objectFit: 'contain', alignSelf: 'flex-start' }} crossOrigin="anonymous" />
+      <div style={{ fontSize: '14px', color: '#64748B', marginTop: '8px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>PCOS Assessment</div>
     </div>
     <div style={{ textAlign: 'right' }}>
       <h2 style={{ color: '#191c1e', fontSize: '20px', fontWeight: '600', margin: 0 }}>{title}</h2>
@@ -361,7 +362,7 @@ export default function PcosReportTemplate({ assessment, patientData, onClose })
           </div>
 
           <div style={{ position: 'absolute', bottom: '80px', left: '48px', right: '48px', background: '#191c1e', padding: '32px', borderRadius: '16px', textAlign: 'center' }}>
-            <h2 style={{ color: '#ffffff', fontSize: '22px', margin: '0 0 8px 0' }}>SORA Fertility</h2>
+            <img src="/sora-logo.png" alt="SORA Fertility" style={{ width: '150px', height: 'auto', marginBottom: '16px', filter: 'brightness(0) invert(1)' }} />
             <p style={{ color: '#cbd5e1', fontSize: '14px', margin: 0 }}>Empowering your reproductive journey with evidence-based insights.</p>
           </div>
           <Footer />

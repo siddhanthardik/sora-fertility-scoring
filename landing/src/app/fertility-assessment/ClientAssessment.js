@@ -167,7 +167,7 @@ export default function Home() {
           <div className={styles.reportMockup}>
             <div className={styles.mockupHeader}>
               <div>
-                <div className={styles.mockupBrand}>SORA Fertility</div>
+                <img src="/sora-logo.png" alt="SORA Fertility" style={{ width: '120px', height: 'auto', marginBottom: '8px' }} />
                 <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>PREMIUM CLINICAL REPORT</div>
               </div>
               <div style={{ textAlign: "right" }}>

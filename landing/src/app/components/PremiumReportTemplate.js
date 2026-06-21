@@ -546,7 +546,7 @@ export default function PremiumReportTemplate({ results, formData, leadName, rep
 
         <div style={{ position: 'absolute', bottom: '80px', left: '48px', right: '48px', background: 'linear-gradient(135deg, #191c1e 0%, #334155 100%)', padding: '32px', borderRadius: '20px', textAlign: 'center', boxShadow: '0 12px 32px rgba(15, 23, 42, 0.2)' }}>
           <FileText style={{ width: '40px', height: '40px', color: '#fca5a5', margin: '0 auto 16px auto', display: 'block' }} />
-          <h2 style={{ color: '#ffffff', fontSize: '26px', fontFamily: 'Georgia, serif', fontWeight: 'bold', marginBottom: '12px', marginTop: 0 }}>SORA Fertility</h2>
+          <img src="/sora-logo.png" alt="SORA Fertility" style={{ width: '160px', height: 'auto', marginBottom: '16px', filter: 'brightness(0) invert(1)' }} />
           <p style={{ color: '#cbd5e1', fontSize: '14px', maxWidth: '450px', margin: '0 auto', lineHeight: '1.6' }}>
             Empowering your reproductive journey with evidence-based insights.
           </p>
