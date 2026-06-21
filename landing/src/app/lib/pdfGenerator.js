@@ -429,10 +429,10 @@ export async function generatePregnancyTimelinePDF(results, insights = {}, optio
 
       const dY = doc.page.height - 120;
       doc.rect(0, dY, doc.page.width, 120).fill(colors.background);
-      doc.fontSize(12).fillColor(colors.textDark).text('Medical Note', 50, dY + 30, { align: 'center', width: doc.page.width - 100 });
+      doc.fontSize(12).fillColor(colors.textDark).text('Medical Disclaimer', 50, dY + 20, { align: 'center', width: doc.page.width - 100 });
       doc.fontSize(10).fillColor(colors.textLight).text(
-        'Only around 4–5% of babies arrive on their exact due date. Healthcare providers may adjust your due date based on ultrasound findings.',
-        70, dY + 55, { align: 'center', width: doc.page.width - 140 }
+        'Only around 4–5% of babies arrive on their exact due date. Healthcare providers may adjust your due date based on ultrasound findings. Important: Please consult your medical practitioners or doctors for any clinical decisions. This data is purely for informational purposes, depends entirely on user input, and cannot be challenged in court.',
+        70, dY + 40, { align: 'center', width: doc.page.width - 140 }
       );
 
       doc.page.margins.bottom = oldBottom;
