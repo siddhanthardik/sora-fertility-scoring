@@ -410,20 +410,20 @@ export default function DueDateCalculator() {
             </div>
 
             {/* Row 1: Snapshot and Countdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               
               {/* Hero Snapshot */}
-              <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-slate-100">
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-slate-100">
                 <div className="absolute -top-10 -right-10 opacity-5 transform rotate-12">
-                  <Heart size={200} fill="#000" />
+                  <Heart size={160} fill="#000" />
                 </div>
                 
-                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-6">
+                <div className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-widest text-xs mb-4">
                   <Heart size={14} className="fill-rose-500" /> Your Pregnancy Snapshot
                 </div>
 
                 <div className="text-slate-500 text-sm font-medium mb-1">Estimated Due Date</div>
-                <div className="text-4xl sm:text-5xl font-black text-slate-800 mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
+                <div className="text-3xl sm:text-4xl font-black text-slate-800 mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
                   {results.dueDateShort}
                 </div>
 
@@ -449,24 +449,24 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Countdown Card */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 text-white flex flex-col justify-center relative overflow-hidden shadow-xl shadow-slate-900/20 border border-slate-700/50">
-                <div className="flex items-center gap-2 text-slate-400 font-bold uppercase tracking-widest text-xs mb-6">
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white flex flex-col justify-center relative overflow-hidden shadow-xl shadow-slate-900/20 border border-slate-700/50">
+                <div className="flex items-center gap-2 text-slate-400 font-bold uppercase tracking-widest text-xs mb-4">
                   <Clock size={14} /> Countdown
                 </div>
 
-                <div className="text-6xl sm:text-7xl font-black text-white leading-none mb-2 tracking-tight">
+                <div className="text-5xl sm:text-6xl font-black text-white leading-none mb-2 tracking-tight">
                   {results.daysUntilDue > 0 ? results.daysUntilDue : 0}
                 </div>
-                <div className="text-lg text-slate-400 font-medium mb-8">days remaining</div>
+                <div className="text-base text-slate-400 font-medium mb-6">days remaining</div>
 
-                <div className="flex gap-8 mb-8">
+                <div className="flex gap-6 mb-6">
                   <div>
-                    <div className="text-3xl font-bold text-white mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
+                    <div className="text-2xl font-bold text-white mb-1">{results.weeksLeft > 0 ? results.weeksLeft : 0}</div>
                     <div className="text-sm text-slate-400 font-medium">weeks left</div>
                   </div>
                   <div className="w-px bg-slate-700"></div>
                   <div>
-                    <div className="text-3xl font-bold text-white mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
+                    <div className="text-2xl font-bold text-white mb-1">{results.monthsLeft > 0 ? results.monthsLeft : 0}</div>
                     <div className="text-sm text-slate-400 font-medium">months left</div>
                   </div>
                 </div>
@@ -480,8 +480,8 @@ export default function DueDateCalculator() {
             </div>
 
             {/* Row 2: Journey Timeline and Coming Up Next */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
-              <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-8">
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-6">
                 <Calendar size={14} /> Pregnancy Journey
               </div>
 
@@ -516,28 +516,28 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Coming Up Next */}
-              <div className="mt-8 bg-slate-50 p-6 rounded-2xl border-l-4 border-rose-500 shadow-sm transition-all hover:shadow-md">
+              <div className="mt-6 bg-slate-50 p-6 rounded-2xl border-l-4 border-rose-500 shadow-sm transition-all hover:shadow-md">
                 <div className="text-rose-600 text-xs font-bold uppercase tracking-wider mb-2">Coming Up Next</div>
-                <div className="text-2xl font-bold text-slate-800 mb-1">{results.nextMilestone.name}</div>
-                <div className="text-base text-slate-500 font-medium mb-2">{results.nextMilestone.time}</div>
+                <div className="text-xl font-bold text-slate-800 mb-1">{results.nextMilestone.name}</div>
+                <div className="text-sm text-slate-500 font-medium mb-2">{results.nextMilestone.time}</div>
                 <div className="text-sm text-slate-600 leading-relaxed">{results.nextMilestone.desc}</div>
               </div>
             </div>
 
             {/* Row 3: Insights and This Week's Tip */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               
               {/* Insights */}
-              <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
-                <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-6">
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
+                <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs mb-4">
                   Baby Development • Week {results.currentWeeks}
                 </div>
                 
-                <h3 className="text-3xl font-black text-slate-800 mb-2 leading-tight">
-                  <span className="text-4xl mr-2">{insights.emoji}</span> Your baby is the size of {insights.size}
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-2 leading-tight">
+                  <span className="text-3xl mr-2">{insights.emoji}</span> Your baby is the size of {insights.size}
                 </h3>
-                {insights.clinicalSize && <p className="text-sm text-slate-500 font-semibold mb-4">{insights.clinicalSize}</p>}
-                <p className="text-lg text-rose-500 font-semibold mb-8">{insights.tagline}</p>
+                {insights.clinicalSize && <p className="text-xs sm:text-sm text-slate-500 font-semibold mb-4">{insights.clinicalSize}</p>}
+                <p className="text-base sm:text-lg text-rose-500 font-semibold mb-6">{insights.tagline}</p>
                 
                 <div className="mb-8">
                   <div className="text-base font-bold text-slate-800 mb-4">This week:</div>
@@ -561,25 +561,25 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Tip and PDF */}
-              <div className="flex flex-col gap-8">
-                <div className="bg-indigo-50/50 rounded-3xl p-8 border border-indigo-100 shadow-sm relative overflow-hidden">
+              <div className="flex flex-col gap-6 lg:gap-8">
+                <div className="bg-indigo-50/50 rounded-3xl p-6 md:p-8 border border-indigo-100 shadow-sm relative overflow-hidden">
                   <div className="absolute -right-4 -bottom-4 text-indigo-100 rotate-12 opacity-50">
-                    <Heart size={120} fill="currentColor" />
+                    <Heart size={100} fill="currentColor" />
                   </div>
-                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 relative z-10">This Week&apos;s Tip</div>
-                  <div className="text-xl font-semibold text-indigo-900 leading-relaxed relative z-10">
+                  <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-3 relative z-10">This Week&apos;s Tip</div>
+                  <div className="text-lg sm:text-xl font-semibold text-indigo-900 leading-relaxed relative z-10">
                     {insights.tip}
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex-1 flex flex-col justify-center">
-                  <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-rose-100">
-                    <Download size={24} className="text-rose-500" />
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex-1 flex flex-col justify-center">
+                  <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center mb-5 shadow-inner border border-rose-100">
+                    <Download size={20} className="text-rose-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Download Pregnancy Timeline PDF</h3>
-                  <p className="text-slate-500 text-sm mb-8 leading-relaxed">Save a beautiful copy of your timeline to share with your family or healthcare provider.</p>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Download Pregnancy Timeline PDF</h3>
+                  <p className="text-slate-500 text-sm mb-6 leading-relaxed">Save a beautiful copy of your timeline to share with your family or healthcare provider.</p>
                   
-                  <button onClick={handleDownloadPdf} disabled={isSending} className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold text-base transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2 mb-6 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0">
+                  <button onClick={handleDownloadPdf} disabled={isSending} className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold text-sm sm:text-base transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2 mb-6 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0">
                     <Download size={18} />
                     Download PDF
                   </button>
