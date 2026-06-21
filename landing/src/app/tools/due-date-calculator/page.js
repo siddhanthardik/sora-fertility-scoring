@@ -410,7 +410,7 @@ export default function DueDateCalculator() {
             </div>
 
             {/* Row 1: Snapshot and Countdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <div className="flex flex-col gap-10">
               
               {/* Hero Snapshot */}
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-slate-100">
@@ -486,8 +486,8 @@ export default function DueDateCalculator() {
               </div>
 
               {/* Horizontal Timeline */}
-              <div className="w-full overflow-x-auto pb-6">
-                <div className="min-w-[600px] flex items-center justify-between relative px-6">
+              <div className="w-full overflow-x-auto pt-10 pb-8">
+                <div className="min-w-[500px] flex items-center justify-between relative px-6">
                   
                   {/* Connecting Line */}
                   <div className="absolute top-6 left-10 right-10 h-1 bg-slate-100 z-0 rounded-full"></div>
@@ -525,7 +525,7 @@ export default function DueDateCalculator() {
             </div>
 
             {/* Row 3: Insights and This Week's Tip */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+            <div className="flex flex-col gap-10">
               
               {/* Insights */}
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
