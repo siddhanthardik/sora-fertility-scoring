@@ -90,7 +90,7 @@ export default function BmiCalculator() {
             <span style={{ color: '#ff2a5f' }}>BMI Fertility Calculator</span>
           </div>
 
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>

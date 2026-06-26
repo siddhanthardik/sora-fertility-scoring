@@ -76,7 +76,7 @@ export default function PeriodCalculator() {
             <span style={{ color: '#ff2a5f' }}>Period Calculator</span>
           </div>
 
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
@@ -152,7 +152,7 @@ export default function PeriodCalculator() {
         
         <div style={{ marginTop: '32px' }}>
           <AdsterraAd size="468x60" className="ad-desktop-only" />
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
         </div>
         </div>
 

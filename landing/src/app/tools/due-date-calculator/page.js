@@ -278,7 +278,7 @@ export default function DueDateCalculator() {
             <span style={{ color: '#ff2a5f' }}>Due Date Calculator</span>
           </div>
 
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         {!results && (
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -399,7 +399,7 @@ export default function DueDateCalculator() {
                 <ChevronRight size={20} />
               </button>
               
-              <AdsterraAd size="320x50" className="ad-mobile-only" />
+              <AdsterraAd size="300x250" className="ad-mobile-only" />
             </form>
           </div>
         )}

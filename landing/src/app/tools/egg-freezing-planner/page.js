@@ -170,7 +170,7 @@ export default function EggFreezingPlanner() {
             <span style={{ color: '#ff2a5f' }}>Egg Freezing Planner</span>
           </div>
 
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         {!hasStarted ? (
           <div style={{ textAlign: 'center', marginTop: '40px', marginBottom: '60px' }}>

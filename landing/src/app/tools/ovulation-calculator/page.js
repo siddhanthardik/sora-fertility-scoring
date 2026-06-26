@@ -67,7 +67,7 @@ export default function OvulationCalculator() {
             <span style={{ color: '#ff2a5f' }}>Ovulation Calculator</span>
           </div>
 
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
         
         <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
@@ -132,7 +132,7 @@ export default function OvulationCalculator() {
         
         <div style={{ marginTop: '32px' }}>
           <AdsterraAd size="468x60" className="ad-desktop-only" />
-          <AdsterraAd size="320x50" className="ad-mobile-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
         </div>
         </div>
         
