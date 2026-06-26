@@ -1,3 +1,4 @@
+import React from "react";
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
