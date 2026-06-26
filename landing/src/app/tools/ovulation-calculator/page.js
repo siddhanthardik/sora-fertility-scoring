@@ -58,20 +58,7 @@ export default function OvulationCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <style>{`
-        .toolLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }} className="toolLayout">
+      <div className="toolLayout tool-page-wrapper">
         <div className="toolContent">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>

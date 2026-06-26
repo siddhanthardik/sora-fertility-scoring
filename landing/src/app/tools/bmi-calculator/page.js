@@ -81,21 +81,8 @@ export default function BmiCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <style>{`
-        .toolLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }} className="toolLayout">
-        <div className="toolContent">
+      <div className="toolLayout tool-page-wrapper">
+        <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
           <ChevronRight size={14} color="#94a3b8" />
@@ -110,9 +97,9 @@ export default function BmiCalculator() {
           <p style={{ fontSize: '16px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
+        <div className="tool-form-card" onFocusCapture={trackStart} onClickCapture={trackStart}>
           
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '32px' }}>
+          <div className="tool-unit-toggle">
             <button 
               onClick={() => { setUnit('metric'); setResults(null); }}
               style={{ padding: '8px 24px', borderRadius: '100px', fontWeight: 'bold', fontSize: '15px', border: 'none', background: unit === 'metric' ? '#0f172a' : '#f1f5f9', color: unit === 'metric' ? '#fff' : '#64748b', cursor: 'pointer', transition: 'all 0.2s' }}
@@ -129,7 +116,7 @@ export default function BmiCalculator() {
 
           <form onSubmit={calculateBMI}>
             {unit === 'metric' ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+              <div className="tool-input-grid-2">
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Height (cm)</label>
                   <input 
@@ -146,7 +133,7 @@ export default function BmiCalculator() {
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+              <div className="tool-input-grid-3">
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1e293b' }}>Height (ft)</label>
                   <input 

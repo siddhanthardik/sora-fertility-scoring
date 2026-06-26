@@ -161,20 +161,7 @@ export default function EggFreezingPlanner() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <style>{`
-        .toolLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolLayout">
+      <div className="toolLayout tool-page-wrapper">
         <div className="toolContent">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
@@ -193,7 +180,7 @@ export default function EggFreezingPlanner() {
               <Shield size={14} /> Educational • Private • No Signup Required
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <button onClick={() => { trackEvent({ event: "tool_started", tool: "egg_freezing_planner" }); setHasStarted(true); }} style={{ padding: '12px 24px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Start Planning <ArrowRight size={18} />
               </button>

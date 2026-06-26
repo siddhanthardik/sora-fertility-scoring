@@ -67,20 +67,7 @@ export default function PeriodCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <style>{`
-        .toolLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }} className="toolLayout">
+      <div className="toolLayout tool-page-wrapper">
         <div className="toolContent">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
@@ -133,16 +120,16 @@ export default function PeriodCalculator() {
           <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '24px', textAlign: 'center' }}>Results:</h2>
             
-            <div style={{ display: 'grid', gap: '16px' }}>
-              <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'grid', gap: '12px' }}>
+              <div className="tool-result-row">
                 <span style={{ fontWeight: '600', color: '#475569' }}>Next period:</span>
                 <span style={{ fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>{results.nextPeriod}</span>
               </div>
-              <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="tool-result-row">
                 <span style={{ fontWeight: '600', color: '#475569' }}>Fertile window:</span>
                 <span style={{ fontWeight: 'bold', color: '#ff2a5f', fontSize: '18px' }}>{results.fertileWindow}</span>
               </div>
-              <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="tool-result-row">
                 <span style={{ fontWeight: '600', color: '#475569' }}>Ovulation estimate:</span>
                 <span style={{ fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>{results.ovulationEstimate}</span>
               </div>
@@ -174,7 +161,7 @@ export default function PeriodCalculator() {
       </div>
 
       {/* SEO & Educational Content Section */}
-      <div style={{ background: '#fff', borderTop: '1px solid #e2e8f0', padding: '80px 20px' }}>
+      <div className="tool-seo-section">
         <div style={{ maxWidth: '800px', margin: '0 auto', color: '#334155', lineHeight: 1.8, fontSize: '18px' }}>
           
           <h2 style={{ fontSize: '32px', color: '#0f172a', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '-0.5px' }}>

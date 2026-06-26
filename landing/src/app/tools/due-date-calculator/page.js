@@ -269,20 +269,7 @@ export default function DueDateCalculator() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
-      <style>{`
-        .toolLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolLayout">
+      <div className="toolLayout tool-page-wrapper">
         <div className="toolContent">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
           <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
@@ -302,7 +289,7 @@ export default function DueDateCalculator() {
             <form onSubmit={calculateDueDate}>
               <div style={{ marginBottom: '32px' }}>
                 <label style={{ display: 'block', marginBottom: '16px', fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>How did conception occur?</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                <div className="tool-method-buttons">
                   {['natural', 'iui', 'ivf'].map(method => (
                     <button 
                       key={method}
@@ -342,7 +329,7 @@ export default function DueDateCalculator() {
                   )}
 
                   {naturalMethod === 'ultrasound' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="tool-input-grid-2">
                       <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1e293b' }}>Scan Date</label>
                         <input 

@@ -111,7 +111,7 @@ export default function ToolsHub() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
       
-      <div style={{ background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%)', padding: '80px 20px', borderBottom: '1px solid #fce7f3' }}>
+      <div style={{ background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%)', borderBottom: '1px solid #fce7f3' }} className="tools-hub-hero">
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>SORA Fertility Hub</h1>
           <p style={{ fontSize: '16px', color: '#475569', margin: '0 0 32px 0', lineHeight: '1.6' }}>
@@ -141,20 +141,7 @@ export default function ToolsHub() {
         </div>
       </div>
 
-      <style>{`
-        .toolsLayout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 40px;
-        }
-        @media (max-width: 900px) {
-          .toolsLayout {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }} className="toolsLayout">
+      <div className="toolsLayout tool-page-wrapper">
         <div className="toolsContent">
           {categories.map(category => {
             const categoryTools = filteredTools.filter(t => t.category === category);
@@ -165,7 +152,7 @@ export default function ToolsHub() {
                 <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', margin: '0 0 24px 0', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
                   {category}
                 </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+                <div className="tools-card-grid">
                   {categoryTools.map(tool => (
                     <ToolCard key={tool.id} tool={tool} />
                   ))}
