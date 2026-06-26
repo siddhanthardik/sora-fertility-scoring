@@ -429,3 +429,20 @@ button, input, select, textarea {
     margin-bottom: 24px;
   }
 }
+
+/* --- Ad Placement Utility Classes --- */
+.ad-desktop-only {
+  display: none !important;
+}
+.ad-mobile-only {
+  display: block !important;
+}
+
+@media (min-width: 768px) {
+  .ad-desktop-only {
+    display: block !important;
+  }
+  .ad-mobile-only {
+    display: none !important;
+  }
+}
