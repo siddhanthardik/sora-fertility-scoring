@@ -280,15 +280,17 @@ export default function DueDateCalculator() {
 
 
         {!results && (
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>SORA Pregnancy<br/>Due Date Calculator™</h1>
-            <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>Calculate your estimated due date for natural conception, IUI, IVF, and embryo transfer pregnancies.</p>
-          </div>
-          
-          <div style={{ marginBottom: '32px' }}>
-            <AdsterraAd size="468x60" className="ad-desktop-only" />
-            <AdsterraAd size="300x250" className="ad-mobile-only" />
-          </div>
+          <>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>SORA Pregnancy<br/>Due Date Calculator™</h1>
+              <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>Calculate your estimated due date for natural conception, IUI, IVF, and embryo transfer pregnancies.</p>
+            </div>
+            
+            <div style={{ marginBottom: '32px' }}>
+              <AdsterraAd size="468x60" className="ad-desktop-only" />
+              <AdsterraAd size="300x250" className="ad-mobile-only" />
+            </div>
+          </>
         )}
 
         {!results && (
