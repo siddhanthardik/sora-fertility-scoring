@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Activity, CalendarHeart, Scale, ChevronRight, Baby, Snowflake, Search, CheckCircle2, Star } from 'lucide-react';
+import { Search, ChevronRight, Calculator, CalendarDays, Snowflake, FileText, Activity, CalendarHeart, Scale, Baby, CheckCircle2, Star } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import AdsterraAd from '../components/AdsterraAd';
 
 const ALL_TOOLS = [
   {
@@ -143,7 +144,7 @@ export default function ToolsHub() {
 
       <div className="toolsLayout tool-page-wrapper">
         <div className="toolsContent">
-          {categories.map(category => {
+          {categories.map((category, index) => {
             const categoryTools = filteredTools.filter(t => t.category === category);
             if (categoryTools.length === 0) return null;
 
@@ -157,6 +158,13 @@ export default function ToolsHub() {
                     <ToolCard key={tool.id} tool={tool} />
                   ))}
                 </div>
+                {/* Insert ad after the first category */}
+                {index === 0 && (
+                  <div style={{ marginTop: '64px' }}>
+                    <AdsterraAd size="728x90" className="ad-desktop-only" />
+                    <AdsterraAd size="300x250" className="ad-mobile-only" />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -169,14 +177,8 @@ export default function ToolsHub() {
           )}
         </div>
         
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* AdSense Placement */}
-          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
-              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
-            </div>
-          </div>
+        <aside>
+          <AdsterraAd size="300x250" />
         </aside>
       </div>
       <Footer />

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, ArrowRight, Snowflake, Download, Mail, Activity, Target, Shield, Clock, Heart, BookOpen, AlertCircle } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AdsterraAd from '../../components/AdsterraAd';
 import { trackEvent } from '../../../lib/analytics';
 
 const RadioButton = ({ label, options, state, setState }) => (
@@ -162,12 +163,14 @@ export default function EggFreezingPlanner() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
       <div className="toolLayout tool-page-wrapper">
-        <div className="toolContent">
+        <div className="toolContent tool-content-inner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
-          <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
-          <ChevronRight size={14} color="#94a3b8" />
-          <span style={{ color: '#ff2a5f' }}>Egg Freezing Planner</span>
-        </div>
+            <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
+            <ChevronRight size={14} color="#94a3b8" />
+            <span style={{ color: '#ff2a5f' }}>Egg Freezing Planner</span>
+          </div>
+
+          <AdsterraAd size="320x50" className="ad-mobile-only" />
 
         {!hasStarted ? (
           <div style={{ textAlign: 'center', marginTop: '40px', marginBottom: '60px' }}>
@@ -453,18 +456,21 @@ export default function EggFreezingPlanner() {
                 </div>
               </div>
             )}
+            
+            {results && (
+              <>
+                <AdsterraAd size="728x90" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </>
+            )}
+            
           </div>
         )}
         </div>
 
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* AdSense Placement */}
-          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
-              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
-            </div>
-          </div>
+        <aside>
+          <AdsterraAd size="300x250" />
+          <AdsterraAd size="300x250" />
         </aside>
 
       </div>

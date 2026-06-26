@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import SubscribeForm from "../../components/SubscribeForm";
 import SocialShare from "../../components/SocialShare";
+import AdsterraAd from "../../components/AdsterraAd";
 import styles from "../page.module.css";
 
 
@@ -199,6 +200,12 @@ export default async function BlogPost({ params }) {
                 
                 <SocialShare title={blog.title} />
               </header>
+
+              <div style={{ marginBottom: '32px' }}>
+                <AdsterraAd size="728x90" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </div>
+
               <div 
                 className={styles.blogContent}
                 dangerouslySetInnerHTML={{ __html: blog.content }} 
@@ -233,8 +240,10 @@ export default async function BlogPost({ params }) {
             </div>
 
             {/* Sidebar Column */}
-            <aside style={{ width: '320px', position: 'sticky', top: '100px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <aside style={{ width: '320px', position: 'sticky', top: '100px', display: 'flex', flexDirection: 'column', gap: '32px', alignItems: 'center' }}>
               <SubscribeForm source={`blog/${blog.slug}`} />
+              <AdsterraAd size="300x250" />
+              <AdsterraAd size="160x300" />
             </aside>
           </div>
 

@@ -209,6 +209,7 @@ button, input, select, textarea {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 @media (min-width: 960px) {
   .toolLayout  { grid-template-columns: 1fr 300px; gap: 40px; }
@@ -226,7 +227,44 @@ button, input, select, textarea {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    align-items: center; /* Center ads inside aside */
   }
+}
+
+/* --- Constrain width of main form area on desktop so it doesn't span 1000px --- */
+.tool-content-inner {
+  width: 100%;
+}
+@media (min-width: 960px) {
+  .tool-content-inner {
+    max-width: 720px; /* Constrain tool forms to a readable width */
+  }
+}
+
+/* --- Adsterra Visibility Helpers --- */
+.ad-desktop-only {
+  display: none;
+}
+@media (min-width: 960px) {
+  .ad-desktop-only {
+    display: block;
+  }
+}
+
+.ad-mobile-only {
+  display: block;
+}
+@media (min-width: 960px) {
+  .ad-mobile-only {
+    display: none;
+  }
+}
+
+/* --- Generic Wrapper for Ads --- */
+.ad-slot-wrapper {
+  margin: 24px 0;
+  display: flex;
+  justify-content: center;
 }
 
 /* --- Tools hub hero padding --- */

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AdsterraAd from "../components/AdsterraAd";
 import styles from "./page.module.css";
 
 import { buildMetadata, getStructuredData } from "@/lib/seo";
@@ -83,46 +84,63 @@ export default async function BlogIndex({ searchParams }) {
 
       <main className={styles.mainGrid} style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '32px' }}>
         {hasBlogs ? (
-          blogs.map(post => (
-            <Link href={`/blog/${post.slug}`} key={post.id} style={{ textDecoration: 'none' }}>
-              <article 
-                style={{ 
-                  background: 'white', 
+          blogs.map((post, index) => (
+            <React.Fragment key={post.id}>
+              <Link href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
+                <article 
+                  style={{ 
+                    background: 'white', 
+                    borderRadius: '16px', 
+                    overflow: 'hidden', 
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', 
+                    border: '1px solid #f1f5f9',
+                    transition: 'all 0.3s',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  {post.cover_image ? (
+                    <div style={{ height: '200px', width: '100%', overflow: 'hidden' }}>
+                      <img src={post.cover_image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ) : (
+                    <div style={{ height: '200px', width: '100%', background: '#fff1f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <BookOpen size={48} color="#fbcfe8" />
+                    </div>
+                  )}
+                  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#f43f5e', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+                      {post.category || "General"}
+                    </div>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginBottom: '12px', lineHeight: '1.4' }}>
+                      {post.title}
+                    </h2>
+                    <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px', flex: 1 }}>
+                      {post.excerpt}
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f43f5e', fontWeight: '700', fontSize: '0.95rem' }}>
+                      Read Article <ArrowRight size={16} />
+                    </div>
+                  </div>
+                </article>
+              </Link>
+              
+              {/* Inject Native-feeling Ad every 4 posts */}
+              {(index === 1 || index === 5 || index === 9) && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  background: '#f8fafc', 
                   borderRadius: '16px', 
-                  overflow: 'hidden', 
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', 
-                  border: '1px solid #f1f5f9',
-                  transition: 'all 0.3s',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
-                {post.cover_image ? (
-                  <div style={{ height: '200px', width: '100%', overflow: 'hidden' }}>
-                    <img src={post.cover_image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                ) : (
-                  <div style={{ height: '200px', width: '100%', background: '#fff1f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <BookOpen size={48} color="#fbcfe8" />
-                  </div>
-                )}
-                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#f43f5e', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
-                    {post.category || "General"}
-                  </div>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginBottom: '12px', lineHeight: '1.4' }}>
-                    {post.title}
-                  </h2>
-                  <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px', flex: 1 }}>
-                    {post.excerpt}
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f43f5e', fontWeight: '700', fontSize: '0.95rem' }}>
-                    Read Article <ArrowRight size={16} />
-                  </div>
+                  border: '1px dashed #e2e8f0',
+                  minHeight: '250px'
+                }}>
+                  <AdsterraAd size="300x250" />
                 </div>
-              </article>
-            </Link>
+              )}
+            </React.Fragment>
           ))
         ) : (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '100px 20px' }}>

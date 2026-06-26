@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, Baby, Download, Mail, Heart, Calendar, CalendarClock, Clock, AlertCircle } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AdsterraAd from '../../components/AdsterraAd';
 import { trackEvent } from '../../../lib/analytics';
 
 const insightsData = {
@@ -270,12 +271,14 @@ export default function DueDateCalculator() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Navbar />
       <div className="toolLayout tool-page-wrapper">
-        <div className="toolContent">
+        <div className="toolContent tool-content-inner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 'bold' }}>
-          <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
-          <ChevronRight size={14} color="#94a3b8" />
-          <span style={{ color: '#ff2a5f' }}>Due Date Calculator</span>
-        </div>
+            <Link href="/tools" style={{ color: '#64748b', textDecoration: 'none' }}>Tools Hub</Link>
+            <ChevronRight size={14} color="#94a3b8" />
+            <span style={{ color: '#ff2a5f' }}>Due Date Calculator</span>
+          </div>
+
+          <AdsterraAd size="320x50" className="ad-mobile-only" />
 
         {!results && (
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -289,6 +292,7 @@ export default function DueDateCalculator() {
             <form onSubmit={calculateDueDate}>
               <div style={{ marginBottom: '32px' }}>
                 <label style={{ display: 'block', marginBottom: '16px', fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>How did conception occur?</label>
+                <AdsterraAd size="468x60" className="ad-desktop-only" />
                 <div className="tool-method-buttons">
                   {['natural', 'iui', 'ivf'].map(method => (
                     <button 
@@ -394,6 +398,8 @@ export default function DueDateCalculator() {
                 Calculate My Due Date
                 <ChevronRight size={20} />
               </button>
+              
+              <AdsterraAd size="320x50" className="ad-mobile-only" />
             </form>
           </div>
         )}
@@ -636,19 +642,19 @@ export default function DueDateCalculator() {
                 <strong className="text-slate-700">Important:</strong> Please consult your medical practitioners or doctors for any clinical decisions. This data is purely for informational purposes, depends entirely on user input, and cannot be challenged in court.
               </p>
             </div>
+            
+            <div style={{ marginTop: '32px' }}>
+              <AdsterraAd size="728x90" className="ad-desktop-only" />
+              <AdsterraAd size="300x250" className="ad-mobile-only" />
+            </div>
           </div>
         )}
 
         </div>
 
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* AdSense Placement */}
-          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#64748b', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Advertisement</div>
-              <div style={{ fontSize: '12px' }}>[ Paste Google AdSense Code Here (300x600) ]</div>
-            </div>
-          </div>
+        <aside>
+          <AdsterraAd size="300x250" />
+          <AdsterraAd size="300x250" />
         </aside>
 
       </div>
