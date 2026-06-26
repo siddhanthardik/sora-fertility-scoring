@@ -194,7 +194,7 @@ export default function DueDateCalculator() {
         w40: formatShortDate(edd)
       }
     });
-    trackEvent({ event: "tool_completed", tool: "due_date_calculator" });
+    trackEvent({ event: "tool_completed", tool: "due_date_calculator", metadata: { method: methodString } });
     setSendSuccess(false);
   };
 

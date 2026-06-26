@@ -1,3 +1,5 @@
+import { bridgeToMetaPixel } from "./meta-pixel.js";
+
 export function getSoraSessionId() {
   if (typeof window === "undefined") return "server-side";
   
@@ -59,4 +61,7 @@ export async function trackEvent({ event, tool, metadata = {} }) {
   } catch (error) {
     console.error("Failed to track event:", error);
   }
+
+  // 3. Bridge to Meta Pixel
+  bridgeToMetaPixel(event, tool, metadata);
 }
