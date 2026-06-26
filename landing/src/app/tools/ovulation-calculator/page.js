@@ -67,14 +67,17 @@ export default function OvulationCalculator() {
             <span style={{ color: '#ff2a5f' }}>Ovulation Calculator</span>
           </div>
 
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
-        
         <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
             <div style={{ width: '48px', height: '48px', background: '#fff1f2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CalendarHeart size={24} color="#ff2a5f" />
             </div>
             <h1 style={{ fontSize: '24px', color: '#1e293b', margin: 0, fontWeight: '800' }}>Ovulation Calculator</h1>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <AdsterraAd size="468x60" className="ad-desktop-only" />
+            <AdsterraAd size="300x250" className="ad-mobile-only" />
           </div>
 
           <form onSubmit={calculateOvulation} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -108,6 +111,10 @@ export default function OvulationCalculator() {
 
           {results && (
             <div style={{ marginTop: '40px', borderTop: '2px dashed #ffe4e6', paddingTop: '40px' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <AdsterraAd size="728x90" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </div>
               <div style={{ background: '#fff1f2', borderRadius: '16px', padding: '24px', textAlign: 'center' }}>
                 <h3 style={{ color: '#ff2a5f', margin: '0 0 8px 0', fontSize: '18px' }}>Estimated Fertile Window</h3>
                 <div style={{ fontSize: '28px', fontWeight: '800', color: '#be123c', marginBottom: '16px' }}>
@@ -130,14 +137,11 @@ export default function OvulationCalculator() {
           )}
         </div>
         
-        <div style={{ marginTop: '32px' }}>
-          <AdsterraAd size="468x60" className="ad-desktop-only" />
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
-        </div>
         </div>
         
-        <aside>
+        <aside style={{ position: 'sticky', top: '100px' }}>
           <AdsterraAd size="300x250" />
+          <AdsterraAd size="160x300" />
         </aside>
       </div>
       <Footer />

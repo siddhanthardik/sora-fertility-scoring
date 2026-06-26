@@ -90,7 +90,6 @@ export default function BmiCalculator() {
             <span style={{ color: '#ff2a5f' }}>BMI Fertility Calculator</span>
           </div>
 
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
@@ -98,6 +97,11 @@ export default function BmiCalculator() {
           </div>
           <h1 style={{ fontSize: '24px', color: '#0f172a', fontWeight: '800', marginBottom: '12px' }}>BMI Fertility Calculator</h1>
           <p style={{ fontSize: '16px', color: '#64748b' }}>Calculate your BMI and understand how your weight impacts your reproductive health.</p>
+        </div>
+
+        <div style={{ marginBottom: '32px' }}>
+          <AdsterraAd size="468x60" className="ad-desktop-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
         </div>
 
         <div className="tool-form-card" onFocusCapture={trackStart} onClickCapture={trackStart}>
@@ -169,6 +173,13 @@ export default function BmiCalculator() {
         </div>
 
         {results && (
+          <div style={{ marginBottom: '32px' }}>
+            <AdsterraAd size="728x90" className="ad-desktop-only" />
+            <AdsterraAd size="300x250" className="ad-mobile-only" />
+          </div>
+        )}
+
+        {results && (
           <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', marginBottom: '32px', textAlign: 'center', borderTop: `8px solid ${results.color}` }}>
             <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#64748b', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Results</h2>
             <div style={{ fontSize: '64px', fontWeight: '900', color: '#0f172a', lineHeight: 1, marginBottom: '8px' }}>{results.bmi}</div>
@@ -182,15 +193,11 @@ export default function BmiCalculator() {
             </div>
           </div>
         )}
-        
-        <div style={{ marginTop: '32px' }}>
-          <AdsterraAd size="728x90" className="ad-desktop-only" />
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
-        </div>
         </div>
 
-        <aside>
+        <aside style={{ position: 'sticky', top: '100px' }}>
           <AdsterraAd size="300x250" />
+          <AdsterraAd size="160x300" />
         </aside>
 
       </div>

@@ -278,12 +278,16 @@ export default function DueDateCalculator() {
             <span style={{ color: '#ff2a5f' }}>Due Date Calculator</span>
           </div>
 
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         {!results && (
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>SORA Pregnancy<br/>Due Date Calculator™</h1>
             <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>Calculate your estimated due date for natural conception, IUI, IVF, and embryo transfer pregnancies.</p>
+          </div>
+          
+          <div style={{ marginBottom: '32px' }}>
+            <AdsterraAd size="468x60" className="ad-desktop-only" />
+            <AdsterraAd size="300x250" className="ad-mobile-only" />
           </div>
         )}
 
@@ -292,7 +296,6 @@ export default function DueDateCalculator() {
             <form onSubmit={calculateDueDate}>
               <div style={{ marginBottom: '32px' }}>
                 <label style={{ display: 'block', marginBottom: '16px', fontWeight: 'bold', color: '#0f172a', fontSize: '18px' }}>How did conception occur?</label>
-                <AdsterraAd size="468x60" className="ad-desktop-only" />
                 <div className="tool-method-buttons">
                   {['natural', 'iui', 'ivf'].map(method => (
                     <button 
@@ -399,7 +402,10 @@ export default function DueDateCalculator() {
                 <ChevronRight size={20} />
               </button>
               
-              <AdsterraAd size="300x250" className="ad-mobile-only" />
+              <div style={{ marginTop: '24px' }}>
+                <AdsterraAd size="728x90" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </div>
             </form>
           </div>
         )}
@@ -643,18 +649,15 @@ export default function DueDateCalculator() {
               </p>
             </div>
             
-            <div style={{ marginTop: '32px' }}>
-              <AdsterraAd size="728x90" className="ad-desktop-only" />
-              <AdsterraAd size="300x250" className="ad-mobile-only" />
-            </div>
+
           </div>
         )}
 
         </div>
 
-        <aside>
+        <aside style={{ position: 'sticky', top: '100px' }}>
           <AdsterraAd size="300x250" />
-          <AdsterraAd size="300x250" />
+          <AdsterraAd size="160x300" />
         </aside>
 
       </div>

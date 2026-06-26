@@ -170,7 +170,6 @@ export default function EggFreezingPlanner() {
             <span style={{ color: '#ff2a5f' }}>Egg Freezing Planner</span>
           </div>
 
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
 
         {!hasStarted ? (
           <div style={{ textAlign: 'center', marginTop: '40px', marginBottom: '60px' }}>
@@ -179,8 +178,13 @@ export default function EggFreezingPlanner() {
             </div>
             <h1 style={{ fontSize: '32px', color: '#0f172a', fontWeight: '900', marginBottom: '16px', letterSpacing: '-1px' }}>Egg Freezing Planner™</h1>
             <p style={{ fontSize: '16px', color: '#475569', maxWidth: '600px', margin: '0 auto 16px' }}>Understand how age influences fertility preservation and explore whether discussing egg freezing with a specialist may be worth considering.</p>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>
               <Shield size={14} /> Educational • Private • No Signup Required
+            </div>
+
+            <div style={{ marginBottom: '32px' }}>
+              <AdsterraAd size="468x60" className="ad-desktop-only" />
+              <AdsterraAd size="300x250" className="ad-mobile-only" />
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -193,8 +197,13 @@ export default function EggFreezingPlanner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             {/* Input Form */}
             <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', border: '1px solid #f1f5f9' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '32px' }}>Your Information</h2>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '16px' }}>Your Information</h2>
               
+              <div style={{ marginBottom: '32px' }}>
+                <AdsterraAd size="468x60" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </div>
+
               <div style={{ marginBottom: '32px' }}>
                 <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <span style={{ fontWeight: 'bold', color: '#1e293b', fontSize: '18px' }}>Age: {age}</span>
@@ -251,6 +260,13 @@ export default function EggFreezingPlanner() {
                 <ChevronRight size={18} />
               </button>
             </div>
+
+            {results && (
+              <div style={{ marginBottom: '32px' }}>
+                <AdsterraAd size="728x90" className="ad-desktop-only" />
+                <AdsterraAd size="300x250" className="ad-mobile-only" />
+              </div>
+            )}
 
             {results && (
               <div ref={resultsRef} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -457,20 +473,14 @@ export default function EggFreezingPlanner() {
               </div>
             )}
             
-            {results && (
-              <>
-                <AdsterraAd size="728x90" className="ad-desktop-only" />
-                <AdsterraAd size="300x250" className="ad-mobile-only" />
-              </>
-            )}
-            
+
           </div>
         )}
         </div>
 
-        <aside>
+        <aside style={{ position: 'sticky', top: '100px' }}>
           <AdsterraAd size="300x250" />
-          <AdsterraAd size="300x250" />
+          <AdsterraAd size="160x300" />
         </aside>
 
       </div>

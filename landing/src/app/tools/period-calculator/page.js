@@ -76,14 +76,17 @@ export default function PeriodCalculator() {
             <span style={{ color: '#ff2a5f' }}>Period Calculator</span>
           </div>
 
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
-
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
-            <Activity size={24} color="#e11d48" />
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', background: '#fff1f2', borderRadius: '16px', marginBottom: '16px' }}>
+              <Activity size={24} color="#e11d48" />
+            </div>
+            <h1 style={{ fontSize: '24px', color: '#0f172a', fontWeight: '800', marginBottom: '12px' }}>Period Calculator</h1>
+            <p style={{ fontSize: '16px', color: '#64748b' }}>Calculate your next period, ovulation estimate, and fertile window.</p>
           </div>
-          <h1 style={{ fontSize: '24px', color: '#0f172a', fontWeight: '800', marginBottom: '12px' }}>Period Calculator</h1>
-          <p style={{ fontSize: '16px', color: '#64748b' }}>Calculate your next period, ovulation estimate, and fertile window.</p>
+
+        <div style={{ marginBottom: '32px' }}>
+          <AdsterraAd size="468x60" className="ad-desktop-only" />
+          <AdsterraAd size="300x250" className="ad-mobile-only" />
         </div>
 
         <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }} onFocusCapture={trackStart} onClickCapture={trackStart}>
@@ -120,6 +123,13 @@ export default function PeriodCalculator() {
         </div>
 
         {results && (
+          <div style={{ marginBottom: '32px' }}>
+            <AdsterraAd size="728x90" className="ad-desktop-only" />
+            <AdsterraAd size="300x250" className="ad-mobile-only" />
+          </div>
+        )}
+
+        {results && (
           <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', marginBottom: '32px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '24px', textAlign: 'center' }}>Results:</h2>
             
@@ -149,15 +159,11 @@ export default function PeriodCalculator() {
           </Link>
         </div>
 
-        
-        <div style={{ marginTop: '32px' }}>
-          <AdsterraAd size="468x60" className="ad-desktop-only" />
-          <AdsterraAd size="300x250" className="ad-mobile-only" />
-        </div>
         </div>
 
-        <aside>
+        <aside style={{ position: 'sticky', top: '100px' }}>
           <AdsterraAd size="300x250" />
+          <AdsterraAd size="160x300" />
         </aside>
 
       </div>
