@@ -165,8 +165,8 @@ export default async function BlogPost({ params }) {
       <main style={{ paddingBottom: '120px' }}>
         {/* Full-width Hero Image */}
         {blog.cover_image && (
-          <div style={{ width: '100%', maxHeight: '480px', position: 'relative', overflow: 'hidden', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: '100%', maxHeight: '480px', objectFit: 'contain', display: 'block' }} />
+          <div style={{ width: '100%', maxHeight: '480px', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={blog.cover_image} alt={blog.title} style={{ width: '100%', height: '100%', minHeight: '100%', maxHeight: '480px', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
           </div>
         )}
 
