@@ -241,13 +241,17 @@ export default async function BlogPost({ params }) {
 
             {/* Sidebar Column */}
             <aside style={{ width: '320px', position: 'sticky', top: '100px', display: 'flex', flexDirection: 'column', gap: '32px', alignItems: 'center' }}>
-              <SubscribeForm source={`blog/${blog.slug}`} />
               <AdsterraAd size="300x250" />
-              <AdsterraAd size="160x300" />
+              <SubscribeForm source={`blog/${blog.slug}`} />
             </aside>
           </div>
 
 
+
+          <div style={{ margin: '64px 0 32px 0', textAlign: 'center' }}>
+            <AdsterraAd size="728x90" className="ad-desktop-only" />
+            <AdsterraAd size="300x250" className="ad-mobile-only" />
+          </div>
 
           {/* Related Posts Section */}
           {relatedPosts && relatedPosts.length > 0 && (
